@@ -695,16 +695,39 @@ public class SpoonTest {
   }
 
   @Test
-  public void saveToRepository() throws Exception {
-    JobMeta mockJobMeta = mock( JobMeta.class );
+  public void saveToRepositoryJobSuccessfulSaveChecksDuplicate() throws Exception {
+    assertSaveToRepositoryChecksDuplicate( mock( JobMeta.class ), LastUsedFile.FILE_TYPE_JOB, RepositoryObjectType.JOB,
+      true );
+  }
 
-    prepareSetSaveTests( spoon, log, mockSpoonPerspective, mockJobMeta, false, false, "NotMainSpoonPerspective", true,
-      true, "filename", null, true, false );
+  @Test
+  public void saveToRepositoryJobFailedSaveChecksDuplicate() throws Exception {
+    assertSaveToRepositoryChecksDuplicate( mock( JobMeta.class ), LastUsedFile.FILE_TYPE_JOB, RepositoryObjectType.JOB,
+      false );
+  }
+
+  @Test
+  public void saveToRepositoryTransformationChecksDuplicateType() throws Exception {
+    assertSaveToRepositoryChecksDuplicate( mock( TransMeta.class ), LastUsedFile.FILE_TYPE_TRANSFORMATION,
+      RepositoryObjectType.TRANSFORMATION, true );
+  }
+
+  @Test
+  public void saveToRepositoryTransformationFailedSaveChecksDuplicate() throws Exception {
+    assertSaveToRepositoryChecksDuplicate( mock( TransMeta.class ), LastUsedFile.FILE_TYPE_TRANSFORMATION,
+      RepositoryObjectType.TRANSFORMATION, false );
+  }
+
+  private void assertSaveToRepositoryChecksDuplicate( AbstractMeta metaData, String fileType,
+                                                      RepositoryObjectType objectType, boolean saveConfirmed )
+    throws Exception {
+    prepareSetSaveTests( spoon, log, mockSpoonPerspective, metaData, false, false, "NotMainSpoonPerspective", true,
+      true, fileType, null, true, false );
 
     RepositoryDirectoryInterface dirMock = mock( RepositoryDirectoryInterface.class );
     doReturn( "my/path" ).when( dirMock ).getPath();
-    doReturn( dirMock ).when( mockJobMeta ).getRepositoryDirectory();
-    doReturn( "trans" ).when( mockJobMeta ).getName();
+    doReturn( dirMock ).when( metaData ).getRepositoryDirectory();
+    doReturn( "trans" ).when( metaData ).getName();
 
     RepositoryDirectoryInterface newDirMock = mock( RepositoryDirectoryInterface.class );
     doReturn( "my/new/path" ).when( newDirMock ).getPath();
@@ -716,28 +739,101 @@ public class SpoonTest {
     doReturn( fileDlgOp ).when( spoon ).getFileDialogOperation( any(), eq( FileDialogOperation.SAVE ),
       eq( FileDialogOperation.ORIGIN_SPOON ) );
     doReturn( "newTrans" ).when( repositoryObject ).getName();
+
+    doCallRealMethod().when( spoon ).saveToRepository( metaData, true );
+
+    doReturn( saveConfirmed ).when( spoon ).saveToRepositoryConfirmed( metaData );
+    spoon.saveToRepository( metaData, true );
+
+    verify( spoon.rep, times( 1 ) ).exists( "newTrans", newDirMock, objectType );
+    verify( spoon, Mockito.description( "Expected repository save confirmation to be invoked once" ) )
+      .saveToRepositoryConfirmed( metaData );
+    verify( metaData, times( 1 ) ).setRepositoryDirectory( newDirMock );
+    verify( metaData, times( 1 ) ).setName( "newTrans" );
+    if ( saveConfirmed ) {
+      verify( spoon.delegates.tabs, times( 1 ) ).renameTabs();
+      verify( metaData, never() ).setRepositoryDirectory( dirMock );
+      verify( metaData, never() ).setName( "trans" );
+    } else {
+      verify( spoon.delegates.tabs, never() ).renameTabs();
+      verify( metaData, times( 1 ) ).setRepositoryDirectory( dirMock );
+      verify( metaData, times( 1 ) ).setName( "trans" );
+    }
+  }
+
+  @Test
+  public void saveToRepositoryDoesNotSaveWhenOverwriteDeclined() throws Exception {
+    JobMeta mockJobMeta = mock( JobMeta.class );
+    prepareSetSaveTests( spoon, log, mockSpoonPerspective, mockJobMeta, false, false, "NotMainSpoonPerspective", true,
+      true, LastUsedFile.FILE_TYPE_JOB, null, true, false );
+
+    RepositoryDirectoryInterface originalDir = mock( RepositoryDirectoryInterface.class );
+    doReturn( originalDir ).when( mockJobMeta ).getRepositoryDirectory();
+    doReturn( "original" ).when( mockJobMeta ).getName();
+
+    RepositoryDirectoryInterface targetDir = mock( RepositoryDirectoryInterface.class );
+    RepositoryObject repositoryObject = mock( RepositoryObject.class );
+    doReturn( targetDir ).when( repositoryObject ).getRepositoryDirectory();
+    doReturn( "existing" ).when( repositoryObject ).getName();
+
+    FileDialogOperation fileDlgOp = mock( FileDialogOperation.class );
+    doReturn( repositoryObject ).when( fileDlgOp ).getRepositoryObject();
+    doReturn( fileDlgOp ).when( spoon ).getFileDialogOperation( any(), eq( FileDialogOperation.SAVE ),
+      eq( FileDialogOperation.ORIGIN_SPOON ) );
+    doReturn( true ).when( spoon.rep ).exists( "existing", targetDir, RepositoryObjectType.JOB );
+    doReturn( false ).when( spoon ).confirmRepositoryOverwrite( mockJobMeta, repositoryObject );
     doCallRealMethod().when( spoon ).saveToRepository( mockJobMeta, true );
 
-    // mock a successful save
-    doReturn( true ).when( spoon ).saveToRepositoryConfirmed( mockJobMeta );
-    spoon.saveToRepository( mockJobMeta, true );
-    // verify that the meta name and directory have been updated and renameTabs is called
-    verify( spoon.delegates.tabs, times( 1 ) ).renameTabs();
-    verify( mockJobMeta, times( 1 ) ).setRepositoryDirectory( newDirMock );
-    verify( mockJobMeta, never() ).setRepositoryDirectory( dirMock ); // verify that the dir is never set back
-    verify( mockJobMeta, times( 1 ) ).setName( "newTrans" );
-    verify( mockJobMeta, never()  ).setName( "trans" ); // verify that the name is never set back
+    assertFalse( spoon.saveToRepository( mockJobMeta, true ) );
 
-    // mock a failed save
-    doReturn( false ).when( spoon ).saveToRepositoryConfirmed( mockJobMeta );
-    spoon.saveToRepository( mockJobMeta, true );
-    // verify that the meta name and directory have not changed and renameTabs is not called (only once form the
-    // previous test)
-    verify( spoon.delegates.tabs, times( 1 ) ).renameTabs();
-    verify( mockJobMeta, times( 2 ) ).setRepositoryDirectory( newDirMock );
-    verify( mockJobMeta, times( 1 ) ).setRepositoryDirectory( dirMock ); // verify that the dir is set back
-    verify( mockJobMeta, times( 2 ) ).setName( "newTrans" );
-    verify( mockJobMeta, times( 1 ) ).setName( "trans" ); // verify that the name is set back
+    verify( spoon, Mockito.description( "Expected overwrite confirmation to be presented for an existing repository object" ) )
+      .confirmRepositoryOverwrite( mockJobMeta, repositoryObject );
+    verify( spoon, never() ).saveToRepositoryConfirmed( mockJobMeta );
+    verify( mockJobMeta, never() ).setRepositoryDirectory( targetDir );
+    verify( mockJobMeta, never() ).setName( "existing" );
+    verify( spoon.delegates.tabs, never() ).renameTabs();
+  }
+
+  @Test
+  public void saveToRepositoryReturnsFalseWhenNameDialogIsCancelled() throws Exception {
+    JobMeta mockJobMeta = mock( JobMeta.class );
+    prepareSetSaveTests( spoon, log, mockSpoonPerspective, mockJobMeta, false, false, "NotMainSpoonPerspective", true,
+      true, LastUsedFile.FILE_TYPE_JOB, null, true, false );
+
+    RepositoryDirectoryInterface currentDir = mock( RepositoryDirectoryInterface.class );
+    doReturn( currentDir ).when( mockJobMeta ).getRepositoryDirectory();
+    doReturn( "current/path" ).when( currentDir ).getPath();
+
+    FileDialogOperation fileDlgOp = mock( FileDialogOperation.class );
+    doReturn( fileDlgOp ).when( spoon ).getFileDialogOperation( any(), eq( FileDialogOperation.SAVE ),
+      eq( FileDialogOperation.ORIGIN_SPOON ) );
+    doReturn( null ).when( fileDlgOp ).getRepositoryObject();
+    doCallRealMethod().when( spoon ).saveToRepository( mockJobMeta, true );
+
+    assertFalse( spoon.saveToRepository( mockJobMeta, true ) );
+
+    verify( spoon, never() ).saveToRepositoryConfirmed( mockJobMeta );
+    verify( spoon.rep, never() ).exists( anyString(), any( RepositoryDirectoryInterface.class ),
+      any( RepositoryObjectType.class ) );
+  }
+
+  @Test
+  public void saveToRepositoryWithoutNamePromptUsesDefaultDirectory() throws Exception {
+    JobMeta mockJobMeta = mock( JobMeta.class );
+    prepareSetSaveTests( spoon, log, mockSpoonPerspective, mockJobMeta, false, false, "NotMainSpoonPerspective", true,
+      true, LastUsedFile.FILE_TYPE_JOB, null, true, false );
+
+    RepositoryDirectoryInterface defaultDir = mock( RepositoryDirectoryInterface.class );
+    doReturn( null ).when( mockJobMeta ).getRepositoryDirectory();
+    doReturn( defaultDir ).when( spoon.rep ).getDefaultSaveDirectory( mockJobMeta );
+    doReturn( true ).when( spoon ).saveToRepositoryConfirmed( mockJobMeta );
+    doCallRealMethod().when( spoon ).saveToRepository( mockJobMeta, false );
+
+    assertTrue( spoon.saveToRepository( mockJobMeta, false ) );
+
+    verify( mockJobMeta ).setRepositoryDirectory( defaultDir );
+    verify( spoon ).saveToRepositoryConfirmed( mockJobMeta );
+    verify( spoon, never() ).getFileDialogOperation( any(), anyString(), anyString() );
   }
 
   private static void prepareSetSaveTests( Spoon spoon, LogChannelInterface log, SpoonPerspective spoonPerspective,
