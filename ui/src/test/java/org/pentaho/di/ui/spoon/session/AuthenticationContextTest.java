@@ -211,7 +211,21 @@ public class AuthenticationContextTest {
 
     AuthenticationContext context = new AuthenticationContext( serverUri, sessionStrategy );
     context.storeJSessionId( "NEW_SESSION_ID" );
-    verify( sessionStrategy ).storeJSessionId( serverUri, "NEW_SESSION_ID" );
+    // Original intent: the context delegates session storage to the session strategy.
+    // Updated validation: storing a session now also records the user it was issued to, so the
+    // delegation carries an owner argument, which is null when the caller does not supply one.
+    verify( sessionStrategy ).storeJSessionId( serverUri, "NEW_SESSION_ID", null );
+  }
+
+  @Test
+  public void testStoreJSessionIdWithOwnerDelegatesToSessionStrategy() {
+    SessionBasedAuthStrategy sessionStrategy = mock( SessionBasedAuthStrategy.class );
+    when( sessionStrategy.getAuthType() ).thenReturn( "SESSION" );
+
+    AuthenticationContext context = new AuthenticationContext( serverUri, sessionStrategy );
+    context.storeJSessionId( "NEW_SESSION_ID", "admin" );
+
+    verify( sessionStrategy ).storeJSessionId( serverUri, "NEW_SESSION_ID", "admin" );
   }
 
   @Test
@@ -727,6 +741,55 @@ public class AuthenticationContextTest {
     AuthenticationContext context = new AuthenticationContext( serverUri, mockStrategy );
     Client client = context.createClient();
     assertNotNull( client );
+  }
+
+  // ===== session ownership =====
+
+  @Test
+  public void testIsSessionOwnedByReturnsTrueForTheUserTheSessionWasIssuedTo() {
+    AuthenticationContext context = new AuthenticationContext( serverUri, new SessionBasedAuthStrategy() );
+    context.storeJSessionId( "SESSION_ADMIN", "admin" );
+
+    assertTrue( context.isSessionOwnedBy( "admin" ) );
+  }
+
+  @Test
+  public void testIsSessionOwnedByReturnsFalseForADifferentUser() {
+    // Regression: reconnecting as another user must not reuse the previous user's session.
+    AuthenticationContext context = new AuthenticationContext( serverUri, new SessionBasedAuthStrategy() );
+    context.storeJSessionId( "SESSION_ADMIN", "admin" );
+
+    assertFalse( context.isSessionOwnedBy( "joe" ) );
+  }
+
+  @Test
+  public void testIsSessionOwnedByReturnsTrueWhenNoOwnerWasRecorded() {
+    // Sessions stored before an owner was tracked stay usable by the caller.
+    AuthenticationContext context = new AuthenticationContext( serverUri, new SessionBasedAuthStrategy() );
+    context.storeJSessionId( "SESSION_LEGACY" );
+
+    assertTrue( context.isSessionOwnedBy( "anyone" ) );
+  }
+
+  @Test
+  public void testGetSessionOwnerReturnsTheRecordedUser() {
+    AuthenticationContext context = new AuthenticationContext( serverUri, new SessionBasedAuthStrategy() );
+    context.storeJSessionId( "SESSION_ADMIN", "admin" );
+
+    assertEquals( "admin", context.getSessionOwner() );
+  }
+
+  @Test
+  public void testClearCredentialsRemovesTheCachedSession() {
+    // Regression: disconnect must leave no session behind for the next connection to replay.
+    AuthenticationContext context = new AuthenticationContext( serverUri, new SessionBasedAuthStrategy() );
+    context.storeJSessionId( "SESSION_ADMIN", "admin" );
+
+    context.clearCredentials();
+
+    assertFalse( context.isAuthenticated() );
+    assertNull( context.getJSessionId() );
+    assertNull( context.getSessionOwner() );
   }
 }
 

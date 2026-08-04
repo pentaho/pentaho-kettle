@@ -17,6 +17,8 @@ package org.pentaho.di.plugins.fileopensave.providers.recents;
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.LastUsedFile;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.plugins.fileopensave.api.overwrite.OverwriteStatus;
 import org.pentaho.di.plugins.fileopensave.api.providers.BaseFileProvider;
@@ -42,6 +44,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class RecentFileProvider extends BaseFileProvider<RecentFile> {
+
+  private static final LogChannelInterface log = new LogChannel( "RecentFileProvider" );
 
   public static final String TYPE = "recents";
   public static final String NAME = "Recents";
@@ -198,6 +202,11 @@ public class RecentFileProvider extends BaseFileProvider<RecentFile> {
           objectID = spoonInstance.rep.getJobId( lastUsedFile.getFilename(), directory );
         }
       } catch ( KettleException | IllegalAccessError e ) {
+        objectID = null;
+      } catch ( RuntimeException e ) {
+        // A recent entry the current user cannot read (for example a SOAP access-denied fault) must
+        // not stop the remaining entries, and the dialog, from loading.
+        log.logDebug( "Skipping recent file '" + lastUsedFile.getFilename() + "'", e );
         objectID = null;
       }
       if ( objectID != null ) {

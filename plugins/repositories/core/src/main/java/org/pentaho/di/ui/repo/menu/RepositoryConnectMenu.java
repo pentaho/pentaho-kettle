@@ -313,7 +313,7 @@ public class RepositoryConnectMenu {
               );
               return;
             }
-            authContext.storeJSessionId( sessionInfo.getJsessionId() );
+            authContext.storeJSessionId( sessionInfo.getJsessionId(), sessionInfo.getUsername() );
 
             repoConnectController.connectToRepository(
               repoName,

@@ -419,6 +419,29 @@ public class PurRepositoryConnector implements IRepositoryConnector {
       serviceManager.close();
     }
     serviceManager = null;
+    clearCachedSession();
+  }
+
+  /**
+   * Discard the cached browser session for this repository.
+   * <p>
+   * The session credentials are held in a cache keyed by server URL that outlives the repository
+   * connection. Leaving them in place lets the next connection replay the previous user's
+   * JSESSIONID, which ignores the credentials supplied for that connection and leaves the client
+   * presenting a session that the server has already invalidated.
+   */
+  private void clearCachedSession() {
+    try {
+      AuthenticationContext authContext =
+        SpoonSessionManager.getInstance()
+          .getAuthenticationContext( repositoryMeta.getRepositoryLocation().getUrl() );
+      if ( authContext != null ) {
+        authContext.clearCredentials();
+      }
+    } catch ( Exception e ) {
+      // Never let session cleanup prevent a disconnect from completing
+      log.logDebug( "Unable to clear cached session credentials on disconnect", e );
+    }
   }
 
   public LogChannelInterface getLog() {

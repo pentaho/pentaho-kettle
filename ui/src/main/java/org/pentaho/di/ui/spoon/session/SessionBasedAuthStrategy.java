@@ -31,6 +31,7 @@ public class SessionBasedAuthStrategy implements AuthenticationStrategy {
   private static final String AUTH_TYPE = "SESSION";
   private static final String JSESSIONID_KEY = "jsessionid";
   private static final String AUTH_METHOD_MARKER_KEY = "_auth_method_marker";
+  private static final String SESSION_OWNER_KEY = "_session_owner";
   
   // Map of server key to authentication credentials
   private final Map<String, Map<String, Object>> credentialsStore = new ConcurrentHashMap<>();
@@ -179,9 +180,39 @@ public class SessionBasedAuthStrategy implements AuthenticationStrategy {
    * @param jsessionId The JSESSIONID value
    */
   public void storeJSessionId( URI serverUri, String jsessionId ) {
+    storeJSessionId( serverUri, jsessionId, null );
+  }
+
+  /**
+   * Store JSESSIONID for a server along with the user that owns it.
+   * <p>
+   * Recording the owner allows a cached session to be reused only by the user it was issued to.
+   * Without it, a session captured for one user could be replayed on a later connection made by a
+   * different user, which silently ignores the second user's credentials.
+   *
+   * @param serverUri The server URI
+   * @param jsessionId The JSESSIONID value
+   * @param username The user the session was issued to, may be {@code null} when unknown
+   */
+  public void storeJSessionId( URI serverUri, String jsessionId, String username ) {
     storeCredentialValue( serverUri, JSESSIONID_KEY, jsessionId );
     // Mark that this server has used browser authentication
     storeCredentialValue( serverUri, AUTH_METHOD_MARKER_KEY, "browser" );
+    if ( username != null ) {
+      storeCredentialValue( serverUri, SESSION_OWNER_KEY, username );
+    } else {
+      clearCredentialValue( serverUri, SESSION_OWNER_KEY );
+    }
+  }
+
+  /**
+   * Get the user that the cached session for a server was issued to.
+   *
+   * @param serverUri The server URI
+   * @return The owning user name, or {@code null} when unknown
+   */
+  public String getSessionOwner( URI serverUri ) {
+    return getCredentialValue( serverUri, SESSION_OWNER_KEY );
   }
 
   /**

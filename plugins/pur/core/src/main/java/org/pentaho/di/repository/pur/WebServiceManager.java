@@ -174,7 +174,7 @@ public class WebServiceManager implements ServiceManager {
 
   private void configureJaxWsAuthentication( final BindingProvider bp, final String username,
       final String password ) {
-    AuthenticationContext authContext = getValidAuthContext();
+    AuthenticationContext authContext = getValidAuthContext( username );
     String sessionId = authContext != null ? authContext.getJSessionId() : null;
     if ( authContext != null && sessionId != null && !sessionId.trim().isEmpty() ) {
       // Use JSESSIONID cookie for authentication
@@ -222,7 +222,7 @@ public class WebServiceManager implements ServiceManager {
   }
 
   private void configureJaxRsAuthentication( final Client client, final String username, final String password ) {
-    AuthenticationContext authContext = getValidAuthContext();
+    AuthenticationContext authContext = getValidAuthContext( username );
     String sessionId = authContext != null ? authContext.getJSessionId() : null;
     if ( authContext != null && sessionId != null && !sessionId.trim().isEmpty() ) {
       // Use JSESSIONID cookie for REST authentication
@@ -343,17 +343,27 @@ public class WebServiceManager implements ServiceManager {
   }
 
   /**
-   * Get a valid AuthenticationContext if session-based authentication is available.
+   * Get a valid AuthenticationContext if session-based authentication is available for the given user.
+   * <p>
+   * A cached session is only returned when it was issued to {@code username}. Reusing a session that
+   * belongs to a different user would silently ignore the credentials supplied for this connection
+   * and send the previous user's cookie instead.
    *
-   * @return AuthenticationContext if session auth is valid, null otherwise
+   * @param username The user the service is being created for
+   * @return AuthenticationContext if session auth is valid for this user, null otherwise
    */
-  private AuthenticationContext getValidAuthContext() {
+  private AuthenticationContext getValidAuthContext( String username ) {
     try {
       AuthenticationContext authContext =
         SpoonSessionManager.getInstance().getAuthenticationContext( baseUrl );
 
       if ( authContext != null && authContext.isAuthenticated()
            && authContext.validateAndClearIfExpired() ) {
+        if ( !authContext.isSessionOwnedBy( username ) ) {
+          log.logDetailed( "Ignoring cached session for " + baseUrl
+            + " because it was issued to a different user" );
+          return null;
+        }
         return authContext;
       }
     } catch ( Exception e ) {

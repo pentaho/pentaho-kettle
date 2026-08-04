@@ -605,5 +605,51 @@ public class SessionBasedAuthStrategyTest {
 
     assertEquals( "ABC", strategy.getCredentialValue( noSchemeUri, "jsessionid" ) );
   }
+
+  // ===== session owner =====
+
+  @Test
+  public void storeJSessionIdRecordsTheOwningUser() {
+    strategy.storeJSessionId( serverUri, "SESSION_ADMIN", "admin" );
+
+    assertEquals( "admin", strategy.getSessionOwner( serverUri ) );
+  }
+
+  @Test
+  public void getSessionOwnerReturnsNullWhenOwnerNotRecorded() {
+    strategy.storeJSessionId( serverUri, "SESSION_ADMIN" );
+
+    assertNull( strategy.getSessionOwner( serverUri ) );
+  }
+
+  @Test
+  public void storeJSessionIdWithoutOwnerClearsAPreviouslyRecordedOwner() {
+    // A session stored without an owner must not inherit the previous owner.
+    strategy.storeJSessionId( serverUri, "SESSION_ADMIN", "admin" );
+
+    strategy.storeJSessionId( serverUri, "SESSION_OTHER" );
+
+    assertNull( strategy.getSessionOwner( serverUri ) );
+  }
+
+  @Test
+  public void storeJSessionIdReplacesTheOwnerWhenAnotherUserConnects() {
+    strategy.storeJSessionId( serverUri, "SESSION_ADMIN", "admin" );
+
+    strategy.storeJSessionId( serverUri, "SESSION_JOE", "joe" );
+
+    assertEquals( "joe", strategy.getSessionOwner( serverUri ) );
+    assertEquals( "SESSION_JOE", strategy.getJSessionId( serverUri ) );
+  }
+
+  @Test
+  public void clearCredentialsRemovesTheRecordedOwner() {
+    strategy.storeJSessionId( serverUri, "SESSION_ADMIN", "admin" );
+
+    strategy.clearCredentials( serverUri );
+
+    assertNull( strategy.getSessionOwner( serverUri ) );
+    assertNull( strategy.getJSessionId( serverUri ) );
+  }
 }
 

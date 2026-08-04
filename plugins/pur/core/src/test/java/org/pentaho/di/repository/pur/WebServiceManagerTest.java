@@ -51,6 +51,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
@@ -191,7 +192,7 @@ public class WebServiceManagerTest {
     try ( MockedStatic<SpoonSessionManager> mocked = mockStatic( SpoonSessionManager.class ) ) {
       mocked.when( SpoonSessionManager::getInstance ).thenReturn( mockMgr );
 
-      AuthenticationContext result = invokePrivate( "getValidAuthContext", new Class<?>[ 0 ] );
+      AuthenticationContext result = invokePrivate( "getValidAuthContext", new Class<?>[] { String.class }, USERNAME );
 
       assertNull( result );
     }
@@ -207,7 +208,7 @@ public class WebServiceManagerTest {
     try ( MockedStatic<SpoonSessionManager> mocked = mockStatic( SpoonSessionManager.class ) ) {
       mocked.when( SpoonSessionManager::getInstance ).thenReturn( mockMgr );
 
-      AuthenticationContext result = invokePrivate( "getValidAuthContext", new Class<?>[ 0 ] );
+      AuthenticationContext result = invokePrivate( "getValidAuthContext", new Class<?>[] { String.class }, USERNAME );
 
       assertNull( result );
     }
@@ -224,7 +225,7 @@ public class WebServiceManagerTest {
     try ( MockedStatic<SpoonSessionManager> mocked = mockStatic( SpoonSessionManager.class ) ) {
       mocked.when( SpoonSessionManager::getInstance ).thenReturn( mockMgr );
 
-      AuthenticationContext result = invokePrivate( "getValidAuthContext", new Class<?>[ 0 ] );
+      AuthenticationContext result = invokePrivate( "getValidAuthContext", new Class<?>[] { String.class }, USERNAME );
 
       assertNull( result );
     }
@@ -237,11 +238,12 @@ public class WebServiceManagerTest {
     when( mockMgr.getAuthenticationContext( BASE_URL ) ).thenReturn( mockCtx );
     when( mockCtx.isAuthenticated() ).thenReturn( true );
     when( mockCtx.validateAndClearIfExpired() ).thenReturn( true );
+    when( mockCtx.isSessionOwnedBy( anyString() ) ).thenReturn( true );
 
     try ( MockedStatic<SpoonSessionManager> mocked = mockStatic( SpoonSessionManager.class ) ) {
       mocked.when( SpoonSessionManager::getInstance ).thenReturn( mockMgr );
 
-      AuthenticationContext result = invokePrivate( "getValidAuthContext", new Class<?>[ 0 ] );
+      AuthenticationContext result = invokePrivate( "getValidAuthContext", new Class<?>[] { String.class }, USERNAME );
 
       assertNotNull( result );
       assertEquals( mockCtx, result );
@@ -253,9 +255,58 @@ public class WebServiceManagerTest {
     try ( MockedStatic<SpoonSessionManager> mocked = mockStatic( SpoonSessionManager.class ) ) {
       mocked.when( SpoonSessionManager::getInstance ).thenThrow( new RuntimeException( "headless" ) );
 
-      AuthenticationContext result = invokePrivate( "getValidAuthContext", new Class<?>[ 0 ] );
+      AuthenticationContext result = invokePrivate( "getValidAuthContext", new Class<?>[] { String.class }, USERNAME );
 
       assertNull( result );
+    }
+  }
+
+  @Test
+  public void testGetValidAuthContext_SessionBelongsToAnotherUser_ReturnsNull() throws Exception {
+    // Regression for PDI-20652: a session cached for one user must not be reused when a different
+    // user connects, otherwise the new user's credentials are silently ignored.
+    SpoonSessionManager mockMgr = mock( SpoonSessionManager.class );
+    AuthenticationContext mockCtx = mock( AuthenticationContext.class );
+    when( mockMgr.getAuthenticationContext( BASE_URL ) ).thenReturn( mockCtx );
+    when( mockCtx.isAuthenticated() ).thenReturn( true );
+    when( mockCtx.validateAndClearIfExpired() ).thenReturn( true );
+    when( mockCtx.isSessionOwnedBy( "joe" ) ).thenReturn( false );
+
+    try ( MockedStatic<SpoonSessionManager> mocked = mockStatic( SpoonSessionManager.class ) ) {
+      mocked.when( SpoonSessionManager::getInstance ).thenReturn( mockMgr );
+
+      AuthenticationContext result = invokePrivate( "getValidAuthContext", new Class<?>[] { String.class }, "joe" );
+
+      assertNull( result );
+    }
+  }
+
+  @Test
+  @SuppressWarnings( "unchecked" )
+  public void testConfigureJaxWsAuthentication_SessionOwnedByAnotherUser_FallsBackToBasicAuth() throws Exception {
+    // Regression for PDI-20652: when the cached session belongs to someone else the connection must
+    // authenticate with the supplied credentials rather than replaying the other user's cookie.
+    SpoonSessionManager mockMgr = mock( SpoonSessionManager.class );
+    AuthenticationContext mockCtx = mock( AuthenticationContext.class );
+    when( mockMgr.getAuthenticationContext( BASE_URL ) ).thenReturn( mockCtx );
+    when( mockCtx.isAuthenticated() ).thenReturn( true );
+    when( mockCtx.validateAndClearIfExpired() ).thenReturn( true );
+    when( mockCtx.isSessionOwnedBy( "joe" ) ).thenReturn( false );
+    // getJSessionId() is deliberately not stubbed: the ownership guard must reject the cached
+    // session before the cookie is ever read.
+
+    BindingProvider bp = mock( BindingProvider.class );
+    Map<String, Object> ctx = bindingProviderContext( bp );
+
+    try ( MockedStatic<SpoonSessionManager> mocked = mockStatic( SpoonSessionManager.class ) ) {
+      mocked.when( SpoonSessionManager::getInstance ).thenReturn( mockMgr );
+
+      invokePrivate( "configureJaxWsAuthentication",
+        new Class<?>[] { BindingProvider.class, String.class, String.class }, bp, "joe", "joePassword" );
+
+      assertNull( ctx.get( MessageContext.HTTP_REQUEST_HEADERS ) );
+      assertEquals( "joe", ctx.get( BindingProvider.USERNAME_PROPERTY ) );
+      assertEquals( "joePassword", ctx.get( BindingProvider.PASSWORD_PROPERTY ) );
     }
   }
 
@@ -267,6 +318,7 @@ public class WebServiceManagerTest {
     when( mockMgr.getAuthenticationContext( BASE_URL ) ).thenReturn( mockCtx );
     when( mockCtx.isAuthenticated() ).thenReturn( true );
     when( mockCtx.validateAndClearIfExpired() ).thenReturn( true );
+    when( mockCtx.isSessionOwnedBy( anyString() ) ).thenReturn( true );
     when( mockCtx.getJSessionId() ).thenReturn( JSESSION_ID );
 
     BindingProvider bp = mock( BindingProvider.class );
@@ -360,6 +412,7 @@ public class WebServiceManagerTest {
     when( mockMgr.getAuthenticationContext( BASE_URL ) ).thenReturn( mockCtx );
     when( mockCtx.isAuthenticated() ).thenReturn( true );
     when( mockCtx.validateAndClearIfExpired() ).thenReturn( true );
+    when( mockCtx.isSessionOwnedBy( anyString() ) ).thenReturn( true );
     // Session auth is "enabled" (getValidAuthContext returns non-null)
     // but getJSessionId returns blank — the isSessionAuthEnabled+getJSessionId check blocks it
     when( mockCtx.getJSessionId() ).thenReturn( "   " );
@@ -395,6 +448,7 @@ public class WebServiceManagerTest {
     when( mockMgr.getAuthenticationContext( BASE_URL ) ).thenReturn( mockCtx );
     when( mockCtx.isAuthenticated() ).thenReturn( true );
     when( mockCtx.validateAndClearIfExpired() ).thenReturn( true );
+    when( mockCtx.isSessionOwnedBy( anyString() ) ).thenReturn( true );
     when( mockCtx.getJSessionId() ).thenReturn( null );
 
     BindingProvider bp = mock( BindingProvider.class );
@@ -429,6 +483,7 @@ public class WebServiceManagerTest {
     when( mockMgr.getAuthenticationContext( BASE_URL ) ).thenReturn( mockCtx );
     when( mockCtx.isAuthenticated() ).thenReturn( true );
     when( mockCtx.validateAndClearIfExpired() ).thenReturn( true );
+    when( mockCtx.isSessionOwnedBy( anyString() ) ).thenReturn( true );
     when( mockCtx.getJSessionId() ).thenReturn( null );
 
     BindingProvider bp = mock( BindingProvider.class );
@@ -468,6 +523,7 @@ public class WebServiceManagerTest {
     when( mockMgr.getAuthenticationContext( BASE_URL ) ).thenReturn( mockCtx );
     when( mockCtx.isAuthenticated() ).thenReturn( true );
     when( mockCtx.validateAndClearIfExpired() ).thenReturn( true );
+    when( mockCtx.isSessionOwnedBy( anyString() ) ).thenReturn( true );
     when( mockCtx.getJSessionId() ).thenReturn( "   " ); // blank
 
     BindingProvider bp = mock( BindingProvider.class );
@@ -507,6 +563,7 @@ public class WebServiceManagerTest {
     when( mockMgr.getAuthenticationContext( BASE_URL ) ).thenReturn( mockCtx );
     when( mockCtx.isAuthenticated() ).thenReturn( true );
     when( mockCtx.validateAndClearIfExpired() ).thenReturn( true );
+    when( mockCtx.isSessionOwnedBy( anyString() ) ).thenReturn( true );
     when( mockCtx.getJSessionId() ).thenReturn( JSESSION_ID );
 
     Client mockClient = mock( Client.class );
@@ -530,6 +587,7 @@ public class WebServiceManagerTest {
     when( mockMgr.getAuthenticationContext( BASE_URL ) ).thenReturn( mockCtx );
     when( mockCtx.isAuthenticated() ).thenReturn( true );
     when( mockCtx.validateAndClearIfExpired() ).thenReturn( true );
+    when( mockCtx.isSessionOwnedBy( anyString() ) ).thenReturn( true );
     when( mockCtx.getJSessionId() ).thenReturn( JSESSION_ID );
 
     Client mockClient = mock( Client.class );
@@ -584,6 +642,7 @@ public class WebServiceManagerTest {
     when( mockMgr.getAuthenticationContext( BASE_URL ) ).thenReturn( mockCtx );
     when( mockCtx.isAuthenticated() ).thenReturn( true );
     when( mockCtx.validateAndClearIfExpired() ).thenReturn( true );
+    when( mockCtx.isSessionOwnedBy( anyString() ) ).thenReturn( true );
     when( mockCtx.getJSessionId() ).thenReturn( "" ); // blank
 
     Client mockClient = mock( Client.class );
@@ -631,6 +690,7 @@ public class WebServiceManagerTest {
     when( mockMgr.getAuthenticationContext( BASE_URL ) ).thenReturn( mockCtx );
     when( mockCtx.isAuthenticated() ).thenReturn( true );
     when( mockCtx.validateAndClearIfExpired() ).thenReturn( true );
+    when( mockCtx.isSessionOwnedBy( anyString() ) ).thenReturn( true );
     when( mockCtx.getJSessionId() ).thenReturn( null );
 
     Client mockClient = mock( Client.class );
@@ -683,6 +743,7 @@ public class WebServiceManagerTest {
     when( mockMgr.getAuthenticationContext( BASE_URL ) ).thenReturn( mockCtx );
     when( mockCtx.isAuthenticated() ).thenReturn( true );
     when( mockCtx.validateAndClearIfExpired() ).thenReturn( true );
+    when( mockCtx.isSessionOwnedBy( anyString() ) ).thenReturn( true );
     when( mockCtx.getJSessionId() ).thenReturn( JSESSION_ID );
 
     Client mockClient = mock( Client.class );

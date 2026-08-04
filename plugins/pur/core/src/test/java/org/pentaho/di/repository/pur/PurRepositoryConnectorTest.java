@@ -81,6 +81,52 @@ public class PurRepositoryConnectorTest {
   }
 
   @Test
+  public void testDisconnectClearsTheCachedSessionCredentials() {
+    // Regression for PDI-20652: leaving the cached session behind lets the next connection replay
+    // the previous user's JSESSIONID instead of authenticating as the new user.
+    PurRepository mockPurRepository = mock( PurRepository.class );
+    PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
+    PurRepositoryLocation location = mock( PurRepositoryLocation.class );
+    RootRef mockRootRef = mock( RootRef.class );
+    doReturn( location ).when( mockPurRepositoryMeta ).getRepositoryLocation();
+    doReturn( "http://localhost:8080/pentaho" ).when( location ).getUrl();
+
+    SpoonSessionManager mockSessionManager = mock( SpoonSessionManager.class );
+    AuthenticationContext mockAuthContext = mock( AuthenticationContext.class );
+    when( mockSessionManager.getAuthenticationContext( "http://localhost:8080/pentaho" ) )
+      .thenReturn( mockAuthContext );
+
+    try ( MockedStatic<SpoonSessionManager> mockedManager = mockStatic( SpoonSessionManager.class ) ) {
+      mockedManager.when( SpoonSessionManager::getInstance ).thenReturn( mockSessionManager );
+
+      new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef ).disconnect();
+
+      verify( mockAuthContext ).clearCredentials();
+    }
+  }
+
+  @Test
+  public void testDisconnectCompletesWhenClearingTheCachedSessionFails() {
+    // Session cleanup is best effort and must never prevent a disconnect from completing.
+    PurRepository mockPurRepository = mock( PurRepository.class );
+    PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
+    PurRepositoryLocation location = mock( PurRepositoryLocation.class );
+    RootRef mockRootRef = mock( RootRef.class );
+    doReturn( location ).when( mockPurRepositoryMeta ).getRepositoryLocation();
+    doReturn( "http://localhost:8080/pentaho" ).when( location ).getUrl();
+
+    SpoonSessionManager mockSessionManager = mock( SpoonSessionManager.class );
+    when( mockSessionManager.getAuthenticationContext( "http://localhost:8080/pentaho" ) )
+      .thenThrow( new IllegalArgumentException( "malformed url" ) );
+
+    try ( MockedStatic<SpoonSessionManager> mockedManager = mockStatic( SpoonSessionManager.class ) ) {
+      mockedManager.when( SpoonSessionManager::getInstance ).thenReturn( mockSessionManager );
+
+      new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef ).disconnect();
+    }
+  }
+
+  @Test
   public void testConnect() {
     PurRepository mockPurRepository = mock( PurRepository.class );
     PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
