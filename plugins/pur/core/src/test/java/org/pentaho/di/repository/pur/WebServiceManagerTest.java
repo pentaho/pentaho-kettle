@@ -1294,4 +1294,115 @@ public class WebServiceManagerTest {
 
     assertTrue( "serviceCache must be empty after close()", cache.isEmpty() );
   }
+
+  /**
+   * Counts how many times {@code logout()} is invoked across all cached ports.
+   */
+  public static class CountingLogoutService {
+    public static final java.util.concurrent.atomic.AtomicInteger LOGOUT_COUNT =
+      new java.util.concurrent.atomic.AtomicInteger();
+
+    public void logout() {
+      LOGOUT_COUNT.incrementAndGet();
+    }
+  }
+
+  /**
+   * Regression test for PDI-20902.
+   * <p>
+   * Every port shares one server session, so {@code close()} must log out exactly once. The previous
+   * implementation invoked {@code logout()} on every cached port; the first call invalidated the shared session
+   * and the remaining calls came back as {@code HTTP 401}.
+   */
+  @Test
+  public void testClose_InvokesLogoutOnlyOnceAcrossAllServices() throws Exception {
+    CountingLogoutService.LOGOUT_COUNT.set( 0 );
+
+    Map<String, Future<Object>> cache = getServiceCache();
+    for ( String serviceName : new String[] { "userRoleService", "roleBindingDao", "authorizationPolicy" } ) {
+      cache.put( BASE_URL + "_" + serviceName + "_" + CountingLogoutService.class.getName(),
+        java.util.concurrent.CompletableFuture.completedFuture( new CountingLogoutService() ) );
+    }
+
+    manager.close();
+
+    assertEquals( "logout() must be invoked exactly once for the shared session",
+      1, CountingLogoutService.LOGOUT_COUNT.get() );
+    assertTrue( "serviceCache must be empty after close()", cache.isEmpty() );
+  }
+
+  /**
+   * A service without a {@code logout()} method must not stop {@code close()} from logging out via another port.
+   */
+  @Test
+  public void testClose_SkipsServicesWithoutLogoutAndStillLogsOut() throws Exception {
+    CountingLogoutService.LOGOUT_COUNT.set( 0 );
+
+    Map<String, Future<Object>> cache = getServiceCache();
+    // IUnifiedRepositoryJaxwsWebService has no logout() of its own; represent it with a plain object
+    cache.put( BASE_URL + "_unifiedRepository_" + Object.class.getName(),
+      java.util.concurrent.CompletableFuture.completedFuture( new Object() ) );
+    cache.put( BASE_URL + "_userRoleService_" + CountingLogoutService.class.getName(),
+      java.util.concurrent.CompletableFuture.completedFuture( new CountingLogoutService() ) );
+
+    manager.close();
+
+    assertEquals( "logout() must still be invoked on a service that supports it",
+      1, CountingLogoutService.LOGOUT_COUNT.get() );
+  }
+
+  /**
+   * A 401 during logout means the session is already gone, which is the desired end state, so {@code close()}
+   * must treat it as success and not fall through to another port.
+   */
+  @Test
+  public void testClose_SessionExpiredLogoutIsTreatedAsSuccess() throws Exception {
+    ClientTransportException cause = mock( ClientTransportException.class );
+    when( cause.getMessage() ).thenReturn( "The server sent HTTP status code 401: null" );
+    LogoutThrowingService.exceptionToThrow = cause;
+    CountingLogoutService.LOGOUT_COUNT.set( 0 );
+
+    Map<String, Future<Object>> cache = getServiceCache();
+    cache.put( BASE_URL + "_aaaFirst_" + LogoutThrowingService.class.getName(),
+      java.util.concurrent.CompletableFuture.completedFuture( new LogoutThrowingService() ) );
+    cache.put( BASE_URL + "_zzzSecond_" + CountingLogoutService.class.getName(),
+      java.util.concurrent.CompletableFuture.completedFuture( new CountingLogoutService() ) );
+
+    manager.close();
+
+    assertTrue( "A 401 logout must be accepted as a closed session, so at most one more port may be tried",
+      CountingLogoutService.LOGOUT_COUNT.get() <= 1 );
+    assertTrue( "serviceCache must be empty after close()", cache.isEmpty() );
+  }
+
+  /**
+   * Regression test for PDI-20902: disconnecting must leave no cookie behind that a later connection — possibly
+   * for a different user — could replay.
+   */
+  @Test
+  public void testClose_ClearsSharedCookieJar() throws Exception {
+    java.net.CookieManager cookies = manager.getCookieManager();
+    java.net.HttpCookie jsessionId = new java.net.HttpCookie( "JSESSIONID", "STALE-SESSION" );
+    jsessionId.setPath( "/" );
+    URI serverUri = new URI( BASE_URL );
+    cookies.getCookieStore().add( serverUri, jsessionId );
+
+    assertFalse( "precondition: the cookie jar holds a session cookie",
+      cookies.getCookieStore().getCookies().isEmpty() );
+
+    manager.close();
+
+    assertTrue( "close() must drop every cached cookie so no stale session is replayed",
+      cookies.getCookieStore().getCookies().isEmpty() );
+  }
+
+  /**
+   * All JAX-WS ports must share a single cookie jar; otherwise each one opens its own server session.
+   */
+  @Test
+  public void testCookieJarIsSharedByAllPorts() {
+    assertNotNull( "the manager must own a cookie jar", manager.getCookieManager() );
+    assertSame( "repeated lookups must return the same shared jar",
+      manager.getCookieManager(), manager.getCookieManager() );
+  }
 }

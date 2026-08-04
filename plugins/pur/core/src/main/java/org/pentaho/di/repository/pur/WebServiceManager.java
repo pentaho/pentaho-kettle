@@ -16,6 +16,8 @@ package org.pentaho.di.repository.pur;
 import java.io.Closeable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.CookieManager;
+import java.net.CookiePolicy;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -29,6 +31,7 @@ import java.util.concurrent.Future;
 import javax.xml.namespace.QName;
 
 import com.sun.xml.ws.client.ClientTransportException;
+import com.sun.xml.ws.developer.HttpConfigFeature;
 import com.sun.xml.ws.developer.JAXWSProperties;
 import jakarta.xml.ws.BindingProvider;
 import jakarta.xml.ws.Service;
@@ -79,6 +82,23 @@ public class WebServiceManager implements ServiceManager {
   private static final ExecutorService executor = ExecutorUtil.getExecutor();
 
   private final Map<String, Future<Object>> serviceCache = new HashMap<String, Future<Object>>();
+
+  /**
+   * Cookie jar shared by every JAX-WS port created by this manager.
+   * <p>
+   * By default the JAX-WS RI gives each port its own {@code HttpConfigFeature}, and therefore its own
+   * {@link CookieManager} (see {@code com.sun.xml.ws.transport.DeferredTransportPipe}). Because the ports all
+   * authenticate against the same server, that means a single repository connection would establish a separate
+   * {@code HttpSession} per service. Logging out of one of them left the others stranded, and the server-side
+   * logout listeners are keyed by user rather than by session, so the first logout tore down state the remaining
+   * sessions still needed and they responded {@code HTTP 401}.
+   * <p>
+   * Sharing one jar collapses those sessions into a single one, which can be logged out exactly once and reset
+   * on {@link #close()}.
+   */
+  private final CookieManager cookieManager = new CookieManager( null, CookiePolicy.ACCEPT_ALL );
+
+  private final HttpConfigFeature httpConfigFeature = new HttpConfigFeature( cookieManager );
 
   private final Map<Class<?>, WebServiceSpecification> serviceNameMap;
 
@@ -160,7 +180,7 @@ public class WebServiceManager implements ServiceManager {
   private <T> T createJaxWsPort( final String username, final String password, final Class<T> clazz,
       final String serviceName, final URL url ) {
     Service service = Service.create( url, new QName( NAMESPACE_URI, serviceName ) );
-    T port = service.getPort( clazz );
+    T port = service.getPort( clazz, httpConfigFeature );
     configureJaxWsAuthentication( (BindingProvider) port, username, password );
     // accept cookies to maintain session on server
     ( (BindingProvider) port ).getRequestContext().put( BindingProvider.SESSION_MAINTAIN_PROPERTY, true );
@@ -254,49 +274,104 @@ public class WebServiceManager implements ServiceManager {
   }
 
   @Override
-  @SuppressWarnings( "squid:S3776" )
   public void close() {
     synchronized ( serviceCache ) {
-      for ( Map.Entry<String, Future<Object>> entry : serviceCache.entrySet() ) {
-        String key = entry.getKey();
-        Future<Object> future = entry.getValue();
-        if ( future.isDone() ) {
-          try {
-            Object service = future.get();
-            String className = key.substring( key.lastIndexOf( "_" ) + 1, key.length() );
-            Class<?> clazz = Class.forName( className );
-            // if the service has a logout method, call it
-            try {
-              Method[] methods = clazz.getMethods();
-              if ( null != methods && methods.length > 0 ) {
-                for ( Method method : methods ) {
-                  if ( "logout".equals( method.getName() ) ) {
-                    method.invoke( service );
-                    break;
-                  }
-                }
-              }
-            } catch ( InvocationTargetException e ) {
-              // Session expired errors during close are expected and can be ignored
-              if ( !isSessionExpiredException( e.getCause() ) ) {
-                log.logDebug( "Unexpected error invoking logout() during close", e.getCause() );
-              }
-            } catch ( Exception e ) {
-              e.printStackTrace();
-            }
-            if ( service instanceof Closeable closeable ) {
-              closeable.close();
-            }
-          } catch ( Exception e ) {
-            if ( e instanceof InterruptedException ) {
-              Thread.currentThread().interrupt();
-            }
-            e.printStackTrace();
-          }
-        }
+      logoutSharedSession();
+      for ( Future<Object> future : serviceCache.values() ) {
+        closeService( future );
       }
       serviceCache.clear();
+      clearClientSessionState();
     }
+  }
+
+  /**
+   * Logs out of the server session shared by every port created by this manager.
+   * <p>
+   * All ports share {@link #cookieManager}, so they share a single {@code HttpSession} and one successful
+   * {@code logout()} ends it for all of them. Invoking {@code logout()} on each port in turn — as this method used
+   * to do — made the first call invalidate the session and every subsequent call fail with {@code HTTP 401}.
+   */
+  private void logoutSharedSession() {
+    for ( Map.Entry<String, Future<Object>> entry : serviceCache.entrySet() ) {
+      Future<Object> future = entry.getValue();
+      if ( !future.isDone() ) {
+        // still being created; blocking here would stall disconnect
+        continue;
+      }
+      if ( invokeLogout( entry.getKey(), future ) ) {
+        // the shared session is gone, no other port needs to log out
+        return;
+      }
+    }
+  }
+
+  /**
+   * @return {@code true} when {@code logout()} was invoked and the shared server session can be considered closed
+   */
+  private boolean invokeLogout( String key, Future<Object> future ) {
+    try {
+      Object service = future.get();
+      Class<?> clazz = Class.forName( key.substring( key.lastIndexOf( '_' ) + 1 ) );
+      Method logout = findLogoutMethod( clazz );
+      if ( logout == null ) {
+        return false;
+      }
+      logout.invoke( service );
+      return true;
+    } catch ( InvocationTargetException e ) {
+      // A 401 means the session is already gone, which is the outcome logout is trying to achieve.
+      if ( isSessionExpiredException( e.getCause() ) ) {
+        return true;
+      }
+      log.logDebug( "Unexpected error invoking logout() during close", e.getCause() );
+      return false;
+    } catch ( InterruptedException e ) {
+      Thread.currentThread().interrupt();
+      return false;
+    } catch ( Exception e ) {
+      log.logDebug( "Unable to invoke logout() during close", e );
+      return false;
+    }
+  }
+
+  private Method findLogoutMethod( Class<?> clazz ) {
+    for ( Method method : clazz.getMethods() ) {
+      if ( "logout".equals( method.getName() ) && method.getParameterCount() == 0 ) {
+        return method;
+      }
+    }
+    return null;
+  }
+
+  private void closeService( Future<Object> future ) {
+    if ( !future.isDone() ) {
+      return;
+    }
+    try {
+      if ( future.get() instanceof Closeable closeable ) {
+        closeable.close();
+      }
+    } catch ( InterruptedException e ) {
+      Thread.currentThread().interrupt();
+    } catch ( Exception e ) {
+      log.logDebug( "Unable to close service during disconnect", e );
+    }
+  }
+
+  /**
+   * Drops every cookie cached by this manager so that a later connection cannot replay a session cookie that
+   * belongs to a previous connection, or to a previous user.
+   */
+  private void clearClientSessionState() {
+    cookieManager.getCookieStore().removeAll();
+  }
+
+  /**
+   * Exposed for testing so the shared cookie jar can be inspected.
+   */
+  CookieManager getCookieManager() {
+    return cookieManager;
   }
 
   private void registerWsSpecification( Class<?> serviceClass, String serviceName ) {
