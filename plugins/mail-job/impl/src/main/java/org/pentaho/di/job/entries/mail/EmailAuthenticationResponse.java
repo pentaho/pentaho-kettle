@@ -12,8 +12,10 @@
 
 package org.pentaho.di.job.entries.mail;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@JsonIgnoreProperties( ignoreUnknown = true )
 public class EmailAuthenticationResponse implements IEmailAuthenticationResponse {
   @JsonProperty( "access_token" )
   private String accessToken;
