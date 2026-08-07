@@ -16,6 +16,7 @@ package org.pentaho.amazon.s3;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FormAttachment;
@@ -161,9 +162,8 @@ public class S3DetailComposite implements VFSDetailsComposite {
     wBottomHalf.setLayoutData( wfdBottomHalf );
     props.setLook( wBottomHalf );
 
-    //This composite holds controls that are not currently in use.  No layout needed here
-    wWidgetHolder = new Composite( wComposite, SWT.NONE );
-    wWidgetHolder.setVisible( false );
+    // This composite holds controls that are not currently in use.
+    wWidgetHolder = createWidgetHolder( wComposite );
 
     wAuthType = createStandbyCombo();
     wAuthType.setItems( getAuthTypeChoices() );
@@ -245,6 +245,18 @@ public class S3DetailComposite implements VFSDetailsComposite {
     VFSDetailsCompositeHelper.setupCompositeResizeListener( wComposite );
     initializingUiForFirstTime = false;
     return wComposite;
+  }
+
+  private static Composite createWidgetHolder( Composite parent ) {
+    var holder = new Composite( parent, SWT.NONE );
+    holder.setVisible( false );
+    var fd = new FormData();
+    // size set to zero to prevent it from leaking into the parent's size computations
+    // after sized components are stored in it
+    fd.width = 0;
+    fd.height = 0;
+    holder.setLayoutData( fd );
+    return holder;
   }
 
   private void setTrustStoreListeners() {
@@ -353,8 +365,23 @@ public class S3DetailComposite implements VFSDetailsComposite {
     moveWidgetsToBottom( s3ConnectionType, authType );
 
     wBottomHalf.layout();
-    wComposite.pack();
-    VFSDetailsCompositeHelper.updateScrollableRegion( wComposite );
+    updateScrollableRegion( wComposite );
+  }
+
+  /**
+   * Ensures the scrollable content is resized to fit the widgets currently shown
+   */
+  private static void updateScrollableRegion( Composite composite ) {
+    int width = composite.getParent().getClientArea().width;
+    // can be called with width zero before the full layout
+    if ( width != 0 ) {
+      // locking the width from the parent in case there are components that wrap
+      var contentSize = composite.computeSize( width, SWT.DEFAULT, true );
+      composite.setSize( contentSize );
+      if ( composite.getParent() instanceof ScrolledComposite scrolled ) {
+        scrolled.setMinSize( contentSize );
+      }
+    }
   }
 
   /** Ensure region in details is what is seen */
