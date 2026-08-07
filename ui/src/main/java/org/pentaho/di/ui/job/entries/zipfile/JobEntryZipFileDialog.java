@@ -56,6 +56,8 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import java.util.Locale;
+import java.util.regex.Pattern;
 
 /**
  * This dialog allows you to edit the Zip File job entry settings.
@@ -69,6 +71,11 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
   private static final String[] FILETYPES = new String[]{
     BaseMessages.getString( PKG, "JobZipFiles.Filetype.Zip" ),
     BaseMessages.getString( PKG, "JobZipFiles.Filetype.All" ) };
+
+  // Cache OS detection and pattern compilation for performance
+  private static final boolean IS_WINDOWS = String.valueOf( System.getProperty( "os.name" ) ).toLowerCase( Locale.ROOT ).contains( "win" );
+  private static final String WINDOWS_INVALID_CHARS = "<>:\"/\\\\|?*";
+  private static final Pattern WINDOWS_INVALID_PATTERN = Pattern.compile( "[" + WINDOWS_INVALID_CHARS + "]" );
 
   private Label wlName;
 
@@ -591,7 +598,7 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
     // Prepare a list of possible DateTimeFormats...
     String[] dats = Const.getDateFormats();
 
-    // DateTimeFormat
+    // DateTimeFormat (filter the options based on OS restrictions)
     wlDateTimeFormat = new Label( wZipFile, SWT.RIGHT );
     wlDateTimeFormat.setText( BaseMessages.getString( PKG, "JobZipFiles.DateTimeFormat.Label" ) );
     props.setLook( wlDateTimeFormat );
@@ -610,7 +617,21 @@ public class JobEntryZipFileDialog extends JobEntryDialog implements JobEntryDia
     fdDateTimeFormat.right = new FormAttachment( 100, 0 );
     wDateTimeFormat.setLayoutData( fdDateTimeFormat );
     for ( int x = 0; x < dats.length; x++ ) {
-      wDateTimeFormat.add( dats[x] );
+      String format = dats[x];
+      boolean allowed = true;
+      if ( IS_WINDOWS ) {
+        if ( WINDOWS_INVALID_PATTERN.matcher( format ).find() ) {
+          allowed = false;
+        }
+      } else {
+        if ( format.contains( "/" ) ) {
+          allowed = false;
+        }
+      }
+
+      if ( allowed ) {
+        wDateTimeFormat.add( format );
+      }
     }
 
     wbShowFiles = new Button( wZipFile, SWT.PUSH | SWT.CENTER );
