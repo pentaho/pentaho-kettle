@@ -21,12 +21,11 @@ import org.pentaho.di.job.entry.validator.FileDoesNotExistValidator;
 import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.text.DecimalFormat;
 import java.text.ParsePosition;
 import java.util.HashSet;
@@ -285,7 +284,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
     boolean createparentfolder ) {
     boolean Fileexists = false;
     File tempFile = null;
-    File fileZip;
+    boolean tempFileComplete = false;
     boolean resultat = false;
     boolean orginExist = false;
 
@@ -416,13 +415,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
                   + localrealZipfilename + BaseMessages.getString( PKG, "JobZipFiles.Zip_FileNameChange1.Label" ) );
               }
             } else if ( ifZipFileExists == 1 && Fileexists ) {
-              if ( !isLocalFile( realZipfilename ) ) {
-                logError( BaseMessages.getString( PKG, "JobZipFiles.Append_LocalFileOnly.Label", realZipfilename ) );
-                return false;
-              }
-              fileZip = getFile( localrealZipfilename );
-              tempFile = createTemporaryZipFile( fileZip );
-              Files.move( fileZip.toPath(), tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING );
+              tempFile = createTemporaryZipFile();
 
               if ( log.isDebug() ) {
                 logDebug( BaseMessages.getString( PKG, "JobZipFiles.Zip_FileAppend1.Label" )
@@ -438,7 +431,8 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
 
             // Prepare Zip File
             buffer = new byte[18024];
-            dest = KettleVFS.getInstance( parentJobMeta.getBowl() ).getOutputStream( localrealZipfilename, this, false );
+            dest = tempFile == null ? KettleVFS.getInstance( parentJobMeta.getBowl() ).getOutputStream(
+              localrealZipfilename, this, false ) : new FileOutputStream( tempFile );
             buff = new BufferedOutputStreamWithCloseDetection( dest );
             out = new ZipOutputStream( buff );
 
@@ -459,7 +453,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
             HashSet<String> fileSet = new HashSet<String>();
 
             if ( tempFile != null ) {
-              try ( ZipInputStream zipInput = new ZipInputStream( new FileInputStream( tempFile ) ) ) {
+              try ( ZipInputStream zipInput = new ZipInputStream( KettleVFS.getInputStream( fileObject ) ) ) {
                 ZipEntry entry;
                 while ( ( entry = zipInput.getNextEntry() ) != null ) {
                   String name = entry.getName();
@@ -535,7 +529,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
                 relativeName = fileList[i].getName().getBaseName();
               }
 
-              if ( getIt && !getItexclude && !isTargetDirectory && !fileSet.contains( relativeName ) ) {
+              if ( getIt && !getItexclude && !isTargetDirectory ) {
                 // We can add the file to the Zip Archive
                 if ( log.isDebug() ) {
                   logDebug( BaseMessages.getString( PKG, "JobZipFiles.Add_FilesToZip1.Label" )
@@ -569,6 +563,18 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
             out.close();
             buff.close();
             dest.close();
+            tempFileComplete = tempFile != null;
+
+            if ( tempFile != null ) {
+              try ( InputStream candidateInput = Files.newInputStream( tempFile.toPath() );
+                    OutputStream targetOutput = KettleVFS.getInstance( parentJobMeta.getBowl() )
+                      .getOutputStream( localrealZipfilename, this, false ) ) {
+                int len;
+                while ( ( len = candidateInput.read( buffer ) ) > 0 ) {
+                  targetOutput.write( buffer, 0, len );
+                }
+              }
+            }
 
             deleteTemporaryZipFile( tempFile );
 
@@ -630,6 +636,13 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
       } catch ( Exception e ) {
         logError( BaseMessages.getString( PKG, "JobZipFiles.Cant_CreateZipFile1.Label" )
           + localrealZipfilename + BaseMessages.getString( PKG, "JobZipFiles.Cant_CreateZipFile2.Label" ), e );
+        if ( tempFile != null && tempFile.exists() ) {
+          if ( tempFileComplete ) {
+            logError( BaseMessages.getString( PKG, "JobZipFiles.TemporaryZipCandidateRetained.Label", tempFile ) );
+          } else {
+            deleteTemporaryZipFile( tempFile );
+          }
+        }
         resultat = false;
       } finally {
         if ( fileObject != null ) {
@@ -669,14 +682,8 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
     return resultat;
   }
 
-  static File createTemporaryZipFile( File zipFile ) throws IOException {
-    File parentDirectory = zipFile.getAbsoluteFile().getParentFile();
-    String prefix = zipFile.getName().length() < 3 ? "zip" : zipFile.getName();
-    return File.createTempFile( prefix, null, parentDirectory );
-  }
-
-  static boolean isLocalFile( String filename ) {
-    return filename != null && ( filename.startsWith( "file:" ) || !KettleVFS.hasSchemePattern( filename ) );
+  private File createTemporaryZipFile() throws IOException {
+    return Files.createTempFile( "pdi-zip-", ".zip" ).toFile();
   }
 
   private void deleteTemporaryZipFile( File tempFile ) {
@@ -745,16 +752,6 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
     } catch ( Exception e ) {
       throw new KettleException( "Unable to get zip filename '" + filename + "' to depth " + depth, e );
     }
-  }
-
-  private File getFile( final String filename ) {
-    try {
-      String uri = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( environmentSubstitute( filename ), this ).getName().getPath();
-      return new File( uri );
-    } catch ( KettleFileException ex ) {
-      logError( "Error in Fetching URI for File: " + filename, ex );
-    }
-    return new File( filename );
   }
 
   private boolean checkContainsFile( String realSourceDirectoryOrFile, FileObject[] filelist, boolean isDirectory ) throws FileSystemException {
