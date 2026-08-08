@@ -172,6 +172,10 @@ public class RunJobServlet extends BaseHttpServlet implements CartePluginInterfa
     response.setStatus( HttpServletResponse.SC_OK );
 
     PrintWriter out = response.getWriter();
+    
+    //runJob ALWAYS responds with XML
+    contentTypeAndHeader( true, response, out, null );
+    
     SlaveServerConfig serverConfig = transformationMap.getSlaveServerConfig();
     try {
       Repository slaveServerRepository = serverConfig.getRepository();
@@ -284,7 +288,7 @@ public class RunJobServlet extends BaseHttpServlet implements CartePluginInterfa
         runJob( job );
 
         WebResult webResult = new WebResult( WebResult.STRING_OK, "Job started", carteObjectId );
-        out.println( webResult.getXML() );
+        out.println( webResult );
         out.flush();
 
       } catch ( Exception executionException ) {
