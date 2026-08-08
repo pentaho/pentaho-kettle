@@ -1,0 +1,44 @@
+name: CodeQL Analysis
+
+on:
+  push:
+    # ignore dependabot branches on push -> https://github.com/microsoft/binskim/issues/425#issuecomment-893373709
+    branches-ignore:
+      - 'dependabot/**'
+  pull_request:
+  schedule:
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '8'
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v1
+        with:
+          languages: java
+
+      - name: Build project
+        run: |
+          mkdir .m2
+          cd .m2
+          curl -o settings.xml https://raw.githubusercontent.com/pentaho/maven-parent-poms/master/maven-support-files/settings.xml
+          curl -o settings-security.xml https://raw.githubusercontent.com/pentaho/maven-parent-poms/master/maven-support-files/settings-security.xml
+          cd ..
+
+          mvn clean install -Dmaven.test.skip=true
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v1
+
+# Built with ❤ by [Pipeline Foundation](https://pipeline.foundation)
