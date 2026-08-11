@@ -26,6 +26,7 @@ import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -926,8 +927,8 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
       return true;
     }
 
-    Long entrySize = sourceFile.getContent().getSize();
-    Long destinationSize = destination.getContent().getSize();
+    long entrySize = sourceFile.getContent().getSize();
+    long destinationSize = destination.getContent().getSize();
 
     if ( iffileexist == IF_FILE_EXISTS_OVERWRITE_DIFF_SIZE ) {
       if ( entrySize != destinationSize ) {

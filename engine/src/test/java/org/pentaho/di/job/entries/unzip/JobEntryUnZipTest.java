@@ -152,7 +152,7 @@ public class JobEntryUnZipTest extends JobEntryLoadSaveTestSupport<JobEntryUnZip
   }
 
   @Test
-  public void testTakeThisFileFailsIfFileExists() throws Exception {
+  public void testTakeThisFileReturnsFalseIfFileExistsWithIfFileExistsFailFlag() throws Exception {
     try ( MockedStatic<KettleVFS> kettleVFSMockedStatic = Mockito.mockStatic( KettleVFS.class ) ) {
       KettleVFSImpl vfsImpl = mock( KettleVFSImpl.class );
       kettleVFSMockedStatic.when( () -> KettleVFS.getInstance( any( Bowl.class ) ) ).thenReturn( vfsImpl );
@@ -172,13 +172,46 @@ public class JobEntryUnZipTest extends JobEntryLoadSaveTestSupport<JobEntryUnZip
       takeThisFileMethod.setAccessible( true );
 
       FileObject sourceFile = mock( FileObject.class );
+
+      Boolean result = (Boolean) takeThisFileMethod.invoke( jobEntryUnZip, sourceFile, "existing.txt" );
+
+      assertFalse( "Should not take file when using IF_FILE_EXISTS_FAIL and file exists", result );
+    }
+  }
+
+  @Test
+  public void testTakeThisFileReturnsTrueWithIfFileExistsOverwriteEqualSizeWhenConditionIsMet() throws Exception {
+    try ( MockedStatic<KettleVFS> kettleVFSMockedStatic = Mockito.mockStatic( KettleVFS.class ) ) {
+      KettleVFSImpl vfsImpl = mock( KettleVFSImpl.class );
+      kettleVFSMockedStatic.when( () -> KettleVFS.getInstance( any( Bowl.class ) ) ).thenReturn( vfsImpl );
+      FileObject destinationFileObject = mock( FileObject.class );
+      FileContent destinationContent = mock( FileContent.class );
+      when( destinationFileObject.getContent() ).thenReturn( destinationContent );
+      when( destinationContent.getSize() ).thenReturn( 1000L );
+      when( destinationFileObject.exists() ).thenReturn( true );
+      when( vfsImpl.getFileObject( any( String.class ), any( VariableSpace.class ) ) ).thenReturn(
+        destinationFileObject );
+
+      JobEntryUnZip jobEntryUnZip = new JobEntryUnZip();
+      JobMeta mockJobMeta = mock( JobMeta.class );
+      when( mockJobMeta.getBowl() ).thenReturn( DefaultBowl.getInstance() );
+      jobEntryUnZip.setParentJobMeta( mockJobMeta );
+      jobEntryUnZip.setIfFileExists( JobEntryUnZip.IF_FILE_EXISTS_OVERWRITE_EQUAL_SIZE );
+      Method
+        takeThisFileMethod =
+        jobEntryUnZip.getClass().getDeclaredMethod( "takeThisFile", FileObject.class, String.class );
+      takeThisFileMethod.setAccessible( true );
+
+      FileObject sourceFile = mock( FileObject.class );
       FileContent sourceContent = mock( FileContent.class );
       when( sourceFile.getContent() ).thenReturn( sourceContent );
       when( sourceContent.getSize() ).thenReturn( 1000L );
 
       Boolean result = (Boolean) takeThisFileMethod.invoke( jobEntryUnZip, sourceFile, "existing.txt" );
 
-      assertFalse( "Should not take file when using FAIL policy (error is logged)", result );
+      assertTrue(
+        "Should take file when using IF_FILE_EXISTS_OVERWRITE_EQUAL_SIZE and equal sized file exists", result
+      );
     }
   }
 
