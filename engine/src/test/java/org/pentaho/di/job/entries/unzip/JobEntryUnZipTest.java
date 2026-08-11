@@ -216,7 +216,7 @@ public class JobEntryUnZipTest extends JobEntryLoadSaveTestSupport<JobEntryUnZip
   }
 
   @Test
-  public void testTakeThisFileFailsIfFileDoesNotYetExist() throws Exception {
+  public void testTakeThisFileReturnsTrueIfFileDoesNotYetExist() throws Exception {
     try ( MockedStatic<KettleVFS> kettleVFSMockedStatic = Mockito.mockStatic( KettleVFS.class ) ) {
       KettleVFSImpl vfsImpl = mock( KettleVFSImpl.class );
       kettleVFSMockedStatic.when( () -> KettleVFS.getInstance( any( Bowl.class ) ) ).thenReturn( vfsImpl );

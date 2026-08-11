@@ -896,141 +896,159 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
   private boolean takeThisFile( FileObject sourceFile, String destinationFile )
     throws FileSystemException, KettleFileException {
     boolean retval = false;
-    FileObject destination = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( destinationFile, this );
-    if ( !destination.exists() ) {
+    try ( FileObject destination = KettleVFS.getInstance( parentJobMeta.getBowl() )
+      .getFileObject( destinationFile, this ) ) {
+      if ( !destination.exists() ) {
+        if ( log.isDebug() ) {
+          logDebug( BaseMessages.getString( PKG, "JobUnZip.Log.CanNotFindFile", destinationFile ) );
+        }
+        return true;
+      }
       if ( log.isDebug() ) {
-        logDebug( BaseMessages.getString( PKG, "JobUnZip.Log.CanNotFindFile", destinationFile ) );
+        logDebug( BaseMessages.getString( PKG, "JobUnZip.Log.FileExists", destinationFile ) );
       }
-      return true;
-    }
-    if ( log.isDebug() ) {
-      logDebug( BaseMessages.getString( PKG, "JobUnZip.Log.FileExists", destinationFile ) );
-    }
-    if ( iffileexist == IF_FILE_EXISTS_SKIP ) {
-      if ( log.isDebug() ) {
-        logDebug( BaseMessages.getString( PKG, "JobUnZip.Log.FileSkip", destinationFile ) );
+      if ( iffileexist == IF_FILE_EXISTS_SKIP ) {
+        if ( log.isDebug() ) {
+          logDebug( BaseMessages.getString( PKG, "JobUnZip.Log.FileSkip", destinationFile ) );
+        }
+        return false;
       }
-      return false;
-    }
-    if ( iffileexist == IF_FILE_EXISTS_FAIL ) {
-      updateErrors();
-      logError( BaseMessages.getString( PKG, "JobUnZip.Log.FileError", destinationFile, "" + NrErrors ) );
-      return false;
-    }
+      if ( iffileexist == IF_FILE_EXISTS_FAIL ) {
+        updateErrors();
+        logError( BaseMessages.getString( PKG, "JobUnZip.Log.FileError", destinationFile, "" + NrErrors ) );
+        return false;
+      }
 
-    if ( iffileexist == IF_FILE_EXISTS_OVERWRITE ) {
-      if ( log.isDebug() ) {
-        logDebug( BaseMessages.getString( PKG, "JobUnZip.Log.FileOverwrite", destinationFile ) );
+      if ( iffileexist == IF_FILE_EXISTS_OVERWRITE ) {
+        if ( log.isDebug() ) {
+          logDebug( BaseMessages.getString( PKG, "JobUnZip.Log.FileOverwrite", destinationFile ) );
+        }
+        return true;
       }
-      return true;
-    }
 
-    long entrySize = sourceFile.getContent().getSize();
-    long destinationSize = destination.getContent().getSize();
+      long entrySize = sourceFile.getContent().getSize();
+      long destinationSize = destination.getContent().getSize();
 
-    if ( iffileexist == IF_FILE_EXISTS_OVERWRITE_DIFF_SIZE ) {
-      if ( entrySize != destinationSize ) {
-        if ( log.isDebug() ) {
-          logDebug( BaseMessages.getString(
-            PKG, "JobUnZip.Log.FileDiffSize.Diff", sourceFile.getName().getURI(), "" + entrySize,
-            destinationFile, "" + destinationSize ) );
+      if ( iffileexist == IF_FILE_EXISTS_OVERWRITE_DIFF_SIZE ) {
+        if ( entrySize != destinationSize ) {
+          if ( log.isDebug() ) {
+            logDebug( BaseMessages.getString(
+              PKG, "JobUnZip.Log.FileDiffSize.Diff", sourceFile.getName().getURI(), "" + entrySize,
+              destinationFile, "" + destinationSize
+            ) );
+          }
+          return true;
+        } else {
+          if ( log.isDebug() ) {
+            logDebug( BaseMessages.getString(
+              PKG, "JobUnZip.Log.FileDiffSize.Same", sourceFile.getName().getURI(), "" + entrySize,
+              destinationFile, "" + destinationSize
+            ) );
+          }
+          return false;
         }
-        return true;
-      } else {
-        if ( log.isDebug() ) {
-          logDebug( BaseMessages.getString(
-            PKG, "JobUnZip.Log.FileDiffSize.Same", sourceFile.getName().getURI(), "" + entrySize,
-            destinationFile, "" + destinationSize ) );
-        }
-        return false;
       }
-    }
-    if ( iffileexist == IF_FILE_EXISTS_OVERWRITE_EQUAL_SIZE ) {
-      if ( entrySize == destinationSize ) {
-        if ( log.isDebug() ) {
-          logDebug( BaseMessages.getString(
-            PKG, "JobUnZip.Log.FileEqualSize.Same", sourceFile.getName().getURI(), "" + entrySize,
-            destinationFile, "" + destinationSize ) );
+      if ( iffileexist == IF_FILE_EXISTS_OVERWRITE_EQUAL_SIZE ) {
+        if ( entrySize == destinationSize ) {
+          if ( log.isDebug() ) {
+            logDebug( BaseMessages.getString(
+              PKG, "JobUnZip.Log.FileEqualSize.Same", sourceFile.getName().getURI(), "" + entrySize,
+              destinationFile, "" + destinationSize
+            ) );
+          }
+          return true;
+        } else {
+          if ( log.isDebug() ) {
+            logDebug( BaseMessages.getString(
+              PKG, "JobUnZip.Log.FileEqualSize.Diff", sourceFile.getName().getURI(), "" + entrySize,
+              destinationFile, "" + destinationSize
+            ) );
+          }
+          return false;
         }
-        return true;
-      } else {
-        if ( log.isDebug() ) {
-          logDebug( BaseMessages.getString(
-            PKG, "JobUnZip.Log.FileEqualSize.Diff", sourceFile.getName().getURI(), "" + entrySize,
-            destinationFile, "" + destinationSize ) );
-        }
-        return false;
       }
-    }
-    if ( iffileexist == IF_FILE_EXISTS_OVERWRITE_ZIP_BIG ) {
-      if ( entrySize > destinationSize ) {
-        if ( log.isDebug() ) {
-          logDebug( BaseMessages.getString( PKG, "JobUnZip.Log.FileBigSize.Big", sourceFile.getName().getURI(), ""
-            + entrySize, destinationFile, "" + destinationSize ) );
+      if ( iffileexist == IF_FILE_EXISTS_OVERWRITE_ZIP_BIG ) {
+        if ( entrySize > destinationSize ) {
+          if ( log.isDebug() ) {
+            logDebug( BaseMessages.getString(
+              PKG, "JobUnZip.Log.FileBigSize.Big", sourceFile.getName().getURI(), ""
+                + entrySize, destinationFile, "" + destinationSize
+            ) );
+          }
+          return true;
+        } else {
+          if ( log.isDebug() ) {
+            logDebug( BaseMessages.getString(
+              PKG, "JobUnZip.Log.FileBigSize.Small", sourceFile.getName().getURI(), "" + entrySize,
+              destinationFile, "" + destinationSize
+            ) );
+          }
+          return false;
         }
-        return true;
-      } else {
-        if ( log.isDebug() ) {
-          logDebug( BaseMessages.getString(
-            PKG, "JobUnZip.Log.FileBigSize.Small", sourceFile.getName().getURI(), "" + entrySize,
-            destinationFile, "" + destinationSize ) );
-        }
-        return false;
       }
-    }
-    if ( iffileexist == IF_FILE_EXISTS_OVERWRITE_ZIP_BIG_EQUAL ) {
-      if ( entrySize >= destinationSize ) {
-        if ( log.isDebug() ) {
-          logDebug( BaseMessages.getString( PKG, "JobUnZip.Log.FileBigEqualSize.Big", sourceFile
-            .getName().getURI(), "" + entrySize, destinationFile, "" + destinationSize ) );
+      if ( iffileexist == IF_FILE_EXISTS_OVERWRITE_ZIP_BIG_EQUAL ) {
+        if ( entrySize >= destinationSize ) {
+          if ( log.isDebug() ) {
+            logDebug( BaseMessages.getString(
+              PKG, "JobUnZip.Log.FileBigEqualSize.Big", sourceFile
+                .getName().getURI(), "" + entrySize, destinationFile, "" + destinationSize
+            ) );
+          }
+          return true;
+        } else {
+          if ( log.isDebug() ) {
+            logDebug( BaseMessages.getString(
+              PKG, "JobUnZip.Log.FileBigEqualSize.Small", sourceFile
+                .getName().getURI(), "" + entrySize, destinationFile, "" + destinationSize
+            ) );
+          }
+          return false;
         }
-        return true;
-      } else {
-        if ( log.isDebug() ) {
-          logDebug( BaseMessages.getString( PKG, "JobUnZip.Log.FileBigEqualSize.Small", sourceFile
-            .getName().getURI(), "" + entrySize, destinationFile, "" + destinationSize ) );
-        }
-        return false;
       }
-    }
-    if ( iffileexist == IF_FILE_EXISTS_OVERWRITE_ZIP_SMALL ) {
-      if ( entrySize < destinationSize ) {
-        if ( log.isDebug() ) {
-          logDebug( BaseMessages.getString(
-            PKG, "JobUnZip.Log.FileSmallSize.Small", sourceFile.getName().getURI(), "" + entrySize,
-            destinationFile, "" + destinationSize ) );
+      if ( iffileexist == IF_FILE_EXISTS_OVERWRITE_ZIP_SMALL ) {
+        if ( entrySize < destinationSize ) {
+          if ( log.isDebug() ) {
+            logDebug( BaseMessages.getString(
+              PKG, "JobUnZip.Log.FileSmallSize.Small", sourceFile.getName().getURI(), "" + entrySize,
+              destinationFile, "" + destinationSize
+            ) );
+          }
+          return true;
+        } else {
+          if ( log.isDebug() ) {
+            logDebug( BaseMessages.getString(
+              PKG, "JobUnZip.Log.FileSmallSize.Big", sourceFile.getName().getURI(), "" + entrySize,
+              destinationFile, "" + destinationSize
+            ) );
+          }
+          return false;
         }
-        return true;
-      } else {
-        if ( log.isDebug() ) {
-          logDebug( BaseMessages.getString(
-            PKG, "JobUnZip.Log.FileSmallSize.Big", sourceFile.getName().getURI(), "" + entrySize,
-            destinationFile, "" + destinationSize ) );
-        }
-        return false;
       }
-    }
-    if ( iffileexist == IF_FILE_EXISTS_OVERWRITE_ZIP_SMALL_EQUAL ) {
-      if ( entrySize <= destinationSize ) {
-        if ( log.isDebug() ) {
-          logDebug( BaseMessages.getString( PKG, "JobUnZip.Log.FileSmallEqualSize.Small", sourceFile
-            .getName().getURI(), "" + entrySize, destinationFile, "" + destinationSize ) );
+      if ( iffileexist == IF_FILE_EXISTS_OVERWRITE_ZIP_SMALL_EQUAL ) {
+        if ( entrySize <= destinationSize ) {
+          if ( log.isDebug() ) {
+            logDebug( BaseMessages.getString(
+              PKG, "JobUnZip.Log.FileSmallEqualSize.Small", sourceFile
+                .getName().getURI(), "" + entrySize, destinationFile, "" + destinationSize
+            ) );
+          }
+          return true;
+        } else {
+          if ( log.isDebug() ) {
+            logDebug( BaseMessages.getString(
+              PKG, "JobUnZip.Log.FileSmallEqualSize.Big", sourceFile
+                .getName().getURI(), "" + entrySize, destinationFile, "" + destinationSize
+            ) );
+          }
+          return false;
         }
-        return true;
-      } else {
-        if ( log.isDebug() ) {
-          logDebug( BaseMessages.getString( PKG, "JobUnZip.Log.FileSmallEqualSize.Big", sourceFile
-            .getName().getURI(), "" + entrySize, destinationFile, "" + destinationSize ) );
-        }
-        return false;
       }
+      if ( iffileexist == IF_FILE_EXISTS_UNIQ ) {
+        // Create file with unique name
+        return true;
+      }
+      return retval;
     }
-    if ( iffileexist == IF_FILE_EXISTS_UNIQ ) {
-      // Create file with unique name
-      return true;
-    }
-
-    return retval;
   }
 
   public boolean evaluates() {
