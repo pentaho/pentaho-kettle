@@ -13,6 +13,7 @@
 package org.pentaho.di.job.entries.unzip;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -178,6 +179,37 @@ public class JobEntryUnZipTest extends JobEntryLoadSaveTestSupport<JobEntryUnZip
       Boolean result = (Boolean) takeThisFileMethod.invoke( jobEntryUnZip, sourceFile, "existing.txt" );
 
       assertFalse( "Should not take file when using FAIL policy (error is logged)", result );
+    }
+  }
+
+  @Test
+  public void testTakeThisFileFailsIfFileDoesNotYetExist() throws Exception {
+    try ( MockedStatic<KettleVFS> kettleVFSMockedStatic = Mockito.mockStatic( KettleVFS.class ) ) {
+      KettleVFSImpl vfsImpl = mock( KettleVFSImpl.class );
+      kettleVFSMockedStatic.when( () -> KettleVFS.getInstance( any( Bowl.class ) ) ).thenReturn( vfsImpl );
+      FileObject destinationFileObject = mock( FileObject.class );
+      when( destinationFileObject.exists() ).thenReturn( false );
+      when( vfsImpl.getFileObject( any( String.class ), any( VariableSpace.class ) ) ).thenReturn(
+        destinationFileObject );
+
+      JobEntryUnZip jobEntryUnZip = new JobEntryUnZip();
+      JobMeta mockJobMeta = mock( JobMeta.class );
+      when( mockJobMeta.getBowl() ).thenReturn( DefaultBowl.getInstance() );
+      jobEntryUnZip.setParentJobMeta( mockJobMeta );
+      jobEntryUnZip.setIfFileExists( JobEntryUnZip.IF_FILE_EXISTS_FAIL );
+      Method
+        takeThisFileMethod =
+        jobEntryUnZip.getClass().getDeclaredMethod( "takeThisFile", FileObject.class, String.class );
+      takeThisFileMethod.setAccessible( true );
+
+      FileObject sourceFile = mock( FileObject.class );
+      FileContent sourceContent = mock( FileContent.class );
+      when( sourceFile.getContent() ).thenReturn( sourceContent );
+      when( sourceContent.getSize() ).thenReturn( 1000L );
+
+      Boolean result = (Boolean) takeThisFileMethod.invoke( jobEntryUnZip, sourceFile, "existing.txt" );
+
+      assertTrue( "Should take file when the destination does not exist", result );
     }
   }
 }
