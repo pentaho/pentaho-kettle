@@ -166,14 +166,10 @@ public class JobEntryUnZipTest extends JobEntryLoadSaveTestSupport<JobEntryUnZip
       when( mockJobMeta.getBowl() ).thenReturn( DefaultBowl.getInstance() );
       jobEntryUnZip.setParentJobMeta( mockJobMeta );
       jobEntryUnZip.setIfFileExists( JobEntryUnZip.IF_FILE_EXISTS_FAIL );
-      Method
-        takeThisFileMethod =
-        jobEntryUnZip.getClass().getDeclaredMethod( "takeThisFile", FileObject.class, String.class );
-      takeThisFileMethod.setAccessible( true );
 
       FileObject sourceFile = mock( FileObject.class );
 
-      Boolean result = (Boolean) takeThisFileMethod.invoke( jobEntryUnZip, sourceFile, "existing.txt" );
+      boolean result = jobEntryUnZip.takeThisFile( sourceFile, "existing.txt" );
 
       assertFalse( "Should not take file when using IF_FILE_EXISTS_FAIL and file exists", result );
     }
@@ -197,17 +193,13 @@ public class JobEntryUnZipTest extends JobEntryLoadSaveTestSupport<JobEntryUnZip
       when( mockJobMeta.getBowl() ).thenReturn( DefaultBowl.getInstance() );
       jobEntryUnZip.setParentJobMeta( mockJobMeta );
       jobEntryUnZip.setIfFileExists( JobEntryUnZip.IF_FILE_EXISTS_OVERWRITE_EQUAL_SIZE );
-      Method
-        takeThisFileMethod =
-        jobEntryUnZip.getClass().getDeclaredMethod( "takeThisFile", FileObject.class, String.class );
-      takeThisFileMethod.setAccessible( true );
 
       FileObject sourceFile = mock( FileObject.class );
       FileContent sourceContent = mock( FileContent.class );
       when( sourceFile.getContent() ).thenReturn( sourceContent );
       when( sourceContent.getSize() ).thenReturn( 1000L );
 
-      Boolean result = (Boolean) takeThisFileMethod.invoke( jobEntryUnZip, sourceFile, "existing.txt" );
+      boolean result = jobEntryUnZip.takeThisFile( sourceFile, "existing.txt" );
 
       assertTrue(
         "Should take file when using IF_FILE_EXISTS_OVERWRITE_EQUAL_SIZE and equal sized file exists", result
@@ -230,17 +222,13 @@ public class JobEntryUnZipTest extends JobEntryLoadSaveTestSupport<JobEntryUnZip
       when( mockJobMeta.getBowl() ).thenReturn( DefaultBowl.getInstance() );
       jobEntryUnZip.setParentJobMeta( mockJobMeta );
       jobEntryUnZip.setIfFileExists( JobEntryUnZip.IF_FILE_EXISTS_FAIL );
-      Method
-        takeThisFileMethod =
-        jobEntryUnZip.getClass().getDeclaredMethod( "takeThisFile", FileObject.class, String.class );
-      takeThisFileMethod.setAccessible( true );
 
       FileObject sourceFile = mock( FileObject.class );
       FileContent sourceContent = mock( FileContent.class );
       when( sourceFile.getContent() ).thenReturn( sourceContent );
       when( sourceContent.getSize() ).thenReturn( 1000L );
 
-      Boolean result = (Boolean) takeThisFileMethod.invoke( jobEntryUnZip, sourceFile, "existing.txt" );
+      boolean result = jobEntryUnZip.takeThisFile( sourceFile, "existing.txt" );
 
       assertTrue( "Should take file when the destination does not exist", result );
     }

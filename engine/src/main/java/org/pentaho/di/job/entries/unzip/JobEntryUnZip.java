@@ -10,10 +10,9 @@
  * Change Date: 2030-06-15
  ******************************************************************************/
 
-
-
 package org.pentaho.di.job.entries.unzip;
 
+import org.apache.commons.vfs2.FileContent;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.job.entry.validator.AbstractFileValidator;
 import org.pentaho.di.job.entry.validator.AndValidator;
@@ -893,11 +892,14 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
     return retval;
   }
 
-  private boolean takeThisFile( FileObject sourceFile, String destinationFile )
+  protected boolean takeThisFile( FileObject sourceFile, String destinationFile )
     throws FileSystemException, KettleFileException {
     boolean retval = false;
-    try ( FileObject destination = KettleVFS.getInstance( parentJobMeta.getBowl() )
-      .getFileObject( destinationFile, this ) ) {
+    try (
+      FileObject destination = KettleVFS.getInstance( parentJobMeta.getBowl() ).getFileObject( destinationFile, this );
+      FileContent destinationContent = destination.getContent();
+      FileContent sourceContent = sourceFile.getContent()
+    ) {
       if ( !destination.exists() ) {
         if ( log.isDebug() ) {
           logDebug( BaseMessages.getString( PKG, "JobUnZip.Log.CanNotFindFile", destinationFile ) );
@@ -926,8 +928,8 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
         return true;
       }
 
-      long entrySize = sourceFile.getContent().getSize();
-      long destinationSize = destination.getContent().getSize();
+      long entrySize = sourceContent.getSize();
+      long destinationSize = destinationContent.getSize();
 
       if ( iffileexist == IF_FILE_EXISTS_OVERWRITE_DIFF_SIZE ) {
         if ( entrySize != destinationSize ) {
