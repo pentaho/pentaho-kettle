@@ -2,16 +2,15 @@
  *
  * Pentaho
  *
- * Copyright (C) 2024 - 2026 by Pentaho Canada Inc. : http://www.pentaho.com
+ * Copyright (C) 2024 by Hitachi Vantara, LLC : http://www.pentaho.com
  *
  * Use of this software is governed by the Business Source License included
  * in the LICENSE.TXT file.
  *
- * Change Date: 2030-06-15
+ * Change Date: 2029-07-20
  ******************************************************************************/
 
-
-package org.pentaho.di.job.entries.zipfile;
+package org.pentaho.di.job.entries.unzip;
 
 import org.json.simple.JSONObject;
 import org.pentaho.di.job.JobMeta;
@@ -20,16 +19,16 @@ import org.pentaho.di.job.entry.BaseJobEntryHelper;
 
 import java.util.Map;
 
-public class JobEntryZipFileHelper extends BaseJobEntryHelper {
+public class JobEntryUnZipFileHelper extends BaseJobEntryHelper {
 
   private static final String SHOW_FILE_NAME = "showFileName";
-  private static final Class<?> PKG = JobEntryZipFile.class;
+  private static final Class<?> PKG = JobEntryUnZip.class;
 
-  private final JobEntryZipFile jobEntryZipFile;
+  private final JobEntryUnZip jobEntryUnZipFile;
 
-  public JobEntryZipFileHelper( JobEntryZipFile jobEntryZipFile ) {
+  public JobEntryUnZipFileHelper( JobEntryUnZip jobEntryUnZipFile ) {
     super();
-    this.jobEntryZipFile = jobEntryZipFile;
+    this.jobEntryUnZipFile = jobEntryUnZipFile;
   }
 
   @Override
@@ -37,7 +36,7 @@ public class JobEntryZipFileHelper extends BaseJobEntryHelper {
     JSONObject response = new JSONObject();
     try {
       if ( SHOW_FILE_NAME.equals( method ) ) {
-        response = ZipUnzipHelper.showFileNameAction( jobMeta, queryParams, jobEntryZipFile, PKG );
+        response = ZipUnzipHelper.showFileNameAction( jobMeta, queryParams, jobEntryUnZipFile, PKG );
       } else {
         response.put( ACTION_STATUS, FAILURE_METHOD_NOT_FOUND_RESPONSE );
       }
