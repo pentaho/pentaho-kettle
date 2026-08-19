@@ -121,8 +121,6 @@ public class HTTPIT {
 
 
   public static final String host = "localhost";
-  public static final int port = 9998;
-  public static final String HTTP_LOCALHOST_9998 = "http://localhost:9998/";
 
   @InjectMocks
   private StepMockHelper<HTTPMeta, HTTPData> stepMockHelper;
@@ -144,8 +142,14 @@ public class HTTPIT {
 
   @After
   public void tearDown() throws Exception {
-    httpServer.stop( 5 );
+    if ( httpServer != null ) {
+      httpServer.stop( 5 );
+    }
 
+  }
+
+  private String getHttpLocalhostUrl() {
+    return "http://" + host + ":" + httpServer.getAddress().getPort() + "/";
   }
 
 
@@ -163,7 +167,7 @@ public class HTTPIT {
     RowMetaInterface inputRowMeta = mock( RowMetaInterface.class );
     http.setInputRowMeta( inputRowMeta );
     when( inputRowMeta.clone() ).thenReturn( inputRowMeta );
-    when( stepMockHelper.processRowsStepMetaInterface.getUrl() ).thenReturn( HTTP_LOCALHOST_9998 );
+    when( stepMockHelper.processRowsStepMetaInterface.getUrl() ).thenReturn( getHttpLocalhostUrl() );
     when( stepMockHelper.processRowsStepMetaInterface.getHeaderField() ).thenReturn( new String[] {} );
     when( stepMockHelper.processRowsStepMetaInterface.getArgumentField() ).thenReturn( new String[] {} );
     when( stepMockHelper.processRowsStepMetaInterface.getResultCodeFieldName() ).thenReturn( "ResultCodeFieldName" );
@@ -191,7 +195,7 @@ public class HTTPIT {
     RowMetaInterface inputRowMeta = mock( RowMetaInterface.class );
     http.setInputRowMeta( inputRowMeta );
     when( inputRowMeta.clone() ).thenReturn( inputRowMeta );
-    when( stepMockHelper.processRowsStepMetaInterface.getUrl() ).thenReturn( HTTP_LOCALHOST_9998 );
+    when( stepMockHelper.processRowsStepMetaInterface.getUrl() ).thenReturn( getHttpLocalhostUrl() );
     when( stepMockHelper.processRowsStepMetaInterface.getHeaderField() ).thenReturn( new String[] {} );
     when( stepMockHelper.processRowsStepMetaInterface.getArgumentField() ).thenReturn( new String[] {} );
     when( stepMockHelper.processRowsStepMetaInterface.getResultCodeFieldName() ).thenReturn( "ResultCodeFieldName" );
@@ -220,7 +224,7 @@ public class HTTPIT {
     RowMetaInterface inputRowMeta = mock( RowMetaInterface.class );
     http.setInputRowMeta( inputRowMeta );
     when( inputRowMeta.clone() ).thenReturn( inputRowMeta );
-    when( stepMockHelper.processRowsStepMetaInterface.getUrl() ).thenReturn( HTTP_LOCALHOST_9998 );
+    when( stepMockHelper.processRowsStepMetaInterface.getUrl() ).thenReturn( getHttpLocalhostUrl() );
     when( stepMockHelper.processRowsStepMetaInterface.getHeaderField() ).thenReturn( new String[] {} );
     when( stepMockHelper.processRowsStepMetaInterface.getArgumentField() ).thenReturn( new String[] {} );
     when( stepMockHelper.processRowsStepMetaInterface.getEncoding() ).thenReturn( "UTF8" );
@@ -243,7 +247,7 @@ public class HTTPIT {
   }
 
   private void startHttpServer( HttpHandler httpHandler ) throws IOException {
-    httpServer = HttpServer.create( new InetSocketAddress( HTTPIT.host, HTTPIT.port ), 10 );
+    httpServer = HttpServer.create( new InetSocketAddress( HTTPIT.host, 0 ), 10 );
     httpServer.createContext( "/", httpHandler );
     httpServer.start();
   }
