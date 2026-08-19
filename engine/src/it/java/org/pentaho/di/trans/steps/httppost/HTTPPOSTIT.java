@@ -48,6 +48,7 @@ import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URLDecoder;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -302,7 +303,7 @@ public class HTTPPOSTIT {
 
 
   private void startHttpServer( HttpHandler httpHandler ) throws IOException {
-    httpServer = HttpServer.create( new InetSocketAddress( HTTPPOSTIT.host, 0 ), 10 );
+    httpServer = HttpServer.create( new InetSocketAddress( InetAddress.getLoopbackAddress(), 0 ), 10 );
     httpServer.createContext( "/", httpHandler );
     httpServer.start();
   }

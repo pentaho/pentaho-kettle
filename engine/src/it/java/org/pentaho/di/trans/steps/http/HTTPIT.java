@@ -45,6 +45,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -247,7 +248,7 @@ public class HTTPIT {
   }
 
   private void startHttpServer( HttpHandler httpHandler ) throws IOException {
-    httpServer = HttpServer.create( new InetSocketAddress( HTTPIT.host, 0 ), 10 );
+    httpServer = HttpServer.create( new InetSocketAddress( InetAddress.getLoopbackAddress(), 0 ), 10 );
     httpServer.createContext( "/", httpHandler );
     httpServer.start();
   }
