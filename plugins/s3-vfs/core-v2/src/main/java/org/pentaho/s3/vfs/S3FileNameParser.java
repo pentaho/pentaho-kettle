@@ -1,0 +1,59 @@
+package org.pentaho.s3.vfs;
+
+import org.apache.commons.vfs2.FileName;
+import org.apache.commons.vfs2.FileSystemException;
+import org.apache.commons.vfs2.FileType;
+import org.apache.commons.vfs2.provider.AbstractFileNameParser;
+import org.apache.commons.vfs2.provider.FileNameParser;
+import org.apache.commons.vfs2.provider.UriParser;
+import org.apache.commons.vfs2.provider.VfsComponentContext;
+import org.pentaho.amazon.s3.S3Util;
+
+/**
+ * Custom parser for the s3 URL
+ *
+ * @author asimoes
+ * @since 09-11-2017
+ */
+
+public class S3FileNameParser extends AbstractFileNameParser {
+  private static final S3FileNameParser INSTANCE = new S3FileNameParser();
+
+  public S3FileNameParser() {
+    super();
+  }
+
+  public static FileNameParser getInstance() {
+    return INSTANCE;
+  }
+
+  public FileName parseUri( VfsComponentContext context, FileName base, String uri ) throws FileSystemException {
+    StringBuilder buffer = new StringBuilder();
+
+    // S3A compatibility: parse either registered spelling without rewriting the URI.
+    String scheme = UriParser.extractScheme( S3FileProvider.SCHEMES, uri, buffer );
+    if ( scheme == null ) {
+      throw new FileSystemException( "Unsupported S3 URI scheme" );
+    }
+
+    UriParser.canonicalizePath( buffer, 0, buffer.length(), this );
+    UriParser.fixSeparators( buffer );
+    FileType fileType = UriParser.normalisePath( buffer );
+
+    //URI includes credentials
+    String keys = S3Util.getFullKeysFromURI( buffer.toString() );
+    if ( keys != null ) {
+      buffer.replace( buffer.indexOf( keys ), buffer.indexOf( keys ) + keys.length(), "" );
+    }
+
+    String path = buffer.toString();
+    // Extract bucket name
+    String bucketName = UriParser.extractFirstElement( buffer );
+
+    if ( keys != null ) {
+      bucketName = keys + bucketName;
+      return new S3FileName( scheme, bucketName, buffer.length() == 0 ? path : buffer.toString(), fileType, keys );
+    }
+    return new S3FileName( scheme, bucketName, path, fileType );
+  }
+}

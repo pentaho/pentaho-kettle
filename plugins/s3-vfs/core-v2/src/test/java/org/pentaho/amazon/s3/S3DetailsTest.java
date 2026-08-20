@@ -1,0 +1,75 @@
+package org.pentaho.amazon.s3;
+
+import org.junit.jupiter.api.Test;
+
+import java.util.Map;
+
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+
+public class S3DetailsTest {
+
+  private S3Details s3Details = new S3Details();
+
+  @Test
+  public void getProperties() {
+    s3Details.setName( "name" );
+    s3Details.setRegion( "aws-west-1" );
+    s3Details.setAccessKey( "ASIAXJ3TZZPFVO3NK6O" );
+    s3Details.setSecretKey( "jKbmptEdHk6cTXXqGodacxJn5yaETIIhKjJb/oZ" );
+    s3Details.setRootPath( "test/path" );
+    s3Details.setTrustStoreFilePath( "/path/to/truststore.jks" );
+    s3Details.setTrustStorePassword( "changeit" );
+    s3Details.setTrustAll( "true" );
+    s3Details.setKeyStoreFilePath( "/path/to/keystore.jks" );
+    s3Details.setKeyStorePassword( "keystorepass" );
+
+    Map<String, String> props = s3Details.getProperties();
+    assertThat( props.get( "name" ), equalTo( "name" ) );
+    assertThat( props.get( "region" ), equalTo( "aws-west-1" ) );
+    assertThat( props.get( "accessKey" ), equalTo( "ASIAXJ3TZZPFVO3NK6O" ) );
+    assertThat( props.get( "secretKey" ), equalTo( "jKbmptEdHk6cTXXqGodacxJn5yaETIIhKjJb/oZ" ) );
+    assertThat( props.get( "rootPath" ), equalTo( "test/path" ) );
+    assertThat( props.get( "trustStoreFilePath" ), equalTo( "/path/to/truststore.jks" ) );
+    assertThat( props.get( "trustStorePassword" ), equalTo( "changeit" ) );
+    assertThat( props.get( "trustAll" ), equalTo( "true" ) );
+    assertThat( props.get( "keyStoreFilePath" ), equalTo( "/path/to/keystore.jks" ) );
+    assertThat( props.get( "keyStorePassword" ), equalTo( "keystorepass" ) );
+    assertThat( props.size(), equalTo( 22 ) );
+    assertThat( props.entrySet().stream().filter( e -> e.getValue() != null ).count(), equalTo( 11L ) );
+  }
+
+  @Test
+  public void getPropertiesWithEndpoint() {
+    s3Details.setName( "name" );
+    s3Details.setRegion( "aws-west-1" );
+    s3Details.setAccessKey( "ASIAXJ3TZZPFVO3NK6O" );
+    s3Details.setSecretKey( "jKbmptEdHk6cTXXqGodacxJn5yaETIIhKjJb/oZ" );
+    s3Details.setEndpoint( "http://localhost:9000" );
+    s3Details.setPathStyleAccess( "true");
+    s3Details.setSignatureVersion( "v4" );
+    s3Details.setTrustStoreFilePath( "/path/to/truststore.jks" );
+    s3Details.setTrustStorePassword( "changeit" );
+    s3Details.setTrustAll( "true" );
+    s3Details.setKeyStoreFilePath( "/path/to/keystore.jks" );
+    s3Details.setKeyStorePassword( "keystorepass" );
+
+    Map<String, String> props = s3Details.getProperties();
+    assertThat( props.get( "name" ), equalTo( "name" ) );
+    assertThat( props.get( "region" ), equalTo( "aws-west-1" ) );
+    assertThat( props.get( "accessKey" ), equalTo( "ASIAXJ3TZZPFVO3NK6O" ) );
+    assertThat( props.get( "secretKey" ), equalTo( "jKbmptEdHk6cTXXqGodacxJn5yaETIIhKjJb/oZ" ) );
+    assertThat( props.get( "endpoint" ), equalTo( "http://localhost:9000" ) );
+    assertThat( props.get( "pathStyleAccess" ), equalTo( "true" ) );
+    assertThat( props.get( "signatureVersion" ), equalTo( "v4" ) );
+    assertThat( props.get( "trustStoreFilePath" ), equalTo( "/path/to/truststore.jks" ) );
+    assertThat( props.get( "trustStorePassword" ), equalTo( "changeit" ) );
+    assertThat( props.get( "trustAll" ), equalTo( "true" ) );
+    assertThat( props.get( "keyStoreFilePath" ), equalTo( "/path/to/keystore.jks" ) );
+    assertThat( props.get( "keyStorePassword" ), equalTo( "keystorepass" ) );
+
+    assertThat( props.size(), equalTo( 22 ) );
+    assertThat( props.entrySet().stream().filter( e -> e.getValue() != null ).count(), equalTo( 13L ) );
+  }
+
+}

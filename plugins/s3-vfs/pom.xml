@@ -27,15 +27,43 @@
   <properties>
     <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
     <pentaho-hadoop-shims.version>11.1.0.0-SNAPSHOT</pentaho-hadoop-shims.version>
+    <aws-sdk-v2.version>2.54.1</aws-sdk-v2.version>
+    <!-- the version S3Mock is built against, so the unit and integration suites stay interchangeable -->
+    <junit-jupiter.version>6.0.3</junit-jupiter.version>
   </properties>
 
   <name>PDI S3-VFS Plugin</name>
   <description>This plugin is for Pentaho Data Integration (ETL) a.k.a Kettle</description>
 
-
+  <dependencyManagement>
+    <dependencies>
+      <!-- Not managed by the PDI parent, so the version lives here for the whole plugin. -->
+      <dependency>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>bom</artifactId>
+        <version>${aws-sdk-v2.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <!-- Also unmanaged by the PDI parent, which knows nothing past JUnit 4. -->
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-api</artifactId>
+        <version>${junit-jupiter.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-engine</artifactId>
+        <version>${junit-jupiter.version}</version>
+        <scope>test</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
   <modules>
     <module>core</module>
+    <module>core-v2</module>
     <module>assemblies</module>
   </modules>
 </project>

@@ -34,6 +34,13 @@
       <artifactId>pentaho-s3-vfs</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <!-- v2 plugin zip dependency -->
+    <dependency>
+      <groupId>pentaho</groupId>
+      <artifactId>pentaho-s3-vfs-v2</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!-- end v2 plugin zip dependency -->
     <dependency>
       <groupId>com.amazonaws</groupId>
       <artifactId>aws-java-sdk-iam</artifactId>
@@ -50,14 +57,29 @@
             <goals>
               <goal>single</goal>
             </goals>
+            <configuration>
+              <descriptors>
+                <descriptor>${basedir}/src/main/assembly/descriptors/s3-vfs.xml</descriptor>
+              </descriptors>
+              <appendAssemblyId>false</appendAssemblyId>
+            </configuration>
           </execution>
+          <!-- v2 plugin zip execution -->
+          <execution>
+            <id>s3-v2</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <descriptors>
+                <descriptor>${basedir}/src/main/assembly/descriptors/s3-vfs-v2.xml</descriptor>
+              </descriptors>
+              <appendAssemblyId>true</appendAssemblyId>
+            </configuration>
+          </execution>
+          <!-- end v2 plugin zip execution -->
         </executions>
-        <configuration>
-          <descriptors>
-            <descriptor>${basedir}/src/main/assembly/descriptors/s3-vfs.xml</descriptor>
-          </descriptors>
-          <appendAssemblyId>false</appendAssemblyId>
-        </configuration>
       </plugin>
     </plugins>
   </build>

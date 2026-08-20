@@ -1,0 +1,44 @@
+<assembly>
+    <id>v2</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <baseDirectory>pentaho-s3-vfs-plugin-v2</baseDirectory>
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>.</outputDirectory>
+            <includes>
+                <include>pentaho:pentaho-s3-vfs-v2:jar</include>
+            </includes>
+            <useProjectArtifact>false</useProjectArtifact>
+        </dependencySet>
+           <!-- AWS SDK v2 and its Netty transport dependencies. -->
+        <dependencySet>
+            <outputDirectory>/lib</outputDirectory>
+            <unpack>false</unpack>
+            <scope>runtime</scope>
+            <useProjectArtifact>false</useProjectArtifact>
+            <outputFileNameMapping>${artifact.artifactId}-${artifact.baseVersion}.${artifact.extension}
+            </outputFileNameMapping>
+            <includes>
+                <include>software.amazon.awssdk:*</include>
+                <include>io.netty:*</include>
+                <include>software.amazon.eventstream:eventstream</include>
+                <!-- We are relying on the following from kettle
+                <include>org.reactivestreams:reactive-streams</include>
+                <include>org.apache.httpcomponents:httpclient</include>
+                <include>org.apache.httpcomponents:httpcore</include>
+                <include>org.apache.httpcomponents.client5:httpclient5</include>
+                <include>org.apache.httpcomponents.core5:*</include>
+                <include>commons-codec:commons-codec</include>
+                <include>commons-logging:commons-logging</include>
+                <include>org.slf4j:slf4j-api</include>
+                <include>com.google.guava:guava</include>
+                <include>commons-io:commons-io</include>
+                <include>org.apache.commons:commons-lang3</include>
+                <include>org.apache.commons:commons-vfs2</include>
+                -->
+            </includes>
+        </dependencySet>
+    </dependencySets>
+</assembly>
