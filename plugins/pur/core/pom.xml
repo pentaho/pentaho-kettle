@@ -46,6 +46,7 @@
     <se-jcr.version>0.9</se-jcr.version>
     <jcr.version>2.0</jcr.version>
     <derby.version>10.17.1.0</derby.version>
+    <javax.transaction-api.version>1.2</javax.transaction-api.version>
     <commons-database.version>11.1.0.0-SNAPSHOT</commons-database.version>
 
     <!-- Wadl2Java Settings -->
@@ -425,6 +426,12 @@
       <groupId>org.apache.derby</groupId>
       <artifactId>derby</artifactId>
       <version>${derby.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.transaction</groupId>
+      <artifactId>javax.transaction-api</artifactId>
+      <version>${javax.transaction-api.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
