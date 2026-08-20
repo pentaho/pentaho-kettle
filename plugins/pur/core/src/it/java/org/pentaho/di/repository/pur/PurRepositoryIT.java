@@ -47,6 +47,7 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.NotePadMeta;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -56,6 +57,7 @@ import org.pentaho.di.core.logging.KettleLoggingEventListener;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.plugins.JobEntryPluginType;
 import org.pentaho.di.core.plugins.StepPluginType;
+import org.pentaho.di.core.service.PluginServiceLoader;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.imp.ImportRules;
 import org.pentaho.di.imp.rule.ImportRuleInterface;
@@ -75,6 +77,10 @@ import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
+import org.pentaho.metastore.locator.api.MetastoreLocator;
+import org.pentaho.metastore.locator.api.MetastoreProvider;
+import org.pentaho.metastore.locator.api.impl.MetastoreLocatorImpl;
+import org.pentaho.metastore.locator.impl.repository.RepositoryMetastoreProvider;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.api.IMetaStoreAttribute;
 import org.pentaho.metastore.api.IMetaStoreElement;
@@ -236,6 +242,14 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
     super.setUp();
 
     KettleEnvironment.init();
+    if ( !Props.isInitialized() ) {
+      Props.init( Props.TYPE_PROPERTIES_EMPTY );
+    }
+
+    PluginServiceLoader.registerService( PurRepositoryIT.class, MetastoreLocator.class,
+      new MetastoreLocatorImpl(), 0 );
+    PluginServiceLoader.registerService( PurRepositoryIT.class, MetastoreProvider.class,
+      new RepositoryMetastoreProvider( () -> repository ), 0 );
 
     // programmatically register plugins, annotation based plugins do not get loaded unless
     // they are in kettle's plugins folder.
