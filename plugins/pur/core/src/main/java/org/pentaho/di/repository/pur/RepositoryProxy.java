@@ -467,7 +467,8 @@ public class RepositoryProxy extends AbstractRepository implements ILockService,
         // Try to find the original DB and load the overriding one by name.
         DatabaseMeta orig = loadDatabaseMeta( databaseId, null );
         if ( orig != null ) {
-          return DatabaseMeta.findDatabase( databases, orig.getName() );
+          DatabaseMeta override = DatabaseMeta.findDatabase( databases, orig.getName() );
+          return override == null ? orig : override;
         }
       }
     } else {
