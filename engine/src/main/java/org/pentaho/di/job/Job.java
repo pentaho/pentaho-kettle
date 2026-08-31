@@ -428,8 +428,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
       emergencyWriteJobTracker( result );
 
-      setActive( false );
-      setFinished( true );
+      markAsFinished();
       setStopped( false );
     } finally {
       try {
@@ -556,9 +555,10 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       // Save this result...
       jobTracker.addJobTracker( new JobTracker( jobMeta, jerEnd ) );
       log.logMinimal( BaseMessages.getString( PKG, "Job.Comment.JobFinished" ) );
-      setActive( false );
       if ( !isStopped() ) {
-        setFinished( true );
+        markAsFinished();
+      } else {
+        setActive( false );
       }
       return res;
     } finally {
@@ -1350,6 +1350,10 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
   public void setFinished( boolean finished ) {
     status.updateAndGet( v -> finished ? v | BitMaskStatus.FINISHED.mask : ( BitMaskStatus.BIT_STATUS_SUM
         ^ BitMaskStatus.FINISHED.mask ) & v );
+  }
+
+  void markAsFinished() {
+    status.updateAndGet( v -> ( v | BitMaskStatus.FINISHED.mask ) & ~BitMaskStatus.ACTIVE.mask );
   }
 
   public Date getStartDate() {

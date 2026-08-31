@@ -71,6 +71,19 @@ import static org.pentaho.test.util.InternalState.setInternalState;
 
 
 public class JobTest {
+
+  @Test
+  public void markAsFinishedUpdatesActiveAndFinishedStatusTogether() {
+    Job job = new Job();
+
+    job.setActive( true );
+    job.setResult( new Result() );
+    job.markAsFinished();
+
+    assertFalse( job.isActive() );
+    assertTrue( job.isFinished() );
+    assertEquals( Trans.STRING_FINISHED, job.getStatus() );
+  }
   private static final String STRING_DEFAULT = "<def>";
   private Job mockedJob;
   private Database mockedDataBase;
