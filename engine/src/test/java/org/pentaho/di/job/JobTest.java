@@ -106,7 +106,7 @@ public class JobTest {
         CountDownLatch runningObserved = new CountDownLatch( 1 );
         AtomicBoolean transitionComplete = new AtomicBoolean();
         Future<Boolean> observedWaiting = executor.submit( () -> {
-          while ( !transitionComplete.get() ) {
+          while ( !transitionComplete.get() && !Thread.currentThread().isInterrupted() ) {
             String status = job.getStatus();
             if ( STRING_RUNNING.equals( status ) ) {
               runningObserved.countDown();
@@ -120,7 +120,7 @@ public class JobTest {
         assertTrue( runningObserved.await( 10, TimeUnit.SECONDS ) );
         job.markAsFinished();
         transitionComplete.set( true );
-        assertFalse( observedWaiting.get() );
+        assertFalse( observedWaiting.get( 10, TimeUnit.SECONDS ) );
       }
     } finally {
       executor.shutdownNow();
