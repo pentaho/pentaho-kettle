@@ -21,6 +21,8 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -31,12 +33,14 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.service.PluginServiceLoader;
 import org.pentaho.di.core.util.StringEvaluationResult;
 import org.pentaho.di.core.util.StringEvaluator;
 import org.pentaho.di.core.util.Utils;
@@ -45,7 +49,9 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.steps.file.BaseFileField;
 import org.pentaho.di.trans.steps.file.BaseFileInputAdditionalField;
 import org.pentaho.di.trans.steps.fileinput.text.BufferedInputStreamReader;
+import org.pentaho.di.trans.steps.fileinput.text.CsvRFC4180ReaderFactory;
 import org.pentaho.di.trans.steps.fileinput.text.EncodingType;
+import org.pentaho.di.trans.steps.fileinput.text.TextFileInput;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileInputMeta;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileInputUtils;
 import org.pentaho.di.trans.steps.fileinput.text.TextFileLine;
@@ -267,17 +273,12 @@ public class TextFileCSVImportProgressDialog implements CsvInputAwareImportProgr
     // Sample <samples> rows...
     debug = "get first line";
 
-    StringBuilder lineBuffer = new StringBuilder( 256 );
-    int fileFormatType = meta.getFileFormatTypeNr();
+    // The RFC 4180 file type is not compatible with the generic delimiter based line reading/splitting performed
+    // below (it doesn't understand enclosures, escaping or embedded line breaks per RFC 4180), so we delegate
+    // straight to the EE RFC 4180 compliant FSM parser instead.
+    final boolean isRfc4180 = TextFileInput.FILE_TYPE_CSV_RFC4180.equalsIgnoreCase( meta.content.fileType );
 
-    if ( meta.content.header ) {
-      fileLineNumber = TextFileInputUtils.skipLines( log, reader, encodingType, fileFormatType, lineBuffer,
-        meta.content.nrHeaderLines, meta.getEnclosure(), meta.getEscapeCharacter(), fileLineNumber );
-    }
-    //Reading the first line of data
-    line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineBuffer, meta.getEnclosure(), meta.getEscapeCharacter() );
     int linenr = 1;
-
     List<StringEvaluator> evaluators = new ArrayList<StringEvaluator>();
 
     // Allocate number and date parsers
@@ -286,63 +287,135 @@ public class TextFileCSVImportProgressDialog implements CsvInputAwareImportProgr
     SimpleDateFormat daf2 = new SimpleDateFormat();
 
     boolean errorFound = false;
-    while ( !errorFound && line != null && ( linenr <= samples || samples == 0 ) && !monitor.isCanceled() ) {
-      monitor.subTask( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Task.ScanningLine", ""
-          + linenr ) );
 
-      if ( samples > 0 ) {
-        monitor.worked( 1 );
-      }
+    if ( isRfc4180 ) {
+      CsvRFC4180ReaderFactory factory = loadCsvRFC4180Factory();
+      List<String[]> sampleRows = factory != null
+          ? factory.getSampleRows( meta, transMeta, samples, meta.content.header )
+          : Collections.emptyList();
 
-      if ( log.isDebug() ) {
-        debug = "convert line #" + linenr + " to row";
-      }
-      RowMetaInterface rowMeta = new RowMeta();
-      meta.getFields( transMeta.getBowl(), rowMeta, "stepname", null, null, transMeta, null, null );
-      // Remove the storage meta-data (don't go for lazy conversion during scan)
-      for ( ValueMetaInterface valueMeta : rowMeta.getValueMetaList() ) {
-        valueMeta.setStorageMetadata( null );
-        valueMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
-      }
+      String filePath = FileInputList.createFilePathList( transMeta.getBowl(), transMeta,
+          meta.inputFiles.fileName, meta.inputFiles.fileMask, meta.inputFiles.excludeFileMask,
+          meta.inputFiles.fileRequired, meta.inputFiles.includeSubFolderBoolean() )[0];
 
-      String delimiter = transMeta.environmentSubstitute( meta.content.separator );
-      String enclosure = transMeta.environmentSubstitute( meta.content.enclosure );
-      String escapeCharacter = transMeta.environmentSubstitute( meta.content.escapeCharacter );
-      Object[] r =
-        TextFileInputUtils.convertLineToRow( log, new TextFileLine( line, fileLineNumber, null ), strinfo, null, 0,
-              outputRowMeta, convertRowMeta, FileInputList.createFilePathList( transMeta.getBowl(), transMeta,
-                  meta.inputFiles.fileName, meta.inputFiles.fileMask, meta.inputFiles.excludeFileMask,
-                  meta.inputFiles.fileRequired, meta.inputFiles.includeSubFolderBoolean() )[0],
-              rownumber, delimiter, enclosure, escapeCharacter, null, new BaseFileInputAdditionalField(), null, null,
-              false, null, null, null, null, null, failOnParseError );
-
-      if ( r == null ) {
-        errorFound = true;
-        continue;
-      }
-      rownumber++;
-      for ( int i = 0; i < nrfields && i < r.length; i++ ) {
-        StringEvaluator evaluator;
-        if ( i >= evaluators.size() ) {
-          evaluator = new StringEvaluator( true );
-          evaluators.add( evaluator );
-        } else {
-          evaluator = evaluators.get( i );
+      for ( String[] fields : sampleRows ) {
+        if ( errorFound || monitor.isCanceled() || ( samples > 0 && linenr > samples ) ) {
+          break;
         }
 
-        String string = getStringFromRow( rowMeta, r, i, failOnParseError );
-        evaluator.evaluateString( string );
-      }
+        monitor.subTask( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Task.ScanningLine", ""
+            + linenr ) );
+        if ( samples > 0 ) {
+          monitor.worked( 1 );
+        }
 
-      if ( r != null ) {
+        if ( log.isDebug() ) {
+          debug = "convert line #" + linenr + " to row";
+        }
+        RowMetaInterface rowMeta = new RowMeta();
+        meta.getFields( transMeta.getBowl(), rowMeta, "stepname", null, null, transMeta, null, null );
+        // Remove the storage meta-data (don't go for lazy conversion during scan)
+        for ( ValueMetaInterface valueMeta : rowMeta.getValueMetaList() ) {
+          valueMeta.setStorageMetadata( null );
+          valueMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
+        }
+
+        // The fields have already been split out by the RFC 4180 FSM parser, so we pass them in directly instead
+        // of having convertLineToRow() re-split the (unavailable) raw line.
+        Object[] r = TextFileInputUtils.convertLineToRow( log, new TextFileLine( "", fileLineNumber, null ), fields,
+            strinfo, null, 0, outputRowMeta, convertRowMeta, filePath, rownumber, null,
+            new BaseFileInputAdditionalField(), null, null, false, null, null, null, null, null, failOnParseError );
+
+        if ( r == null ) {
+          errorFound = true;
+          continue;
+        }
+        rownumber++;
+        for ( int i = 0; i < nrfields && i < r.length; i++ ) {
+          StringEvaluator evaluator;
+          if ( i >= evaluators.size() ) {
+            evaluator = new StringEvaluator( true );
+            evaluators.add( evaluator );
+          } else {
+            evaluator = evaluators.get( i );
+          }
+
+          String string = getStringFromRow( rowMeta, r, i, failOnParseError );
+          evaluator.evaluateString( string );
+        }
+
         linenr++;
+        fileLineNumber++;
       }
+    } else {
+      StringBuilder lineBuffer = new StringBuilder( 256 );
+      int fileFormatType = meta.getFileFormatTypeNr();
 
-      // Grab another line...
-      TextFileLine textFileLine = TextFileInputUtils
-        .getLine( log, reader, encodingType, fileFormatType, lineBuffer, enclosure, escapeCharacter, fileLineNumber );
-      line = textFileLine.getLine();
-      fileLineNumber = textFileLine.getLineNumber();
+      if ( meta.content.header ) {
+        fileLineNumber = TextFileInputUtils.skipLines( log, reader, encodingType, fileFormatType, lineBuffer,
+          meta.content.nrHeaderLines, meta.getEnclosure(), meta.getEscapeCharacter(), fileLineNumber );
+      }
+      //Reading the first line of data
+      line = TextFileInputUtils.getLine( log, reader, encodingType, fileFormatType, lineBuffer, meta.getEnclosure(), meta.getEscapeCharacter() );
+
+      while ( !errorFound && line != null && ( linenr <= samples || samples == 0 ) && !monitor.isCanceled() ) {
+        monitor.subTask( BaseMessages.getString( PKG, "TextFileCSVImportProgressDialog.Task.ScanningLine", ""
+            + linenr ) );
+
+        if ( samples > 0 ) {
+          monitor.worked( 1 );
+        }
+
+        if ( log.isDebug() ) {
+          debug = "convert line #" + linenr + " to row";
+        }
+        RowMetaInterface rowMeta = new RowMeta();
+        meta.getFields( transMeta.getBowl(), rowMeta, "stepname", null, null, transMeta, null, null );
+        // Remove the storage meta-data (don't go for lazy conversion during scan)
+        for ( ValueMetaInterface valueMeta : rowMeta.getValueMetaList() ) {
+          valueMeta.setStorageMetadata( null );
+          valueMeta.setStorageType( ValueMetaInterface.STORAGE_TYPE_NORMAL );
+        }
+
+        String delimiter = transMeta.environmentSubstitute( meta.content.separator );
+        String enclosure = transMeta.environmentSubstitute( meta.content.enclosure );
+        String escapeCharacter = transMeta.environmentSubstitute( meta.content.escapeCharacter );
+        Object[] r =
+          TextFileInputUtils.convertLineToRow( log, new TextFileLine( line, fileLineNumber, null ), strinfo, null, 0,
+                outputRowMeta, convertRowMeta, FileInputList.createFilePathList( transMeta.getBowl(), transMeta,
+                    meta.inputFiles.fileName, meta.inputFiles.fileMask, meta.inputFiles.excludeFileMask,
+                    meta.inputFiles.fileRequired, meta.inputFiles.includeSubFolderBoolean() )[0],
+                rownumber, delimiter, enclosure, escapeCharacter, null, new BaseFileInputAdditionalField(), null, null,
+                false, null, null, null, null, null, failOnParseError );
+
+        if ( r == null ) {
+          errorFound = true;
+          continue;
+        }
+        rownumber++;
+        for ( int i = 0; i < nrfields && i < r.length; i++ ) {
+          StringEvaluator evaluator;
+          if ( i >= evaluators.size() ) {
+            evaluator = new StringEvaluator( true );
+            evaluators.add( evaluator );
+          } else {
+            evaluator = evaluators.get( i );
+          }
+
+          String string = getStringFromRow( rowMeta, r, i, failOnParseError );
+          evaluator.evaluateString( string );
+        }
+
+        if ( r != null ) {
+          linenr++;
+        }
+
+        // Grab another line...
+        TextFileLine textFileLine = TextFileInputUtils
+          .getLine( log, reader, encodingType, fileFormatType, lineBuffer, enclosure, escapeCharacter, fileLineNumber );
+        line = textFileLine.getLine();
+        fileLineNumber = textFileLine.getLineNumber();
+      }
     }
 
     monitor.worked( 1 );
@@ -503,5 +576,25 @@ public class TextFileCSVImportProgressDialog implements CsvInputAwareImportProgr
 
     return message.toString();
 
+  }
+
+  /**
+   * Attempts to load the {@link CsvRFC4180ReaderFactory} service via the {@link PluginServiceLoader}. This is the
+   * EE implementation of the RFC 4180 compliant CSV reader, used to correctly sample and split rows for the
+   * "CSV-RFC4180" file type.
+   *
+   * @return the factory instance, or null if not available
+   */
+  private CsvRFC4180ReaderFactory loadCsvRFC4180Factory() {
+    try {
+      Collection<CsvRFC4180ReaderFactory> services =
+        PluginServiceLoader.loadServices( CsvRFC4180ReaderFactory.class );
+      if ( !services.isEmpty() ) {
+        return services.iterator().next();
+      }
+    } catch ( KettlePluginException e ) {
+      log.logError( BaseMessages.getString( PKG, "TextFileInput.Error.CsvRFC4180ReaderNotAvailable" ), e );
+    }
+    return null;
   }
 }

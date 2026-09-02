@@ -1222,7 +1222,8 @@ public class TextFileInputMeta extends BaseFileInputMeta<BaseFileInputAdditional
 
   public int getFileTypeNr() {
     // calculate the file type in advance CSV or Fixed?
-    if ( content.fileType.equalsIgnoreCase( "CSV" ) ) {
+    if ( content.fileType.equalsIgnoreCase( "CSV" )
+        || TextFileInput.FILE_TYPE_CSV_RFC4180.equalsIgnoreCase( content.fileType ) ) {
       return TextFileInputMeta.FILE_TYPE_CSV;
     } else {
       return TextFileInputMeta.FILE_TYPE_FIXED;

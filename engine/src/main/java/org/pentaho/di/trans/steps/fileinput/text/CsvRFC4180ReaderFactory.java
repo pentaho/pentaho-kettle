@@ -64,5 +64,21 @@ public interface CsvRFC4180ReaderFactory {
    * @throws KettleException if the file cannot be read
    */
   String[] getFieldNames( TransMeta transMeta, TextFileInputMeta meta ) throws KettleException;
+
+  /**
+   * Reads and parses sample data rows from the file using the RFC 4180 compliant FSM parser. Used by the "Get
+   * Fields" dialog to guess field names, types and lengths. Unlike {@link #getFirst}, which returns raw (unparsed)
+   * lines, this method returns each sample row already split into its individual fields, correctly handling
+   * enclosures, escaping and embedded line breaks per RFC 4180.
+   *
+   * @param meta        the text file input metadata
+   * @param transMeta   the transformation metadata (for variable substitution and file resolution)
+   * @param samples     the maximum number of data rows to return (0 = all)
+   * @param skipHeaders whether to skip header lines
+   * @return a list of rows, each represented as an array of field values
+   * @throws KettleException if the file cannot be read
+   */
+  List<String[]> getSampleRows( TextFileInputMeta meta, TransMeta transMeta, int samples,
+                                boolean skipHeaders ) throws KettleException;
 }
 

@@ -58,7 +58,8 @@ public class TextFileInputUtils {
         return null;
       }
 
-      if ( inf.content.fileType.equalsIgnoreCase( "CSV" ) ) {
+      if ( inf.content.fileType.equalsIgnoreCase( "CSV" )
+          || TextFileInput.FILE_TYPE_CSV_RFC4180.equalsIgnoreCase( inf.content.fileType ) ) {
 
         // Split string in pieces, only for CSV!
 
@@ -457,6 +458,34 @@ public class TextFileInputUtils {
       return null;
     }
 
+    // System.out.println("Convertings line to string ["+line+"]");
+    String[] strings = convertLineToStrings( log, textFileLine.line, info, delimiter, enclosure, escapeCharacter );
+
+    return convertLineToRow( log, textFileLine, strings, info, passThruFields, nrPassThruFields, outputRowMeta,
+        convertRowMeta, fname, rowNr, errorHandler, additionalOutputFields, shortFilename, path, hidden,
+        modificationDateTime, uri, rooturi, extension, size, failOnParseError );
+  }
+
+  /**
+   * Same as {@link #convertLineToRow(LogChannelInterface, TextFileLine, TextFileInputMeta, Object[], int,
+   * RowMetaInterface, RowMetaInterface, String, long, String, String, String, FileErrorHandler,
+   * BaseFileInputAdditionalField, String, String, boolean, Date, String, String, String, Long, boolean)}, except
+   * that the line has already been split into fields by the caller (e.g. an RFC 4180 compliant CSV parser), so no
+   * further splitting is attempted here.
+   *
+   * @param strings the fields for this line, already split by the caller
+   */
+  public static final Object[] convertLineToRow( LogChannelInterface log, TextFileLine textFileLine,
+      String[] strings, TextFileInputMeta info, Object[] passThruFields, int nrPassThruFields,
+      RowMetaInterface outputRowMeta, RowMetaInterface convertRowMeta, String fname, long rowNr,
+      FileErrorHandler errorHandler, BaseFileInputAdditionalField additionalOutputFields, String shortFilename,
+      String path, boolean hidden, Date modificationDateTime, String uri, String rooturi, String extension,
+      Long size, final boolean failOnParseError )
+        throws KettleException {
+    if ( textFileLine == null || textFileLine.line == null ) {
+      return null;
+    }
+
     Object[] r = RowDataUtil.allocateRowData( outputRowMeta.size() ); // over-allocate a bit in the row producing
                                                                       // steps...
 
@@ -480,8 +509,6 @@ public class TextFileInputUtils {
     }
 
     try {
-      // System.out.println("Convertings line to string ["+line+"]");
-      String[] strings = convertLineToStrings( log, textFileLine.line, info, delimiter, enclosure, escapeCharacter );
       int shiftFields = ( passThruFields == null ? 0 : nrPassThruFields );
       for ( fieldnr = 0; fieldnr < nrfields; fieldnr++ ) {
         BaseFileField f = info.inputFields[fieldnr];
@@ -665,7 +692,8 @@ public class TextFileInputUtils {
         return null;
       }
 
-      if ( inf.content.fileType.equalsIgnoreCase( "CSV" ) ) {
+      if ( inf.content.fileType.equalsIgnoreCase( "CSV" )
+          || TextFileInput.FILE_TYPE_CSV_RFC4180.equalsIgnoreCase( inf.content.fileType ) ) {
         // Split string in pieces, only for CSV!
 
         fieldnr = 0;
