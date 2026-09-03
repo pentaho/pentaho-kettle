@@ -22,17 +22,23 @@ public class PluginServiceLoaderTest {
   @Test
   public void unregisterServiceRemovesOnlyTheProviderRegistration() throws Exception {
     Object provider = new Object();
+    Object otherProvider = new Object();
     TestService service = new TestService() { };
+    TestService otherService = new TestService() { };
 
     PluginServiceLoader.registerService( provider, TestService.class, service, 0 );
+    PluginServiceLoader.registerService( otherProvider, TestService.class, otherService, 0 );
     try {
       assertTrue( PluginServiceLoader.loadServices( TestService.class ).contains( service ) );
+      assertTrue( PluginServiceLoader.loadServices( TestService.class ).contains( otherService ) );
 
       PluginServiceLoader.unregisterService( provider, TestService.class );
 
       assertFalse( PluginServiceLoader.loadServices( TestService.class ).contains( service ) );
+      assertTrue( PluginServiceLoader.loadServices( TestService.class ).contains( otherService ) );
     } finally {
       PluginServiceLoader.unregisterService( provider, TestService.class );
+      PluginServiceLoader.unregisterService( otherProvider, TestService.class );
     }
   }
 
