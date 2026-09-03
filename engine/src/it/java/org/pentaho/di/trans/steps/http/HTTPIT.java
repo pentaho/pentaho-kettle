@@ -150,7 +150,9 @@ public class HTTPIT {
   }
 
   private String getHttpLocalhostUrl() {
-    return "http://" + host + ":" + httpServer.getAddress().getPort() + "/";
+    String boundHost = httpServer.getAddress().getAddress().getHostAddress();
+    return "http://" + ( boundHost.contains( ":" ) ? "[" + boundHost + "]" : boundHost )
+      + ":" + httpServer.getAddress().getPort() + "/";
   }
 
 
