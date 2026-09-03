@@ -120,6 +120,13 @@ public class PluginServiceLoader {
     dynamicallyAddedServices.put( apiInterface.getName(), providersAndServices );
   }
 
+  public static void unregisterService( Object provider, Class<?> apiInterface ) {
+    dynamicallyAddedServices.computeIfPresent( apiInterface.getName(), ( key, providersAndServices ) -> {
+      providersAndServices.removeIf( service -> service.getProvider().equals( provider ) );
+      return providersAndServices.isEmpty() ? null : providersAndServices;
+    } );
+  }
+
   private static class WrappingClassLoaderChangingInvocationHandler implements InvocationHandler {
 
     private final Object o;

@@ -201,7 +201,12 @@ public class PurRepositoryIT extends RepositoryTestBase implements ApplicationCo
 
   @AfterClass
   public static void tearDownClass() throws Exception {
-    PentahoSessionHolder.setStrategyName( PentahoSessionHolder.MODE_INHERITABLETHREADLOCAL );
+    try {
+      PluginServiceLoader.unregisterService( PurRepositoryIT.class, MetastoreLocator.class );
+      PluginServiceLoader.unregisterService( PurRepositoryIT.class, MetastoreProvider.class );
+    } finally {
+      PentahoSessionHolder.setStrategyName( PentahoSessionHolder.MODE_INHERITABLETHREADLOCAL );
+    }
   }
 
   @Before
