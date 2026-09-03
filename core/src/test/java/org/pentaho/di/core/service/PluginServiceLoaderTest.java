@@ -36,6 +36,22 @@ public class PluginServiceLoaderTest {
     }
   }
 
+  @Test
+  public void unregisterServiceSupportsANullProvider() throws Exception {
+    TestService service = new TestService() { };
+
+    PluginServiceLoader.registerService( null, TestService.class, service, 0 );
+    try {
+      assertTrue( PluginServiceLoader.loadServices( TestService.class ).contains( service ) );
+
+      PluginServiceLoader.unregisterService( null, TestService.class );
+
+      assertFalse( PluginServiceLoader.loadServices( TestService.class ).contains( service ) );
+    } finally {
+      PluginServiceLoader.unregisterService( null, TestService.class );
+    }
+  }
+
   private interface TestService {
   }
 }
