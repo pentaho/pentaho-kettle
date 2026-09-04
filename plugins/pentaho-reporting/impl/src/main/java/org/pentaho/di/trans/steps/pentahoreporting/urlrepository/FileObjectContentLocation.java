@@ -40,7 +40,7 @@ public class FileObjectContentLocation extends FileObjectContentEntity implement
    *
    * @param parent  the parent location.
    * @param backend the backend.
-   * @throws ContentIOException if an error occured or the file did not point to a directory.
+   * @throws ContentIOException if an error occurred or the file did not point to a directory.
    */
   public FileObjectContentLocation( final ContentLocation parent, final FileObject backend ) throws ContentIOException {
     super( parent, backend );
@@ -60,7 +60,7 @@ public class FileObjectContentLocation extends FileObjectContentEntity implement
    *
    * @param repository the repository for which a location should be created.
    * @param backend    the backend.
-   * @throws ContentIOException if an error occured or the file did not point to a directory.
+   * @throws ContentIOException if an error occurred or the file did not point to a directory.
    */
   public FileObjectContentLocation( final Repository repository, final FileObject backend ) throws ContentIOException {
     super( repository, backend );
@@ -80,7 +80,7 @@ public class FileObjectContentLocation extends FileObjectContentEntity implement
    * name (according to the repository rules).
    *
    * @return the content entities for this location.
-   * @throws ContentIOException if an repository error occured.
+   * @throws ContentIOException if an repository error occurred.
    */
   public ContentEntity[] listContents() throws ContentIOException {
     try {
@@ -110,7 +110,7 @@ public class FileObjectContentLocation extends FileObjectContentEntity implement
    *
    * @param name the name of the entity to be retrieved.
    * @return the content entity for this name, never null.
-   * @throws ContentIOException if an repository error occured.
+   * @throws ContentIOException if an repository error occurred.
    */
   public ContentEntity getEntry( final String name ) throws ContentIOException {
     try {
