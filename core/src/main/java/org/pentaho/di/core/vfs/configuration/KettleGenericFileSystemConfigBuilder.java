@@ -74,7 +74,7 @@ public class KettleGenericFileSystemConfigBuilder extends FileSystemConfigBuilde
   }
 
   /**
-   * Extract the scheme from a Kettle VFS configuration paramter (vfs.scheme.parameter)
+   * Extract the scheme from a Kettle VFS configuration parameter (vfs.scheme.parameter)
    *
    * @param fullParameterName
    *          A VFS configuration parameter in the form of 'vfs.scheme.parameter'
