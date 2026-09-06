@@ -2050,8 +2050,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    * @return true the specified step (or step copy) has started, false otherwise
    */
   public boolean hasStepStarted( String sname, int copy ) {
-    // log.logDetailed("DIS: Checking whether of not ["+sname+"]."+cnr+" has started!");
-    // log.logDetailed("DIS: hasStepStarted() looking in "+threads.size()+" threads");
     for ( int i = 0; i < steps.size(); i++ ) {
       StepMetaDataCombi sid = steps.get( i );
       boolean started = ( sid.stepname != null && sid.stepname.equalsIgnoreCase( sname ) ) && sid.copy == copy;
