@@ -248,7 +248,7 @@ public abstract class BaseStepXulDialog extends BaseStepGenericXulDialog {
    * @param tableView
    *          the table view to modify
    * @param keyColumn
-   *          the column in the table view to match with the names of the fields, checks for existance if >0
+   *          the column in the table view to match with the names of the fields, checks for existence if >0
    * @param nameColumn
    *          the column numbers in which the name should end up in
    * @param dataTypeColumn

@@ -171,7 +171,7 @@ public class ConstUI {
   }
 
   /**
-   * Return the tree path seperated by Const.FILE_SEPARATOR, starting from a certain depth in the tree.
+   * Return the tree path separated by Const.FILE_SEPARATOR, starting from a certain depth in the tree.
    *
    * @param ti
    *          The TreeItem to get the path for
