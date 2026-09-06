@@ -391,7 +391,7 @@ public class Translator {
                 boolean systemKey = entry.startsWith( SYSTEM_KEY_PREFIX );
                 String fileContent = "";
 
-                if ( wVerify.getSelection() ) { // check existence of keys in java files...
+                if ( wVerify.getSelection() ) { // check existance of keys in java files...
                   if ( systemKey ) {
                     fileContent = "";
                   } else {
