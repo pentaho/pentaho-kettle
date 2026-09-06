@@ -665,7 +665,7 @@ public class MappingMeta extends StepWithMappingMeta implements StepMetaInterfac
      * StepMeta stepMeta = mappingTransMeta.getMappingOutputStep();
      *
      * if (stepMeta!=null) { // See which fields are coming out of the mapping output step of the sub-transformation //
-     * For these fields we check the existence // RowMetaInterface fields = null; try { fields =
+     * For these fields we check the existance // RowMetaInterface fields = null; try { fields =
      * mappingTransMeta.getStepFields(stepMeta);
      *
      * boolean allOK = true;
