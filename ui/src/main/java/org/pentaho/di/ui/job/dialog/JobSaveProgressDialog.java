@@ -64,10 +64,7 @@ public class JobSaveProgressDialog {
     try {
       ProgressMonitorDialog pmd = new ProgressMonitorDialog( shell );
       pmd.run( true, true, op );
-    } catch ( InvocationTargetException e ) {
-      new ErrorDialog( shell, "Error saving job", "An error occurred saving the job!", e );
-      retval = false;
-    } catch ( InterruptedException e ) {
+    } catch ( InvocationTargetException | InterruptedException e ) {
       new ErrorDialog( shell, "Error saving job", "An error occurred saving the job!", e );
       retval = false;
     }
