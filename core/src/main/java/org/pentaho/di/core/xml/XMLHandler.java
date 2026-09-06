@@ -566,7 +566,7 @@ public class XMLHandler {
    * Load a file into an XML document
    *
    * @param fileObject The fileObject to load into a document
-   * @return the Document if all went well, null if an error occured!
+   * @return the Document if all went well, null if an error occurred!
    */
   public static Document loadXMLFile( FileObject fileObject ) throws KettleXMLException {
     return loadXMLFile( fileObject, null, false, false );
@@ -579,7 +579,7 @@ public class XMLHandler {
    * @param systemID       Provide a base for resolving relative URIs.
    * @param ignoreEntities Ignores external entities and returns an empty dummy.
    * @param namespaceAware support XML namespaces.
-   * @return the Document if all went well, null if an error occured!
+   * @return the Document if all went well, null if an error occurred!
    */
   public static Document loadXMLFile( FileObject fileObject, String systemID, boolean ignoreEntities,
                                       boolean namespaceAware ) throws KettleXMLException {
@@ -636,7 +636,7 @@ public class XMLHandler {
    * @param systemID       Provide a base for resolving relative URIs.
    * @param ignoreEntities Ignores external entities and returns an empty dummy.
    * @param namespaceAware support XML namespaces.
-   * @return the Document if all went well, null if an error occured!
+   * @return the Document if all went well, null if an error occurred!
    */
   public static Document loadXMLFile( InputStream inputStream, String systemID, boolean ignoreEntities,
                                       boolean namespaceAware ) throws KettleXMLException {
@@ -648,7 +648,7 @@ public class XMLHandler {
       dbf.setNamespaceAware( namespaceAware );
       DocumentBuilder db = dbf.newDocumentBuilder();
 
-      // even dbf.setValidating(false) will the parser NOT prevent from checking the existance of the DTD
+      // even dbf.setValidating(false) will the parser NOT prevent from checking the existence of the DTD
       // thus we need to give the BaseURI (systemID) below to have a chance to get it
       // or return empty dummy documents for all external entities (sources)
       //
@@ -700,7 +700,7 @@ public class XMLHandler {
    * Load a file into an XML document
    *
    * @param resource The resource to load into a document
-   * @return the Document if all went well, null if an error occured!
+   * @return the Document if all went well, null if an error occurred!
    */
   public static Document loadXMLFile( URL resource ) throws KettleXMLException {
     DocumentBuilderFactory dbf;

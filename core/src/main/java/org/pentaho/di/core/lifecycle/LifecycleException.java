@@ -19,7 +19,7 @@ public class LifecycleException extends Exception {
   private static final long serialVersionUID = 1L;
 
   /**
-   * Indicates an error that prevents the application from starting succesfully.
+   * Indicates an error that prevents the application from starting successfully.
    */
   private boolean severe;
 

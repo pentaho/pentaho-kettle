@@ -176,7 +176,7 @@ public class DateDetector {
    * 
    *  {@link #getDateFormatByRegex( String regex, String locale ) }
    *
-   * @return {@link java.lang.String} string wich represented Date Format
+   * @return {@link java.lang.String} string which represented Date Format
    */
   public static String getDateFormatByRegex( String regex ) {
     return getDateFormatByRegex( regex, null );
@@ -186,7 +186,7 @@ public class DateDetector {
    * 
    * @param regex
    *          - regexp for parse date format from string by locale
-   * @return {@link java.lang.String} string wich represented Date Format
+   * @return {@link java.lang.String} string which represented Date Format
    */
   public static String getDateFormatByRegex( String regex, String locale ) {
     if ( locale != null && LOCALE_en_US.equalsIgnoreCase( locale ) ) {

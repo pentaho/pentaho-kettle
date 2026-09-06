@@ -35,7 +35,7 @@ import com.jcraft.jsch.UserInfo;
  * specified by host by appending the host name (as it will appear in the VFS URL) to the end of the parameter. (e.g.-
  * vfs.sftp.parameter.192.168.1.5)
  *
- * Overriden parameters are currently:
+ * Overridden parameters are currently:
  * <table style="text-align: left;" border="1">
  * <tr>
  * <th>Parameter</th>
