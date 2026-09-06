@@ -25,7 +25,7 @@ import java.io.ObjectInputStream;
  * A WebSocket decoder that converts gziped strings transported across the wire in WebSockets calls into AEL
  * Message objects.
  *
- * This class will be used by WebSockets endpoint when recieving webSocket messages.
+ * This class will be used by WebSockets endpoint when receiving webSocket messages.
  *
  * Created by ccaspanello on 7/20/17.
  */

@@ -56,7 +56,7 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
   private String errorDescriptionsValuename;
 
   /**
-   * the name of the field value to contain the fields for which the error(s) occured (null or empty means it's not
+   * the name of the field value to contain the fields for which the error(s) occurred (null or empty means it's not
    * needed)
    */
   private String errorFieldsValuename;
@@ -114,7 +114,7 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
    * @param errorDescriptionsValuename
    *          the name of the field value to contain the error description(s) (null or empty means it's not needed)
    * @param errorFieldsValuename
-   *          the name of the field value to contain the fields for which the error(s) occured (null or empty means it's
+   *          the name of the field value to contain the fields for which the error(s) occurred (null or empty means it's
    *          not needed)
    * @param errorCodesValuename
    *          the name of the field value to contain the error code(s) (null or empty means it's not needed)

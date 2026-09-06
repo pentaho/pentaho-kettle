@@ -138,7 +138,7 @@ public class ExtensionPointIntegrationTest {
         } catch ( KettlePluginException e ) {
           e.printStackTrace();
         } catch ( NullPointerException e ) {
-          //NullPointerException can be thrown if trying to remove a plugin that doesn't exit, discarding occurence
+          //NullPointerException can be thrown if trying to remove a plugin that doesn't exit, discarding occurrence
         }
 
         ExtensionPointMap.getInstance().reInitialize();

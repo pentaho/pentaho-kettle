@@ -194,7 +194,7 @@ public class CommandLineOption {
   }
 
   /**
-   * @return Returns wether or not this is a Yes/No flag
+   * @return Returns whether or not this is a Yes/No flag
    */
   public boolean isYesNo() {
     return yesNo;
@@ -202,7 +202,7 @@ public class CommandLineOption {
 
   /**
    * @param yesNo
-   *          sets wether or not this is a Yes/No flag
+   *          sets whether or not this is a Yes/No flag
    */
   public void setYesNo( boolean yesNo ) {
     this.yesNo = yesNo;
