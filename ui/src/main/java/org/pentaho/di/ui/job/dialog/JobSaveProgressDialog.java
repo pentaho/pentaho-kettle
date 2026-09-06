@@ -66,6 +66,7 @@ public class JobSaveProgressDialog {
       pmd.run( true, true, op );
     } catch ( InvocationTargetException | InterruptedException e ) {
       new ErrorDialog( shell, "Error saving job", "An error occurred saving the job!", e );
+      Thread.currentThread().interrupt();
       retval = false;
     }
 
