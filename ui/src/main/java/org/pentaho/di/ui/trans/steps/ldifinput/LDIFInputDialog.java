@@ -1257,7 +1257,7 @@ public class LDIFInputDialog extends BaseStepDialog implements StepDialogInterfa
       LDAPAttribute attribute_DIF = attributes_LDIF[j];
       if ( attribute_DIF.getName().equalsIgnoreCase( AttributValue ) ) {
         Enumeration<String> valuesLDIF = attribute_DIF.getStringValues();
-        // Get the first occurence
+        // Get the first occurrence
         Stringvalue = valuesLDIF.nextElement();
       }
     }
