@@ -32,7 +32,7 @@ import org.w3c.dom.Element;
  */
 
 /**
- * A ComplexType contians a map of the elementName -> elementXmlType of all the elements in a named complex type.
+ * A ComplexType contains a map of the elementName -> elementXmlType of all the elements in a named complex type.
  */
 public final class ComplexType implements java.io.Serializable {
 

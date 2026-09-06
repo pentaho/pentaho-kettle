@@ -85,7 +85,7 @@ public class SocketRepository {
         serverSocket.close();
         throw ioException;
       }
-      log.logDetailed( "Carte socket repository : Succesfully bound the server socket on port "
+      log.logDetailed( "Carte socket repository : Successfully bound the server socket on port "
         + port + " after " + ( totalWait / 1000 ) + " seconds." );
     }
     return serverSocket;

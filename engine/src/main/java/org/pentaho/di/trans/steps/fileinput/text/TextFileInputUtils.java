@@ -796,7 +796,7 @@ public class TextFileInputUtils {
                     }
                   }
 
-                  // If behind the seperator there are a odd number of escaped
+                  // If behind the separator there are a odd number of escaped
                   // The separator is escaped.
                   if ( previous_escapes % 2 != 0 ) {
                     // take the next separator, this one is escaped...
