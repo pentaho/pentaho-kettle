@@ -19,7 +19,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 
 import org.hamcrest.core.IsInstanceOf;
 import org.junit.Before;
@@ -27,6 +30,7 @@ import org.junit.Test;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mockito;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.extension.ExtensionPointInterface;
 import org.pentaho.di.core.extension.ExtensionPointPluginType;
@@ -41,6 +45,7 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.imp.Import;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementInterface;
@@ -57,6 +62,7 @@ import org.pentaho.platform.api.repository2.unified.IUnifiedRepository;
 import org.pentaho.platform.api.repository2.unified.RepositoryFile;
 import org.pentaho.platform.api.repository2.unified.RepositoryFileTree;
 import org.pentaho.platform.api.repository2.unified.RepositoryRequest;
+import org.pentaho.platform.api.repository2.unified.data.node.DataNode;
 import org.pentaho.platform.repository2.ClientRepositoryPaths;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -68,6 +74,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -629,6 +636,250 @@ public class PurRepositoryUnitTest extends RepositoryTestLazySupport {
     purRepo.init( repoMeta );
     assertTrue( purRepo.getUri().isPresent() );
     assertThat( purRepo.getUri().get(), equalTo( new URI( "http://localhost:8080/pentaho" ) ) );
+  }
+
+  @Test
+  public void testUpdateDatabaseMetaFileReturnsUpdatedFile() throws Exception {
+    IUnifiedRepository unifiedRepository = mock( IUnifiedRepository.class );
+    DatabaseDelegate databaseDelegate = mock( DatabaseDelegate.class );
+    PurRepository repository = createRepositoryForDatabaseSaveTests( unifiedRepository, databaseDelegate );
+
+    DatabaseMeta databaseMeta = new DatabaseMeta();
+    databaseMeta.setName( "db" );
+    databaseMeta.setObjectId( new StringObjectId( "db-id" ) );
+
+    RepositoryFile existingFile = new RepositoryFile.Builder(
+      "db" + RepositoryObjectType.DATABASE.getExtension() ).id( "db-id" ).path( "/db" ).build();
+    RepositoryFile updatedFile = new RepositoryFile.Builder( "db" + RepositoryObjectType.DATABASE.getExtension() )
+      .id( "updated-id" ).path( "/db" ).build();
+
+    when( unifiedRepository.getFileById( "db-id" ) ).thenReturn( existingFile );
+    when( databaseDelegate.elementToDataNode( any( RepositoryElementInterface.class ) ) ).thenReturn( mock( DataNode.class ) );
+    when( unifiedRepository.updateFile( any( RepositoryFile.class ), any(), anyString() ) ).thenReturn( updatedFile );
+
+    RepositoryFile result = repository.updateDatabaseMetaFile( databaseMeta, "version comment", Calendar.getInstance() );
+
+    assertEquals( updatedFile, result );
+  }
+
+  @Test
+  public void testUpdateDatabaseMetaFileWrapsFailureInKettleException() throws Exception {
+    IUnifiedRepository unifiedRepository = mock( IUnifiedRepository.class );
+    DatabaseDelegate databaseDelegate = mock( DatabaseDelegate.class );
+    PurRepository repository = createRepositoryForDatabaseSaveTests( unifiedRepository, databaseDelegate );
+
+    DatabaseMeta databaseMeta = new DatabaseMeta();
+    databaseMeta.setName( "db" );
+    databaseMeta.setObjectId( new StringObjectId( "db-id" ) );
+
+    RepositoryFile existingFile = new RepositoryFile.Builder(
+      "db" + RepositoryObjectType.DATABASE.getExtension() ).id( "db-id" ).path( "/db" ).build();
+
+    when( unifiedRepository.getFileById( "db-id" ) ).thenReturn( existingFile );
+    when( databaseDelegate.elementToDataNode( any( RepositoryElementInterface.class ) ) ).thenReturn( mock( DataNode.class ) );
+    when( unifiedRepository.updateFile( any( RepositoryFile.class ), any(), anyString() ) )
+      .thenThrow( new RuntimeException( "boom" ) );
+
+    try {
+      repository.updateDatabaseMetaFile( databaseMeta, "version comment", Calendar.getInstance() );
+      fail( "Expected KettleException" );
+    } catch ( KettleException e ) {
+      assertThat( e.getCause(), is( instanceOf( RuntimeException.class ) ) );
+      assertEquals( "boom", e.getCause().getMessage() );
+    }
+  }
+
+  @Test
+  public void testSaveDatabaseMetaUpdatePathAndSideEffects() throws Exception {
+    IUnifiedRepository unifiedRepository = mock( IUnifiedRepository.class );
+    DatabaseDelegate databaseDelegate = mock( DatabaseDelegate.class );
+    PurRepository repository = createRepositoryForDatabaseSaveTests( unifiedRepository, databaseDelegate );
+
+    DatabaseMeta databaseMeta = new DatabaseMeta();
+    databaseMeta.setName( "db" );
+    databaseMeta.setObjectId( new StringObjectId( "db-id" ) );
+
+    RepositoryFile existingFile = new RepositoryFile.Builder(
+      "db" + RepositoryObjectType.DATABASE.getExtension() ).id( "db-id" ).path( "/db" ).build();
+    RepositoryFile updatedFile = new RepositoryFile.Builder( "db" + RepositoryObjectType.DATABASE.getExtension() )
+      .id( "updated-id" ).path( "/db" ).build();
+
+    when( unifiedRepository.getFileById( "db-id" ) ).thenReturn( existingFile );
+    when( databaseDelegate.elementToDataNode( any( RepositoryElementInterface.class ) ) ).thenReturn( mock( DataNode.class ) );
+    when( unifiedRepository.updateFile( any( RepositoryFile.class ), any(), anyString() ) ).thenReturn( updatedFile );
+
+    repository.saveDatabaseMeta( databaseMeta, "version comment", Calendar.getInstance() );
+
+    verify( unifiedRepository, times( 1 ) ).updateFile( any( RepositoryFile.class ), any(), anyString() );
+    assertEquals( "updated-id", databaseMeta.getObjectId().getId() );
+  }
+
+  @Test
+  public void testSaveDatabaseMetaCreatePathWhenObjectIdMissing() throws Exception {
+    IUnifiedRepository unifiedRepository = mock( IUnifiedRepository.class );
+    DatabaseDelegate databaseDelegate = mock( DatabaseDelegate.class );
+    PurRepository repository = createRepositoryForDatabaseSaveTests( unifiedRepository, databaseDelegate );
+
+    DatabaseMeta databaseMeta = new DatabaseMeta();
+    databaseMeta.setName( "db" );
+
+    RepositoryFile createdFile = new RepositoryFile.Builder(
+      "db" + RepositoryObjectType.DATABASE.getExtension() ).id( "created-id" ).path( "/db" ).build();
+
+    doReturn( null ).when( repository ).getDatabaseID( "db" );
+    when( unifiedRepository.getReservedChars() ).thenReturn( Collections.emptyList() );
+    when( databaseDelegate.elementToDataNode( any( RepositoryElementInterface.class ) ) ).thenReturn( mock( DataNode.class ) );
+    when( unifiedRepository.createFile( any( Serializable.class ), any( RepositoryFile.class ), any(), anyString() ) )
+      .thenReturn( createdFile );
+
+    repository.saveDatabaseMeta( databaseMeta, "version comment", null );
+
+    verify( unifiedRepository, times( 1 ) )
+      .createFile( any( Serializable.class ), any( RepositoryFile.class ), any(), anyString() );
+    assertEquals( "created-id", databaseMeta.getObjectId().getId() );
+  }
+
+  @Test
+  public void testSaveDatabaseMetaWrapsAndRethrowsKettleException() throws Exception {
+    IUnifiedRepository unifiedRepository = mock( IUnifiedRepository.class );
+    DatabaseDelegate databaseDelegate = mock( DatabaseDelegate.class );
+    PurRepository repository = createRepositoryForDatabaseSaveTests( unifiedRepository, databaseDelegate );
+
+    DatabaseMeta databaseMeta = new DatabaseMeta();
+    databaseMeta.setName( "db" );
+    databaseMeta.setObjectId( new StringObjectId( "db-id" ) );
+
+    RepositoryFile existingFile = new RepositoryFile.Builder(
+      "db" + RepositoryObjectType.DATABASE.getExtension() ).id( "db-id" ).path( "/db" ).build();
+
+    when( unifiedRepository.getFileById( "db-id" ) ).thenReturn( existingFile );
+    when( databaseDelegate.elementToDataNode( any( RepositoryElementInterface.class ) ) ).thenReturn( mock( DataNode.class ) );
+    when( unifiedRepository.updateFile( any( RepositoryFile.class ), any(), anyString() ) )
+      .thenThrow( new RuntimeException( "boom" ) );
+
+    try {
+      repository.saveDatabaseMeta( databaseMeta, "version comment", Calendar.getInstance() );
+      fail( "Expected KettleException" );
+    } catch ( KettleException e ) {
+      assertThat( e.getCause(), is( instanceOf( RuntimeException.class ) ) );
+      assertEquals( "boom", e.getCause().getMessage() );
+    }
+  }
+
+  @Test
+  public void testCreateDatabaseMetaFileReturnsCreatedFile() throws Exception {
+    IUnifiedRepository unifiedRepository = mock( IUnifiedRepository.class );
+    DatabaseDelegate databaseDelegate = mock( DatabaseDelegate.class );
+    PurRepository repository = createRepositoryForDatabaseSaveTests( unifiedRepository, databaseDelegate );
+
+    DatabaseMeta databaseMeta = new DatabaseMeta();
+    databaseMeta.setName( "db" );
+
+    RepositoryFile createdFile = new RepositoryFile.Builder(
+      "db" + RepositoryObjectType.DATABASE.getExtension() ).id( "created-id" ).path( "/db" ).build();
+
+    when( databaseDelegate.elementToDataNode( any( RepositoryElementInterface.class ) ) ).thenReturn( mock( DataNode.class ) );
+    when( unifiedRepository.createFile( any( Serializable.class ), any( RepositoryFile.class ), any(), anyString() ) )
+      .thenReturn( createdFile );
+
+    RepositoryFile result = repository.createDatabaseMetaFile( databaseMeta, "version comment", Calendar.getInstance() );
+
+    assertEquals( createdFile, result );
+  }
+
+  @Test
+  public void testCreateDatabaseMetaFileWrapsFailureInKettleException() throws Exception {
+    IUnifiedRepository unifiedRepository = mock( IUnifiedRepository.class );
+    DatabaseDelegate databaseDelegate = mock( DatabaseDelegate.class );
+    PurRepository repository = createRepositoryForDatabaseSaveTests( unifiedRepository, databaseDelegate );
+
+    DatabaseMeta databaseMeta = new DatabaseMeta();
+    databaseMeta.setName( "db" );
+
+    when( databaseDelegate.elementToDataNode( any( RepositoryElementInterface.class ) ) ).thenReturn( mock( DataNode.class ) );
+    when( unifiedRepository.createFile( any( Serializable.class ), any( RepositoryFile.class ), any(), anyString() ) )
+      .thenThrow( new RuntimeException( "boom" ) );
+
+    try {
+      repository.createDatabaseMetaFile( databaseMeta, "version comment", Calendar.getInstance() );
+      fail( "Expected KettleException" );
+    } catch ( KettleException e ) {
+      assertThat( e.getCause(), is( instanceOf( RuntimeException.class ) ) );
+      assertEquals( "boom", e.getCause().getMessage() );
+    }
+  }
+
+  @Test
+  public void testResolveVersionDateReturnsCurrentDateWhenNull() {
+    IUnifiedRepository unifiedRepository = mock( IUnifiedRepository.class );
+    DatabaseDelegate databaseDelegate = mock( DatabaseDelegate.class );
+    PurRepository repository = createRepositoryForDatabaseSaveTests( unifiedRepository, databaseDelegate );
+
+    Date before = new Date();
+    Date result = repository.resolveVersionDate( null );
+    Date after = new Date();
+
+    assertTrue( !result.before( before ) && !result.after( after ) );
+  }
+
+  @Test
+  public void testResolveVersionDateReturnsCurrentDateWhenCalendarTimeIsNull() {
+    IUnifiedRepository unifiedRepository = mock( IUnifiedRepository.class );
+    DatabaseDelegate databaseDelegate = mock( DatabaseDelegate.class );
+    PurRepository repository = createRepositoryForDatabaseSaveTests( unifiedRepository, databaseDelegate );
+
+    Calendar mockedCalendar = mock( Calendar.class );
+    when( mockedCalendar.getTime() ).thenReturn( null );
+
+    Date before = new Date();
+    Date result = repository.resolveVersionDate( mockedCalendar );
+    Date after = new Date();
+
+    assertTrue( !result.before( before ) && !result.after( after ) );
+  }
+
+  @Test
+  public void testToDatabaseSaveExceptionReturnsAccessDeniedMessage() {
+    IUnifiedRepository unifiedRepository = mock( IUnifiedRepository.class );
+    DatabaseDelegate databaseDelegate = mock( DatabaseDelegate.class );
+    PurRepository repository = createRepositoryForDatabaseSaveTests( unifiedRepository, databaseDelegate );
+
+    DatabaseMeta databaseMeta = new DatabaseMeta();
+    databaseMeta.setName( "restricted-db" );
+
+    KettleException result = repository.toDatabaseSaveException( databaseMeta,
+      new RuntimeException( "access denied for update" ) );
+
+    assertThat( result.getCause(), is( instanceOf( RuntimeException.class ) ) );
+  }
+
+  @Test
+  public void testToDatabaseSaveExceptionReturnsOriginalKettleException() {
+    IUnifiedRepository unifiedRepository = mock( IUnifiedRepository.class );
+    DatabaseDelegate databaseDelegate = mock( DatabaseDelegate.class );
+    PurRepository repository = createRepositoryForDatabaseSaveTests( unifiedRepository, databaseDelegate );
+
+    DatabaseMeta databaseMeta = new DatabaseMeta();
+    databaseMeta.setName( "db" );
+
+    KettleException input = new KettleException( "already kettle" );
+    KettleException result = repository.toDatabaseSaveException( databaseMeta, input );
+
+    assertEquals( input, result );
+  }
+
+  private PurRepository createRepositoryForDatabaseSaveTests( IUnifiedRepository unifiedRepository,
+                                                              DatabaseDelegate databaseDelegate ) {
+    PurRepository repository = Mockito.spy( new PurRepository() );
+    repository.init( mock( PurRepositoryMeta.class ) );
+    repository.setTest( unifiedRepository );
+    repository.setDatabaseMetaTransformerForTesting( databaseDelegate );
+    Map sharedObjectCache = new EnumMap( RepositoryObjectType.class );
+    sharedObjectCache.put( RepositoryObjectType.DATABASE, new ArrayList<>() );
+    repository.setSharedObjectsByTypeForTesting( sharedObjectCache );
+    doReturn( mock( ObjectRevision.class ) ).when( repository ).createObjectRevision( any() );
+    doReturn( "db-parent-id" ).when( repository ).getDatabaseMetaParentFolderId();
+    return repository;
   }
 
 }
