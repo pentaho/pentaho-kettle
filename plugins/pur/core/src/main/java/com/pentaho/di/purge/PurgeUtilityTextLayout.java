@@ -109,7 +109,7 @@ public class PurgeUtilityTextLayout implements StringLayout, IPurgeUtilityLayout
       try {
         time = df.format( date );
       } catch ( Exception ex ) {
-        StatusLogger.getLogger().error( "Error occured while converting date.", ex );
+        StatusLogger.getLogger().error( "Error occurred while converting date.", ex );
       }
 
       sbuf.append( time );

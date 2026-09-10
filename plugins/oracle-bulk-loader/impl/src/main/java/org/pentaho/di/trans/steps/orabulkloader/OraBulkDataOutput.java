@@ -88,7 +88,7 @@ public class OraBulkDataOutput {
         output = new BufferedWriter( new OutputStreamWriter( os, encoding ) );
       }
     } catch ( IOException e ) {
-      throw new KettleException( "IO exception occured: " + e.getMessage(), e );
+      throw new KettleException( "IO exception occurred: " + e.getMessage(), e );
     }
   }
 
@@ -233,7 +233,7 @@ public class OraBulkDataOutput {
     try {
       output.append( outbuf );
     } catch ( IOException e ) {
-      throw new KettleException( "IO exception occured: " + e.getMessage(), e );
+      throw new KettleException( "IO exception occurred: " + e.getMessage(), e );
     }
   }
 
