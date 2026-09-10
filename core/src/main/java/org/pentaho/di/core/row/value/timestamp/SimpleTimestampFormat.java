@@ -40,7 +40,7 @@ public class SimpleTimestampFormat extends SimpleDateFormat {
   private int endNanosecondPatternPosition;
 
   /**
-   * Flag noticed that specified pattern can be succesfully operated by parent <code>SimpleDateFormat</code>
+   * Flag noticed that specified pattern can be successfully operated by parent <code>SimpleDateFormat</code>
    */
   private boolean compatibleToSuperPattern = true;
 

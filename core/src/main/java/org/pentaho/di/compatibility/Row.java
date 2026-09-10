@@ -414,7 +414,7 @@ public class Row implements XMLInterface, Comparable<Row>, Serializable {
   }
 
   /**
-   * Check wether or not this row should be ignored...
+   * Check whether or not this row should be ignored...
    *
    * @return true if the row should be ignored.
    */

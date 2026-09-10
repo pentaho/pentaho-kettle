@@ -829,7 +829,7 @@ public interface DatabaseInterface extends Cloneable {
 
   /**
    * @param tablename
-   *          The table to verify the existance for
+   *          The table to verify the existence for
    * @return The SQL to execute to verify if the given table exists. If an Exception is thrown for this SQL, we don't
    *         have the table.
    */
@@ -837,9 +837,9 @@ public interface DatabaseInterface extends Cloneable {
 
   /**
    * @param column
-   *          The column to verify the existance for
+   *          The column to verify the existence for
    * @param tablename
-   *          The table to verify the existance for
+   *          The table to verify the existence for
    * @return The SQL to execute to verify if the given table exists. If an Exception is thrown for this SQL, we don't
    *         have the column.
    */

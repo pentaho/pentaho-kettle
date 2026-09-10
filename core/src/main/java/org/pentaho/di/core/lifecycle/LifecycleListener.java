@@ -29,7 +29,7 @@ public interface LifecycleListener {
    * Called when the application starts.
    *
    * @throws LifecycleException
-   *           Whenever this listener is unable to start succesfully.
+   *           Whenever this listener is unable to start successfully.
    */
   public void onStart( LifeEventHandler handler ) throws LifecycleException;
 
