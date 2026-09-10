@@ -25,7 +25,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.owasp.encoder.Encode;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
-import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 
@@ -149,25 +148,21 @@ public class CleanupTransServlet extends BaseHttpServlet implements CartePluginI
 
     String transName = request.getParameter( "name" );
     String id = request.getParameter( "id" );
-    boolean useXML = "Y".equalsIgnoreCase( request.getParameter( "xml" ) );
+    boolean useXML = useXML( request );
     boolean onlySockets = "Y".equalsIgnoreCase( request.getParameter( "sockets" ) );
 
     response.setStatus( HttpServletResponse.SC_OK );
 
     PrintWriter out = response.getWriter();
-    if ( useXML ) {
-      response.setContentType( "text/xml" );
-      response.setCharacterEncoding( Const.XML_ENCODING );
-      out.print( XMLHandler.getXMLHeader( Const.XML_ENCODING ) );
-    } else {
-      response.setContentType( "text/html;charset=UTF-8" );
+    String encoding = contentTypeAndHeader( useXML, response, out, Const.XML_ENCODING );
+    if ( !useXML ) {
       out.println( "<HTML>" );
       out.println( "<HEAD>" );
       out.println( "<TITLE>Transformation cleanup</TITLE>" );
       out.println( "<META http-equiv=\"Refresh\" content=\"2;url="
         + convertContextPath( GetTransStatusServlet.CONTEXT_PATH ) + "?name="
         + URLEncoder.encode( transName, "UTF-8" ) + "\">" );
-      out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" );
+      out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=" + encoding + "\">" );
       out.println( "</HEAD>" );
       out.println( "<BODY>" );
     }
