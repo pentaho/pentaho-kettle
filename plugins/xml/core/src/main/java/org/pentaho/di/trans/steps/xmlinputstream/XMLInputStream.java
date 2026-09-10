@@ -591,7 +591,7 @@ public class XMLInputStream extends BaseStep implements StepInterface {
     data.elementLevel = 0;
     data.elementID = new Long( 0 ); // init value, could be parameterized later on
     data.elementLevelID = new Long[PARENT_ID_ALLOCATE_SIZE];
-    data.elementLevelID[0] = data.elementID; // inital id for level 0
+    data.elementLevelID[0] = data.elementID; // initial id for level 0
     data.elementParentID = new Long[PARENT_ID_ALLOCATE_SIZE];
     data.elementName = new String[PARENT_ID_ALLOCATE_SIZE];
     data.elementPath = new String[PARENT_ID_ALLOCATE_SIZE];

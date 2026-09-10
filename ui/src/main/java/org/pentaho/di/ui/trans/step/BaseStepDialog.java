@@ -1088,7 +1088,7 @@ public class BaseStepDialog extends Dialog {
    *
    * @param row             the input fields
    * @param tableView       the table view to modify
-   * @param keyColumn       the column in the table view to match with the names of the fields, checks for existance if
+   * @param keyColumn       the column in the table view to match with the names of the fields, checks for existence if
    *                        >0
    * @param nameColumn      the column numbers in which the name should end up in
    * @param dataTypeColumn  the target column numbers in which the data type should end up in
@@ -1110,7 +1110,7 @@ public class BaseStepDialog extends Dialog {
    *
    * @param row             the input fields
    * @param tableView       the table view to modify
-   * @param keyColumn       the column in the table view to match with the names of the fields, checks for existance if
+   * @param keyColumn       the column in the table view to match with the names of the fields, checks for existence if
    *                        >0
    * @param nameColumn      the column numbers in which the name should end up in
    * @param dataTypeColumn  the target column numbers in which the data type should end up in
@@ -1134,7 +1134,7 @@ public class BaseStepDialog extends Dialog {
    * @param row                           the input fields
    * @param tableView                     the table view to modify
    * @param keyColumn                     the column in the table view to match with the names of the fields, checks
-   *                                      for existance if >0
+   *                                      for existence if >0
    * @param nameColumn                    the column numbers in which the name should end up in
    * @param dataTypeColumn                the target column numbers in which the data type should end up in
    * @param lengthColumn                  the length column where the length should end up in (if >0)

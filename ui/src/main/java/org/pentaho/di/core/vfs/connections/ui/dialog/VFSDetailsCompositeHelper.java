@@ -173,7 +173,7 @@ public class VFSDetailsCompositeHelper {
   }
 
   /**
-   * This method places a centered title at the top of the composite recieved
+   * This method places a centered title at the top of the composite received
    *
    * @param composite    The composite holding the details
    * @param key          The key to the message file

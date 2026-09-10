@@ -1657,7 +1657,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     fdBadFileField.right = new FormAttachment( 100, 0 );
     wBadFileField.setLayoutData( fdBadFileField );
 
-    // field for file error messsage
+    // field for file error message
     wlBadFileMessageField = new Label( wErrorComp, SWT.RIGHT );
     wlBadFileMessageField.setText( BaseMessages.getString( PKG, "TextFileInputDialog.BadFileMessageField.Label" ) );
     props.setLook( wlBadFileMessageField );

@@ -414,7 +414,7 @@ public abstract class BaseStreamingDialog extends BaseStepDialog implements Step
       log.logError( "Failed to call extension point", e );
     }
 
-    // go back to inital tab
+    // go back to initial tab
     TabSet ts = spoonInstance.getTabSet();
     ts.setSelected( tabItem );
   }
