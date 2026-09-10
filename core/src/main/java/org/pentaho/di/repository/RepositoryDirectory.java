@@ -430,7 +430,7 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface {
    *
    * @param repdirnode
    *          The node in which the Repository directory information resides.
-   * @return True if all went well, false if an error occured.
+   * @return True if all went well, false if an error occurred.
    */
   public boolean loadXML( Node repdirnode ) {
     try {

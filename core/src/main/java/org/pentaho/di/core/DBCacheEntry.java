@@ -106,7 +106,7 @@ public class DBCacheEntry {
    *
    * @param dos
    *          The DataOutputStream to write this entry to.
-   * @return True if all went well, false if an error occured!
+   * @return True if all went well, false if an error occurred!
    */
   public boolean write( DataOutputStream dos ) {
     try {
