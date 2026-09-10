@@ -74,10 +74,10 @@ public class PGBulkLoaderHelper extends BaseStepHelper {
     String connectionName = queryParams.get( CONNECTION );
     String schema = transMeta.environmentSubstitute( queryParams.get( SCHEMA ) );
     String table = transMeta.environmentSubstitute( queryParams.get( TABLE ) );
+    String normalizedSchema = ( schema == null || schema.isBlank() ) ? null : schema;
 
-    if ( connectionName == null || connectionName.isBlank() || schema == null || schema.isBlank()
-        || table == null || table.isBlank() ) {
-      response.put( "error", "Missing or invalid parameters: connection, schema, or table." );
+    if ( connectionName == null || connectionName.isBlank() || table == null || table.isBlank() ) {
+      response.put( "error", "Missing or invalid parameters: connection or table." );
       return response;
     }
     try {
@@ -89,7 +89,8 @@ public class PGBulkLoaderHelper extends BaseStepHelper {
 
       try ( Database db = new Database( loggingObject, databaseMeta ) ) {
         db.connect();
-        RowMetaInterface rowMeta = db.getTableFieldsMeta( schema, table );
+        String schemaTable = databaseMeta.getQuotedSchemaTableCombination( normalizedSchema, table );
+        RowMetaInterface rowMeta = db.getTableFields( schemaTable );
 
         JSONArray columnsList = new JSONArray();
         if ( rowMeta != null ) {
