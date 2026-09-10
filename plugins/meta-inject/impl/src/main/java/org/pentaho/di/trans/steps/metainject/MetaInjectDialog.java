@@ -855,6 +855,19 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     return stepname + " : " + field;
   }
 
+  static List<StepMeta> getInjectableSteps( TransMeta injectTransMeta ) {
+    List<StepMeta> injectSteps = new ArrayList<>();
+    for ( StepMeta stepMeta : injectTransMeta.getUsedSteps() ) {
+      StepMetaInterface meta = stepMeta.getStepMetaInterface();
+      if ( meta.getStepMetaInjectionInterface() != null
+          || BeanInjectionInfo.isInjectionSupported( meta.getClass() ) ) {
+        injectSteps.add( stepMeta );
+      }
+    }
+    Collections.sort( injectSteps );
+    return injectSteps;
+  }
+
   private void refreshTree() {
     try {
       loadTransformation();
@@ -866,15 +879,7 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
       TreeItem transItem = new TreeItem( wTree, SWT.NONE );
       transItem.setExpanded( true );
       transItem.setText( injectTransMeta.getName() );
-      List<StepMeta> injectSteps = new ArrayList<>();
-      for ( StepMeta stepMeta : injectTransMeta.getUsedSteps() ) {
-        StepMetaInterface meta = stepMeta.getStepMetaInterface();
-        if ( meta.getStepMetaInjectionInterface() != null || BeanInjectionInfo
-          .isInjectionSupported( meta.getClass() ) ) {
-          injectSteps.add( stepMeta );
-        }
-      }
-      Collections.sort( injectSteps );
+      List<StepMeta> injectSteps = MetaInjectDialog.getInjectableSteps( injectTransMeta );
 
       for ( StepMeta stepMeta : injectSteps ) {
         TreeItem stepItem = new TreeItem( transItem, SWT.NONE );
