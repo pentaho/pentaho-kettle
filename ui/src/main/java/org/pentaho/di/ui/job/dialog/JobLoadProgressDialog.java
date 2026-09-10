@@ -114,10 +114,10 @@ public class JobLoadProgressDialog {
       if ( krle != null ) {
         throw krle;
       }
-      new ErrorDialog( shell, "Error loading job", "An error occured loading the job!", e );
+      new ErrorDialog( shell, "Error loading job", "An error occurred loading the job!", e );
       jobInfo = null;
     } catch ( InterruptedException e ) {
-      new ErrorDialog( shell, "Error loading job", "An error occured loading the job!", e );
+      new ErrorDialog( shell, "Error loading job", "An error occurred loading the job!", e );
       jobInfo = null;
     }
 
