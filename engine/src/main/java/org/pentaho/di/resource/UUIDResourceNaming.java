@@ -38,7 +38,7 @@ public class UUIDResourceNaming extends SimpleResourceNaming {
     // This implementation assumes that the name alone
     // will be insufficient to uniquely identify the
     // file. So, return a UUID which will be used
-    // to guarentee uniqueness.
+    // to guarantee uniqueness.
     //
     // The UUID will look something like this:
     // 03a32f25-1538-11dc-ae07-5dbf1395f3fd

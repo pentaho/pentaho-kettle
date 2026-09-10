@@ -977,14 +977,14 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
   }
 
   /**
-   * Set the number of occured errors to 0.
+   * Set the number of occurred errors to 0.
    */
   public void resetErrors() {
     errors.set( 0 );
   }
 
   /**
-   * Add a number of errors to the total number of erros that occured during execution.
+   * Add a number of errors to the total number of erros that occurred during execution.
    *
    * @param nrToAdd
    *          nr of errors to add.

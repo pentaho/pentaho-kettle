@@ -69,7 +69,7 @@ public class AreaOwner {
    * @param x
    * @param y
    * @param width
-   * @param heigth
+   * @param height
    * @param owner
    */
   public AreaOwner( AreaType areaType, int x, int y, int width, int heigth, Point offset, Object parent,
