@@ -51,7 +51,7 @@ public class KettleValidatorException extends KettleValueException {
    * Constructs a new Throwable with the specified detail message.
    *
    * @param Validator
-   *          - the instance of Validator that this object will reference use environmenSubsitute invokation. The class
+   *          - the instance of Validator that this object will reference use environmenSubsitute invocation. The class
    *          is probably where this object is being created.
    * @param validatorField
    *          - the Validation in which the failure happened and this exception is to be created for.

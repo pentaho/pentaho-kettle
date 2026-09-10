@@ -145,7 +145,7 @@ public final class WsdlOpParameter extends WsdlOpReturnType implements java.io.S
   }
 
   /**
-   * Is this paramter's name element form qualified?
+   * Is this parameter's name element form qualified?
    *
    * @return True if element form qualified.
    */

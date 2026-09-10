@@ -46,7 +46,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * This test simulates two avro file contents being sent as pdi input fields.  Each file contains two rows of data so
- * the processRow method should be successfull 4 times.  We check that all 4 rows are returned and that the fields
+ * the processRow method should be successful 4 times.  We check that all 4 rows are returned and that the fields
  * passed to pdi output are syncronized with the input row that corresponds to the avro content processed.
  *
  * @author tkafalas

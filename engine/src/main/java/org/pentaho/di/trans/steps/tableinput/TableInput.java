@@ -150,7 +150,7 @@ public class TableInput extends BaseDatabaseStep implements StepInterface {
             data.nextrow = data.db.getRow( data.rs, meta.isLazyConversionActive() );
           } catch ( KettleDatabaseException e ) {
             if ( e.getCause() instanceof SQLException && isStopped() ) {
-              //This exception indicates we tried reading a row after the statment for this step was cancelled
+              //This exception indicates we tried reading a row after the statement for this step was cancelled
               //this is expected and ok so do not pass the exception up
               logDebug( e.getMessage() );
               return false;

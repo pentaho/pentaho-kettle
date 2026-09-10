@@ -63,8 +63,8 @@ import org.w3c.dom.Node;
  *
  *        WANTED: Interconnected Dynamic Lookups --> http://www.datawarehouse.com/article/?articleId=5354
  *
- *        The idea is here to create a central 'dimension' cache process, seperated from the other Kettle processes.
- *        Kettle then connects over a socket to this daemon-like process to check wether a certain dimension entry is
+ *        The idea is here to create a central 'dimension' cache process, separated from the other Kettle processes.
+ *        Kettle then connects over a socket to this daemon-like process to check whether a certain dimension entry is
  *        present. Perhaps a more general caching service should be considered.
  *
  */
