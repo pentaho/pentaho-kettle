@@ -38,10 +38,14 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.row.RowMetaInterface;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import java.util.HashMap;
+import java.util.Map;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.columnsexist.JobEntryColumnsExist;
+import org.pentaho.di.job.entries.columnsexist.JobEntryColumnsExistHelper;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
@@ -66,6 +70,8 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEntryDialogInterface {
   private static Class<?> PKG = JobEntryColumnsExist.class; // for i18n purposes, needed by Translator2!!
+
+  private static final String SYSTEM_DIALOG_ERROR_TITLE = "System.Dialog.Error.Title";
 
   private Label wlName;
 
@@ -385,7 +391,7 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
     } else {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setMessage( BaseMessages.getString( PKG, "JobEntryColumnsExist.ConnectionError.DialogMessage" ) );
-      mb.setText( BaseMessages.getString( PKG, "System.Dialog.Error.Title" ) );
+      mb.setText( BaseMessages.getString( PKG, SYSTEM_DIALOG_ERROR_TITLE ) );
       mb.open();
     }
 
@@ -467,43 +473,48 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
   }
 
   /**
-   * Get a list of columns
+   * Get a list of columns by delegating to {@link JobEntryColumnsExistHelper}.
    */
-  private void getListColumns() {
+  void getListColumns() {
     if ( !Utils.isEmpty( wTablename.getText() ) ) {
-      DatabaseMeta databaseMeta = jobMeta.findDatabase( wConnection.getText() );
-      if ( databaseMeta != null ) {
-        Database database = new Database( loggingObject, databaseMeta );
-        database.shareVariablesWith( jobMeta );
-        try {
-          database.connect();
-          RowMetaInterface row =
-            database.getTableFieldsMeta(
-              jobMeta.environmentSubstitute( wSchemaname.getText() ),
-              jobMeta.environmentSubstitute( wTablename.getText() ) );
-          if ( row != null ) {
-            String[] available = row.getFieldNames();
+      JobEntryColumnsExistHelper helper = createColumnsExistHelper();
+      Map<String, String> params = new HashMap<>();
+      params.put( "connection", wConnection.getText() );
+      params.put( "schemaname", wSchemaname.getText() );
+      params.put( "tablename", wTablename.getText() );
 
-            wFields.removeAll();
-            for ( int i = 0; i < available.length; i++ ) {
-              wFields.add( available[i] );
-            }
-            wFields.removeEmptyRows();
-            wFields.setRowNums();
-          } else {
-            MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
-            mb.setMessage( BaseMessages.getString( PKG, "JobEntryColumnsExist.GetListColumsNoRow.DialogMessage" ) );
-            mb.setText( BaseMessages.getString( PKG, "System.Dialog.Error.Title" ) );
-            mb.open();
+      JSONObject result = helper.getTableColumns( jobMeta, params );
+
+      if ( !helper.isFailedResponse( result ) ) {
+        JSONArray columns = (JSONArray) result.get( "columns" );
+        if ( columns != null ) {
+          wFields.removeAll();
+          for ( Object col : columns ) {
+            wFields.add( col.toString() );
           }
-        } catch ( Exception e ) {
-          new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages
-            .getString( PKG, "JobEntryColumnsExist.ConnectionError2.DialogMessage", wTablename.getText() ), e );
-        } finally {
-          database.disconnect();
+          wFields.removeEmptyRows();
+          wFields.setRowNums();
+        } else {
+          showErrorDialog( BaseMessages.getString( PKG, "JobEntryColumnsExist.GetListColumsNoRow.DialogMessage" ) );
         }
+      } else {
+        String helperMsg = (String) result.get( "message" );
+        String displayMsg = helperMsg != null ? helperMsg
+          : BaseMessages.getString( PKG, "JobEntryColumnsExist.ConnectionError2.DialogMessage", wTablename.getText() );
+        showErrorDialog( displayMsg );
       }
     }
+  }
+
+  protected JobEntryColumnsExistHelper createColumnsExistHelper() {
+    return new JobEntryColumnsExistHelper();
+  }
+
+  protected void showErrorDialog( String message ) {
+    MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
+    mb.setText( BaseMessages.getString( PKG, SYSTEM_DIALOG_ERROR_TITLE ) );
+    mb.setMessage( message );
+    mb.open();
   }
 
   private void getSchemaNames() {
@@ -535,13 +546,10 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
           mb.open();
         }
       } catch ( Exception e ) {
-        new ErrorDialog( shell, BaseMessages.getString( PKG, "System.Dialog.Error.Title" ), BaseMessages
+        new ErrorDialog( shell, BaseMessages.getString( PKG, SYSTEM_DIALOG_ERROR_TITLE ), BaseMessages
           .getString( PKG, "System.Dialog.AvailableSchemas.ConnectionError" ), e );
       } finally {
-        if ( database != null ) {
-          database.disconnect();
-          database = null;
-        }
+        database.disconnect();
       }
     }
   }
