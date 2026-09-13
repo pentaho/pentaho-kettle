@@ -18,10 +18,10 @@ import java.io.IOException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 
-import com.healthmarketscience.jackcess.Database;
-import com.healthmarketscience.jackcess.DatabaseBuilder;
-import com.healthmarketscience.jackcess.Table;
-import com.healthmarketscience.jackcess.util.LinkResolver;
+import io.github.spannm.jackcess.Database;
+import io.github.spannm.jackcess.DatabaseBuilder;
+import io.github.spannm.jackcess.Table;
+import io.github.spannm.jackcess.util.LinkResolver;
 
 /**
  * Opens and creates Access databases with linked table resolution disabled.

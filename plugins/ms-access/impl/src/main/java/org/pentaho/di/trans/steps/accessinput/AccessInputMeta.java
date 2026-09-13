@@ -60,8 +60,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-import com.healthmarketscience.jackcess.Column;
-import com.healthmarketscience.jackcess.DataType;
+import io.github.spannm.jackcess.Column;
+import io.github.spannm.jackcess.DataType;
 
 @Step( id = "AccessInput", name = "BaseStep.TypeLongDesc.AccessInput",
        description = "BaseStep.TypeTooltipDesc.AccessInput",
