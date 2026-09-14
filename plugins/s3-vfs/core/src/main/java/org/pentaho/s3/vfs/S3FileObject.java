@@ -82,6 +82,15 @@ public class S3FileObject extends S3CommonFileObject {
   }
 
   private boolean bucketExists( String bucket ) {
+    // Cache the result briefly (see S3CommonFileSystem#isBucketExists) since this is invoked on virtually
+    // every VFS operation (isRootBucket(), getS3Object(), doDelete(), etc. all go through fixFilePath()),
+    // and bucket existence effectively never changes during a single listing/traversal operation. Without
+    // this cache, every file attached during e.g. a folder listing would trigger its own live
+    // doesBucketExistV2() network round-trip.
+    return fileSystem.isBucketExists( bucket, this::checkBucketExists );
+  }
+
+  private boolean checkBucketExists( String bucket ) {
     boolean bucketExists = false;
     try {
       bucketExists = fileSystem.getS3Client().doesBucketExistV2( bucket );
