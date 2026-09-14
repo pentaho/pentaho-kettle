@@ -42,7 +42,6 @@
     <ibmmq.version>9.4.0.0</ibmmq.version>
     <jms.version>2.0.1</jms.version>
     <pdi.version>11.0.0.0-SNAPSHOT</pdi.version>
-    <artemis.version>2.33.0</artemis.version>
     <artemis.version>2.57.0</artemis.version>
   </properties>
 
