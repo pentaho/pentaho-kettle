@@ -459,10 +459,10 @@
       <method>none</method>
       <schema_name/>
     </partitioning>
-    <wsURL>http&#x3a;&#x2f;&#x2f;www.weather.gov&#x2f;forecasts&#x2f;xml&#x2f;DWMLgen&#x2f;wsdl&#x2f;ndfdXML.wsdl</wsURL>
+    <wsURL>https://digital.weather.gov/xml/wsdl/ndfdXML.wsdl</wsURL>
     <wsOperation>LatLonListZipCode</wsOperation>
     <wsOperationRequest/>
-    <wsOperationNamespace>http&#x3a;&#x2f;&#x2f;www.weather.gov&#x2f;forecasts&#x2f;xml&#x2f;DWMLgen&#x2f;wsdl&#x2f;ndfdXML.wsdl</wsOperationNamespace>
+    <wsOperationNamespace>https://digital.weather.gov/xml/wsdl/ndfdXML.wsdl</wsOperationNamespace>
     <wsInFieldContainer/>
     <wsInFieldArgument/>
     <wsOutFieldContainer>listLatLonOut</wsOutFieldContainer>
@@ -477,19 +477,30 @@
     <repeating_element/>
     <reply_as_string>N</reply_as_string>
     <fieldsIn>
-    <field>
+      <field>
         <name>zipCode</name>
         <wsName>zipCodeList</wsName>
         <xsdType>zipCodeListType</xsdType>
-    </field>
-      </fieldsIn>
+      </field>
+      <field>
+        <name>xmlFormat</name>
+        <wsName>XMLformat</wsName>
+        <xsdType>string</xsdType>
+      </field>
+      <field>
+        <name>listType</name>
+        <wsName>listType</wsName>
+        <xsdType>string</xsdType>
+      </field>
+    </fieldsIn>
     <fieldsOut>
-    <field>
+      <field>
         <name>listLatLonOut</name>
         <wsName>listLatLonOut</wsName>
         <xsdType>listLatLonType</xsdType>
-    </field>
-      </fieldsOut>
+      </field>
+    </fieldsOut>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -528,12 +539,37 @@
         <precision>-1</precision>
         <set_empty_string>N</set_empty_string>
       </field>
+      <field>
+        <name>xmlFormat</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>DWML</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>N</set_empty_string>
+      </field>
+      <field>
+        <name>listType</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <set_empty_string>Y</set_empty_string>
+      </field>
     </fields>
     <limit>1</limit>
     <never_ending>N</never_ending>
     <interval_in_ms/>
     <row_time_field/>
     <last_time_field/>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -606,6 +642,7 @@
         <precision>-1</precision>
       </field>
     </fields>
+    <attributes/>
     <cluster_schema/>
     <remotesteps>
       <input>
@@ -625,4 +662,5 @@
   <slave-step-copy-partition-distribution>
   </slave-step-copy-partition-distribution>
   <slave_transformation>N</slave_transformation>
+  <attributes/>
 </transformation>
