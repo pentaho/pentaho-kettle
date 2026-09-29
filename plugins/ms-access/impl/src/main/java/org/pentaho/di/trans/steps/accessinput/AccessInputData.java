@@ -26,8 +26,8 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
-import com.healthmarketscience.jackcess.Database;
-import com.healthmarketscience.jackcess.Table;
+import io.github.spannm.jackcess.Database;
+import io.github.spannm.jackcess.Table;
 
 /**
  * @author Samatar Hassan

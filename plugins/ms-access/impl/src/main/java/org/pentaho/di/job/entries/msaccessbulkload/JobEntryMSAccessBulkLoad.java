@@ -50,9 +50,9 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-import com.healthmarketscience.jackcess.Database;
-import com.healthmarketscience.jackcess.DatabaseBuilder;
-import com.healthmarketscience.jackcess.util.ImportUtil;
+import io.github.spannm.jackcess.Database;
+import io.github.spannm.jackcess.DatabaseBuilder;
+import io.github.spannm.jackcess.util.ImportUtil;
 
 /**
  * This defines a 'MS Access Bulk Load' job entry. It will compare to load data from files into Microsoft Access files
