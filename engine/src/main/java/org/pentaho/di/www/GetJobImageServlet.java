@@ -139,7 +139,7 @@ public class GetJobImageServlet extends BaseHttpServlet implements CartePluginIn
     String jobName = request.getParameter( "name" );
     String id = request.getParameter( "id" );
 
-    boolean useXML = "Y".equalsIgnoreCase( request.getParameter( "xml" ) );
+    boolean useXML = useXML( request );
 
     // ID is optional...
     //
@@ -184,6 +184,7 @@ public class GetJobImageServlet extends BaseHttpServlet implements CartePluginIn
     PrintWriter out;
     try {
       out = response.getWriter();
+      contentTypeAndHeader( useXML, response, out, null );
       if ( useXML ) {
         out.println( new WebResult( WebResult.STRING_ERROR, message ) );
       } else {
@@ -226,6 +227,7 @@ public class GetJobImageServlet extends BaseHttpServlet implements CartePluginIn
     PrintWriter out;
     try {
       out = response.getWriter();
+      contentTypeAndHeader( useXML, response, out, null );
       if ( useXML ) {
         out.println( new WebResult( WebResult.STRING_ERROR, message ) );
       } else {

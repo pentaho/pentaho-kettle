@@ -183,8 +183,7 @@ public class AddExportServlet extends BaseHttpServlet implements CartePluginInte
     boolean isJob = TYPE_JOB.equalsIgnoreCase( request.getParameter( PARAMETER_TYPE ) );
     String load = request.getParameter( PARAMETER_LOAD ); // the resource to load
 
-    response.setContentType( "text/xml" );
-    out.print( XMLHandler.getXMLHeader() );
+    contentTypeAndHeader( true, response, out, null );
 
     response.setStatus( HttpServletResponse.SC_OK );
 

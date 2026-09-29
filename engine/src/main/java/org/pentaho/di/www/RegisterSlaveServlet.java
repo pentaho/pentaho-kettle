@@ -122,8 +122,7 @@ if an error occurred. Response has <code>result</code> OK if there were no error
 
     // We always use XML to reply here...
     //
-    response.setContentType( "text/xml" );
-    out.print( XMLHandler.getXMLHeader() );
+    contentTypeAndHeader( true, response, out, Const.XML_ENCODING );
     response.setStatus( HttpServletResponse.SC_OK );
 
     try {
