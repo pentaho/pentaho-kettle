@@ -17,6 +17,7 @@ package org.pentaho.di.ui.util;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -26,10 +27,15 @@ import static org.pentaho.di.ui.util.DialogUtils.objectWithTheSameNameExists;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
 import org.junit.Test;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
+import org.pentaho.di.shared.DatabaseManagementInterface;
 import org.pentaho.di.shared.SharedObjectInterface;
+import org.pentaho.di.ui.spoon.Spoon;
 
 /**
  * @author Andrey Khayrutdinov
@@ -124,6 +130,90 @@ public class DialogUtilsTest {
 
     String newPath = DialogUtils.getPath( parentPath, path );
     assertEquals( "${Internal.Entry.Current.Directory}/path/to/file", newPath );
+  }
+
+  @Test
+  public void resolveContainingDatabaseManager_prefersSpoonLocalManager() throws KettleException {
+    DatabaseManagementInterface spoonLocal = mock( DatabaseManagementInterface.class );
+    DatabaseManagementInterface spoonGlobal = mock( DatabaseManagementInterface.class );
+    DatabaseManagementInterface localDbMgr = mock( DatabaseManagementInterface.class );
+
+    when( spoonLocal.get( "conn" ) ).thenReturn( mock( DatabaseMeta.class ) );
+    when( spoonGlobal.get( "conn" ) ).thenReturn( mock( DatabaseMeta.class ) );
+    when( localDbMgr.get( "conn" ) ).thenReturn( mock( DatabaseMeta.class ) );
+
+    DatabaseManagementInterface result = DialogUtils.resolveContainingDatabaseManager(
+      mockSpoon( spoonLocal, spoonGlobal ), localDbMgr, "conn" );
+
+    assertSame( spoonLocal, result );
+  }
+
+  @Test
+  public void resolveContainingDatabaseManager_fallsBackToSpoonGlobalManager() throws KettleException {
+    DatabaseManagementInterface spoonLocal = mock( DatabaseManagementInterface.class );
+    DatabaseManagementInterface spoonGlobal = mock( DatabaseManagementInterface.class );
+    DatabaseManagementInterface localDbMgr = mock( DatabaseManagementInterface.class );
+
+    when( spoonLocal.get( "conn" ) ).thenReturn( null );
+    when( spoonGlobal.get( "conn" ) ).thenReturn( mock( DatabaseMeta.class ) );
+    when( localDbMgr.get( "conn" ) ).thenReturn( mock( DatabaseMeta.class ) );
+
+    DatabaseManagementInterface result = DialogUtils.resolveContainingDatabaseManager(
+      mockSpoon( spoonLocal, spoonGlobal ), localDbMgr, "conn" );
+
+    assertSame( spoonGlobal, result );
+  }
+
+  @Test
+  public void resolveContainingDatabaseManager_fallsBackToLocalManager() throws KettleException {
+    DatabaseManagementInterface spoonLocal = mock( DatabaseManagementInterface.class );
+    DatabaseManagementInterface spoonGlobal = mock( DatabaseManagementInterface.class );
+    DatabaseManagementInterface localDbMgr = mock( DatabaseManagementInterface.class );
+
+    when( spoonLocal.get( "conn" ) ).thenReturn( null );
+    when( spoonGlobal.get( "conn" ) ).thenReturn( null );
+    when( localDbMgr.get( "conn" ) ).thenReturn( mock( DatabaseMeta.class ) );
+
+    DatabaseManagementInterface result = DialogUtils.resolveContainingDatabaseManager(
+      mockSpoon( spoonLocal, spoonGlobal ), localDbMgr, "conn" );
+
+    assertSame( localDbMgr, result );
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void resolveContainingDatabaseManager_throwsWhenConnectionMissingEverywhere() throws KettleException {
+    DatabaseManagementInterface spoonLocal = mock( DatabaseManagementInterface.class );
+    DatabaseManagementInterface spoonGlobal = mock( DatabaseManagementInterface.class );
+    DatabaseManagementInterface localDbMgr = mock( DatabaseManagementInterface.class );
+
+    when( spoonLocal.get( "missing" ) ).thenReturn( null );
+    when( spoonGlobal.get( "missing" ) ).thenReturn( null );
+    when( localDbMgr.get( "missing" ) ).thenReturn( null );
+
+    DialogUtils.resolveContainingDatabaseManager( mockSpoon( spoonLocal, spoonGlobal ), localDbMgr, "missing" );
+  }
+
+  @Test( expected = NullPointerException.class )
+  public void resolveContainingDatabaseManager_throwsWhenOriginalNameIsNull() throws KettleException {
+    DatabaseManagementInterface spoonLocal = mock( DatabaseManagementInterface.class );
+    DatabaseManagementInterface spoonGlobal = mock( DatabaseManagementInterface.class );
+    DatabaseManagementInterface localDbMgr = mock( DatabaseManagementInterface.class );
+
+    DialogUtils.resolveContainingDatabaseManager( mockSpoon( spoonLocal, spoonGlobal ), localDbMgr, null );
+  }
+
+  private Spoon mockSpoon( DatabaseManagementInterface spoonLocal,
+                           DatabaseManagementInterface spoonGlobal ) throws KettleException {
+    Spoon spoon = mock( Spoon.class );
+    Bowl managementBowl = mock( Bowl.class );
+    Bowl globalBowl = mock( Bowl.class );
+
+    when( spoon.getManagementBowl() ).thenReturn( managementBowl );
+    when( spoon.getGlobalManagementBowl() ).thenReturn( globalBowl );
+    when( managementBowl.getManager( DatabaseManagementInterface.class ) ).thenReturn( spoonLocal );
+    when( globalBowl.getManager( DatabaseManagementInterface.class ) ).thenReturn( spoonGlobal );
+
+    return spoon;
   }
 
 }
