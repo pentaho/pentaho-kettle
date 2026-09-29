@@ -16,6 +16,7 @@ package org.pentaho.s3.vfs;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,6 +41,7 @@ import org.pentaho.di.core.util.StorageUnitConverter;
 import org.pentaho.s3common.S3KettleProperty;
 import org.pentaho.s3common.TestCleanupUtil;
 
+import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.Bucket;
@@ -55,12 +57,15 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -115,6 +120,8 @@ public class S3FileObjectTest {
     S3FileName rootFileName = new S3FileName( SCHEME, BUCKET_NAME, "", FileType.FOLDER );
     S3KettleProperty s3KettleProperty  = mock( S3KettleProperty.class );
     when( s3KettleProperty.getPartSize() ).thenReturn( "5MB" );
+    when( s3KettleProperty.getCacheTtlSeconds() ).thenReturn( S3KettleProperty.S3VFS_CACHE_TTL_SECONDS_DEFAULT );
+    when( s3KettleProperty.isCacheEnabled() ).thenReturn( S3KettleProperty.S3VFS_CACHE_ENABLED_DEFAULT );
     fileSystem =
         new S3FileSystem( rootFileName, new FileSystemOptions(), new StorageUnitConverter(), s3KettleProperty ) {
           @Override
@@ -286,6 +293,102 @@ public class S3FileObjectTest {
     assertEquals( childBucketNameListComp, childNameArray );
   }
 
+  @Test
+  public void testDoAttachReusesListingMetadataWithoutExtraS3Calls() throws Exception {
+    fileSystem.init();
+
+    // Simulate what "Get File Names" sees when listing a flat S3 folder: a single file, with its
+    // size already returned by the listing, no truncation/subfolders.
+    ObjectListing singleFileListing = mock( ObjectListing.class );
+    S3ObjectSummary summary = new S3ObjectSummary();
+    summary.setBucketName( BUCKET_NAME );
+    summary.setKey( "cachedFile.txt" );
+    summary.setSize( 12345L );
+    when( singleFileListing.getObjectSummaries() ).thenReturn( Collections.singletonList( summary ) );
+    when( singleFileListing.getCommonPrefixes() ).thenReturn( Collections.emptyList() );
+    when( singleFileListing.isTruncated() ).thenReturn( false );
+    when( s3ServiceMock.listObjects( any( ListObjectsRequest.class ) ) ).thenReturn( singleFileListing );
+
+    // Listing the bucket's children must cache "cachedFile.txt"'s metadata.
+    s3FileObjectBucketSpy.getChildren();
+
+    // Resolving/attaching that same child right afterwards, as Commons-VFS traversal does, must
+    // reuse the cached metadata instead of issuing a redundant getObjectMetadata request.
+    S3FileObject cachedChild = new S3FileObject(
+      new S3FileName( SCHEME, BUCKET_NAME, BUCKET_NAME + "/cachedFile.txt", FileType.IMAGINARY ), fileSystem );
+    cachedChild.doAttach();
+
+    assertEquals( FileType.FILE, cachedChild.getType() );
+    assertEquals( 12345L, cachedChild.getContent().getSize() );
+    verify( s3ServiceMock, never() ).getObjectMetadata( BUCKET_NAME, "cachedFile.txt" );
+  }
+
+  @Test
+  public void testDoAttachReusesCachedFolderMetadataFromListingWithoutExtraS3Calls() throws Exception {
+    fileSystem.init();
+
+    // Simulate a listing where a subfolder is only known via a common prefix (no zero-byte
+    // marker object), exactly like a "virtual folder" inferred from object keys.
+    ObjectListing folderListing = mock( ObjectListing.class );
+    when( folderListing.getObjectSummaries() ).thenReturn( Collections.emptyList() );
+    when( folderListing.getCommonPrefixes() ).thenReturn( Collections.singletonList( "cachedFolder/" ) );
+    when( folderListing.isTruncated() ).thenReturn( false );
+    when( s3ServiceMock.listObjects( any( ListObjectsRequest.class ) ) ).thenReturn( folderListing );
+
+    // Listing the bucket's children must cache "cachedFolder/" as a folder.
+    s3FileObjectBucketSpy.getChildren();
+
+    // Resolving/attaching that same child right afterwards, as Commons-VFS traversal does, must
+    // reuse the cached folder marker instead of issuing any redundant S3 calls.
+    S3FileObject cachedFolderChild = new S3FileObject(
+      new S3FileName( SCHEME, BUCKET_NAME, BUCKET_NAME + "/cachedFolder", FileType.IMAGINARY ), fileSystem );
+    cachedFolderChild.doAttach();
+
+    assertEquals( FileType.FOLDER, cachedFolderChild.getType() );
+    verify( s3ServiceMock, never() ).getObjectMetadata( BUCKET_NAME, "cachedFolder" );
+    verify( s3ServiceMock, never() ).getObject( BUCKET_NAME, "cachedFolder/" );
+    // Only the one listing call (from getChildren()) should have happened; the cache hit must not
+    // trigger any additional listObjects fallback call.
+    verify( s3ServiceMock, org.mockito.Mockito.times( 1 ) ).listObjects( any( ListObjectsRequest.class ) );
+  }
+
+  @Test
+  public void testGetChildrenDoesNotCacheFolderSelfMarkerAsFile() throws Exception {
+    fileSystem.init();
+
+    String testKey = BUCKET_NAME + "/" + origKey;
+    String testBucket = "badBucketName";
+    AmazonS3Exception exception = new AmazonS3Exception( "NoSuchKey" );
+
+    // Attach the folder itself first (mirrors testHandleAttachException), so its key ends up as
+    // "some/key/" -- the exact realKey used when it is later listed.
+    when( s3ServiceMock.getObject( BUCKET_NAME, origKey + "/" ) ).thenThrow( exception );
+    s3FileObjectFileSpy.handleAttachException( testKey, testBucket );
+    assertEquals( FileType.FOLDER, s3FileObjectFileSpy.getType() );
+
+    // Simulate a listing of that folder that includes its own self-referencing marker object
+    // (key == realKey) alongside one real child file.
+    String selfKey = origKey + "/";
+    S3ObjectSummary selfSummary = new S3ObjectSummary();
+    selfSummary.setBucketName( BUCKET_NAME );
+    selfSummary.setKey( selfKey );
+    S3ObjectSummary childSummary = new S3ObjectSummary();
+    childSummary.setBucketName( BUCKET_NAME );
+    childSummary.setKey( selfKey + "child.txt" );
+
+    ObjectListing selfMarkerListing = mock( ObjectListing.class );
+    when( selfMarkerListing.getObjectSummaries() ).thenReturn( Arrays.asList( selfSummary, childSummary ) );
+    when( selfMarkerListing.getCommonPrefixes() ).thenReturn( Collections.emptyList() );
+    when( selfMarkerListing.isTruncated() ).thenReturn( false );
+    when( s3ServiceMock.listObjects( any( ListObjectsRequest.class ) ) ).thenReturn( selfMarkerListing );
+
+    s3FileObjectFileSpy.getChildren();
+
+    assertNull( "the folder's own self-marker entry must not be cached as a FILE",
+      fileSystem.getCachedFileMetadata( BUCKET_NAME, selfKey ) );
+    assertNotNull( "the real child file must still be cached",
+      fileSystem.getCachedFileMetadata( BUCKET_NAME, selfKey + "child.txt" ) );
+  }
 
   @Test
   public void testFixFilePathToFile() {
@@ -303,6 +406,61 @@ public class S3FileObjectTest {
     SimpleEntry<String, String> newPath = s3FileObjectBucketSpy.fixFilePath( key, bucketName );
     assertEquals( "bucketName", newPath.getValue() );
     assertEquals( "", newPath.getKey() );
+  }
+
+  @Test
+  public void testBucketExistsCheckIsCachedAcrossCalls() {
+    // fixFilePath() (and therefore its underlying doesBucketExistV2() check) is invoked on virtually
+    // every VFS operation (isRootBucket(), getS3Object(), doDelete(), etc.). Bucket existence effectively
+    // never changes during a single listing/traversal operation, so the underlying AmazonS3 call must only
+    // be made once per bucket (per S3CommonFileSystem#isBucketExists TTL window), not once per invocation -
+    // otherwise every file attached during a folder listing would trigger its own live network round-trip.
+    for ( int i = 0; i < 5; i++ ) {
+      s3FileObjectBucketSpy.fixFilePath( origKey, BUCKET_NAME );
+    }
+    verify( s3ServiceMock, times( 1 ) ).doesBucketExistV2( BUCKET_NAME );
+  }
+
+  @Test
+  public void testBucketExistsCheckIsCachedPerBucket() {
+    String otherBucketName = "otherBucket";
+    when( s3ServiceMock.doesBucketExistV2( otherBucketName ) ).thenReturn( true );
+
+    s3FileObjectBucketSpy.fixFilePath( origKey, BUCKET_NAME );
+    s3FileObjectBucketSpy.fixFilePath( origKey, otherBucketName );
+    s3FileObjectBucketSpy.fixFilePath( origKey, BUCKET_NAME );
+    s3FileObjectBucketSpy.fixFilePath( origKey, otherBucketName );
+
+    verify( s3ServiceMock, times( 1 ) ).doesBucketExistV2( BUCKET_NAME );
+    verify( s3ServiceMock, times( 1 ) ).doesBucketExistV2( otherBucketName );
+  }
+
+  @Test
+  public void testBucketExistsReturnsFalseWhenClientThrowsSdkClientException() {
+    // If the AWS client can't be reached at all (e.g. network failure) doesBucketExistV2() throws
+    // SdkClientException rather than returning a value. This must be treated as "bucket doesn't exist"
+    // (falling through to the legacy-path-compatibility handling in fixFilePath()) rather than blowing up
+    // the whole VFS operation.
+    String unreachableBucket = "unreachableBucket";
+    when( s3ServiceMock.doesBucketExistV2( unreachableBucket ) ).thenThrow( new SdkClientException( "boom" ) );
+
+    SimpleEntry<String, String> newPath = s3FileObjectBucketSpy.fixFilePath( "some/key", unreachableBucket );
+
+    assertEquals( "some", newPath.getValue() );
+    assertEquals( "key", newPath.getKey() );
+  }
+
+  @Test
+  public void testBucketExistsSdkClientExceptionResultIsAlsoCached() {
+    // The false result produced by a failed check must be cached too, otherwise every single
+    // operation against an unreachable/misconfigured bucket would retry the live network call.
+    String unreachableBucket = "unreachableBucket";
+    when( s3ServiceMock.doesBucketExistV2( unreachableBucket ) ).thenThrow( new SdkClientException( "boom" ) );
+
+    s3FileObjectBucketSpy.fixFilePath( "some/key", unreachableBucket );
+    s3FileObjectBucketSpy.fixFilePath( "some/key", unreachableBucket );
+
+    verify( s3ServiceMock, times( 1 ) ).doesBucketExistV2( unreachableBucket );
   }
 
   @Test

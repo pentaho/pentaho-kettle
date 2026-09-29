@@ -122,9 +122,7 @@ public abstract class S3CommonFileObject extends AbstractFileObject<S3CommonFile
     if ( getType() == FileType.FOLDER || isRootBucket() ) {
       childrenList = getS3ObjectsFromVirtualFolder( key, bucketName );
     }
-    String[] childrenArr = new String[ childrenList.size() ];
-
-    return childrenList.toArray( childrenArr );
+    return childrenList.toArray( new String[ childrenList.size() ] );
   }
 
   protected String getS3BucketName() {
@@ -182,11 +180,18 @@ public abstract class S3CommonFileObject extends AbstractFileObject<S3CommonFile
 
     for ( S3ObjectSummary s3os : allSummaries ) {
       if ( !s3os.getKey().equals( realKey ) ) {
+        // Cache the metadata this listing already returned for each file, so that resolving/attaching it right
+        // afterward (as Commons-VFS traversal does) can reuse it instead of issuing a redundant per-file
+        // getObjectMetadata request. The self-referencing summary (matching realKey, representing this folder
+        // itself) is intentionally not cached here, since it must remain a FOLDER, not a FILE.
+        fileSystem.cacheListedFile( bucketName, s3os );
         childrenList.add( s3os.getKey().substring( prefix.length() ) );
       }
     }
 
     for ( String commonPrefix : allCommonPrefixes ) {
+      fileSystem.cacheListedFolder( bucketName, commonPrefix );
+
       if ( !commonPrefix.equals( realKey ) ) {
         childrenList.add( commonPrefix.substring( prefix.length() ) );
       }
@@ -223,7 +228,10 @@ public abstract class S3CommonFileObject extends AbstractFileObject<S3CommonFile
   @Override
   @SuppressWarnings( "java:S2139" ) // Logging for traceability while allowing the exception to propagate normally
   public void doAttach() throws Exception {
-    logger.trace( "Attach called on {}", getQualifiedName() );
+    if ( logger.isTraceEnabled() ) {
+      logger.trace( "Attach called on {}", getQualifiedName() );
+    }
+
     injectType( FileType.IMAGINARY );
 
     if ( isRootBucket() ) {
@@ -247,6 +255,33 @@ public abstract class S3CommonFileObject extends AbstractFileObject<S3CommonFile
       }
 
       injectType( FileType.FOLDER );
+      return;
+    }
+
+    // If this file/folder was already returned by a recent listing of its parent (e.g. Commons-VFS
+    // resolving/attaching each child right after doListChildren(), as "Get File Names" does), reuse that metadata
+    // instead of issuing a redundant per-file getObjectMetadata/listObjects call.
+    ObjectMetadata cachedFileMetadata = fileSystem.getCachedFileMetadata( bucketName, key );
+
+    if ( cachedFileMetadata != null ) {
+      if ( logger.isTraceEnabled() ) {
+        logger.trace( "Using cached listing metadata for {}", getQualifiedName() );
+      }
+
+      s3ObjectMetadata = cachedFileMetadata;
+      injectType( FileType.FILE );
+      return;
+    }
+
+    String keyWithDelimiter = key + DELIMITER;
+
+    if ( fileSystem.isCachedFolder( bucketName, keyWithDelimiter ) ) {
+      if ( logger.isTraceEnabled() ) {
+        logger.trace( "Using cached listing metadata (folder) for {}", getQualifiedName() );
+      }
+
+      injectType( FileType.FOLDER );
+      this.key = keyWithDelimiter;
       return;
     }
 
