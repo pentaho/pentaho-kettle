@@ -42,7 +42,7 @@
     <ibmmq.version>9.4.0.0</ibmmq.version>
     <jms.version>2.0.1</jms.version>
     <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
-    <artemis.version>2.33.0</artemis.version>
+    <artemis.version>2.57.0</artemis.version>
   </properties>
 
   <dependencies>
@@ -83,7 +83,7 @@
     </dependency>
 
     <dependency>
-      <groupId>org.apache.activemq</groupId>
+      <groupId>org.apache.artemis</groupId>
       <artifactId>artemis-jms-client-osgi</artifactId>
       <version>${artemis.version}</version>
       <exclusions>
@@ -195,7 +195,7 @@
     </dependency>
 
     <dependency>
-      <groupId>org.apache.activemq</groupId>
+      <groupId>org.apache.artemis</groupId>
       <artifactId>artemis-junit</artifactId>
       <version>${artemis.version}</version>
       <scope>test</scope>
