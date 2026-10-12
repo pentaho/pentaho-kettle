@@ -15,6 +15,7 @@
 
 package org.pentaho.di.repository.pur;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Condition;
@@ -2328,70 +2329,116 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
     readWriteLock.writeLock().lock();
     try {
-      // Even if the object id is null, we still have to check if the element is not present in the PUR
-      // For example, if we import data from an XML file and there is a element with the same name in it.
-      //
-      if ( element.getObjectId() == null ) {
-        element.setObjectId( getDatabaseID( element.getName() ) );
-      }
+      ensureDatabaseObjectId( element );
 
-      boolean isUpdate = element.getObjectId() != null;
-      RepositoryFile file = null;
-      if ( isUpdate ) {
-        file = pur.getFileById( element.getObjectId().getId() );
-
-        // update title
-        final String title = ( (DatabaseMeta) element ).getDisplayName();
-        Date modifiedDate = null;
-        if ( versionDate != null && versionDate.getTime() != null ) {
-          modifiedDate = versionDate.getTime();
-        } else {
-          modifiedDate = new Date();
-        }
-        file = new RepositoryFile.Builder( file ).title( RepositoryFile.DEFAULT_LOCALE, title )
-          .lastModificationDate( modifiedDate ).build();
-        renameIfNecessary( element, file );
-
-        file =
-          pur.updateFile( file, new NodeRepositoryFileData( databaseMetaTransformer.elementToDataNode( element ) ),
-            versionComment );
-
+      RepositoryFile file;
+      if ( element.getObjectId() != null ) {
+        file = updateDatabaseMetaFile( element, versionComment, versionDate );
       } else {
-        Date createdDate = null;
-        if ( versionDate != null && versionDate.getTime() != null ) {
-          createdDate = versionDate.getTime();
-        } else {
-          createdDate = new Date();
-        }
-
-        file =
-          new RepositoryFile.Builder(
-            checkAndSanitize( RepositoryFilenameUtils.escape( element.getName(), pur.getReservedChars() )
-              + RepositoryObjectType.DATABASE.getExtension() ) ).title( RepositoryFile.DEFAULT_LOCALE,
-            element.getName() ).createdDate( createdDate ).versioned( VERSION_SHARED_OBJECTS ).build();
-
-        file =
-          pur.createFile( getDatabaseMetaParentFolderId(), file,
-            new NodeRepositoryFileData( databaseMetaTransformer.elementToDataNode( element ) ), versionComment );
+        file = createDatabaseMetaFile( element, versionComment, versionDate );
       }
-      // side effects
-      ObjectId objectId = new StringObjectId( file.getId().toString() );
-      element.setObjectId( objectId );
-      element.setObjectRevision( getObjectRevision( objectId, null ) );
-      if ( element instanceof ChangedFlagInterface ) {
-        ( (ChangedFlagInterface) element ).clearChanged();
-      }
-      updateSharedObjectCache( element );
+
+      applyDatabaseMetaSaveSideEffects( element, file );
     } catch ( Exception e ) {
-      // determine if there is an "access denied" issue and throw a nicer error message.
-      if ( e.getMessage().indexOf( "access denied" ) >= 0 ) {
-        throw new KettleException(
-          BaseMessages.getString( PKG, "PurRepository.ERROR_0004_DATABASE_UPDATE_ACCESS_DENIED", element.getName() ),
-          e );
-      }
+      throw toDatabaseSaveException( element, e );
     } finally {
       readWriteLock.writeLock().unlock();
     }
+  }
+
+  private void ensureDatabaseObjectId( RepositoryElementInterface element ) throws KettleException {
+    // Even if the object id is null, we still have to check if the element is not present in the PUR.
+    // For example, if we import data from an XML file and there is an element with the same name in it.
+    if ( element.getObjectId() == null ) {
+      element.setObjectId( getDatabaseID( element.getName() ) );
+    }
+  }
+
+  @VisibleForTesting
+  RepositoryFile updateDatabaseMetaFile( RepositoryElementInterface element, String versionComment,
+                                         Calendar versionDate ) throws KettleException {
+    try {
+      RepositoryFile existingFile = pur.getFileById( element.getObjectId().getId() );
+      String title = ( (DatabaseMeta) element ).getDisplayName();
+      Date modifiedDate = resolveVersionDate( versionDate );
+
+      RepositoryFile fileToUpdate = new RepositoryFile.Builder( existingFile )
+        .title( RepositoryFile.DEFAULT_LOCALE, title )
+        .lastModificationDate( modifiedDate )
+        .build();
+
+      renameIfNecessary( element, fileToUpdate );
+
+      return pur.updateFile( fileToUpdate,
+        new NodeRepositoryFileData( databaseMetaTransformer.elementToDataNode( element ) ), versionComment );
+    } catch ( Exception e ) {
+      throw toDatabaseSaveException( element, e );
+    }
+  }
+
+  @VisibleForTesting
+  RepositoryFile createDatabaseMetaFile( RepositoryElementInterface element, String versionComment,
+                                         Calendar versionDate ) throws KettleException {
+    try {
+      Date createdDate = resolveVersionDate( versionDate );
+
+      RepositoryFile file = new RepositoryFile.Builder(
+        checkAndSanitize( RepositoryFilenameUtils.escape( element.getName(), pur.getReservedChars() )
+          + RepositoryObjectType.DATABASE.getExtension() ) )
+        .title( RepositoryFile.DEFAULT_LOCALE, element.getName() )
+        .createdDate( createdDate )
+        .versioned( VERSION_SHARED_OBJECTS )
+        .build();
+
+      return pur.createFile( getDatabaseMetaParentFolderId(), file,
+        new NodeRepositoryFileData( databaseMetaTransformer.elementToDataNode( element ) ), versionComment );
+    } catch ( Exception e ) {
+      throw toDatabaseSaveException( element, e );
+    }
+  }
+
+  @VisibleForTesting
+  Date resolveVersionDate( Calendar versionDate ) {
+    if ( versionDate != null && versionDate.getTime() != null ) {
+      return versionDate.getTime();
+    }
+    return new Date();
+  }
+
+  private void applyDatabaseMetaSaveSideEffects( RepositoryElementInterface element, RepositoryFile file )
+    throws KettleException {
+    ObjectId objectId = new StringObjectId( file.getId().toString() );
+    element.setObjectId( objectId );
+    element.setObjectRevision( getObjectRevision( objectId, null ) );
+    if ( element instanceof ChangedFlagInterface ) {
+      ( (ChangedFlagInterface) element ).clearChanged();
+    }
+    updateSharedObjectCache( element );
+  }
+
+  @VisibleForTesting
+  KettleException toDatabaseSaveException( RepositoryElementInterface element, Exception e ) {
+    // Determine if there is an "access denied" issue and throw a nicer error message.
+    if ( e.getMessage() != null && e.getMessage().indexOf( "access denied" ) >= 0 ) {
+      return new KettleException(
+        BaseMessages.getString( PKG, "PurRepository.ERROR_0004_DATABASE_UPDATE_ACCESS_DENIED", element.getName() ),
+        e );
+    }
+    if ( e instanceof KettleException ) {
+      return (KettleException) e;
+    }
+    return new KettleException( e );
+  }
+
+  @VisibleForTesting
+  void setDatabaseMetaTransformerForTesting( DatabaseDelegate databaseDelegate ) {
+    this.databaseMetaTransformer = databaseDelegate;
+  }
+
+  @VisibleForTesting
+  void setSharedObjectsByTypeForTesting(
+    Map<RepositoryObjectType, List<? extends SharedObjectInterface<?>>> sharedObjectsByType ) {
+    this.sharedObjectsByType = sharedObjectsByType;
   }
 
   @Override

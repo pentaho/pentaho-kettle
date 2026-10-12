@@ -20,6 +20,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.junit.rules.RestorePDIEngineEnvironment;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.shared.DatabaseManagementInterface;
 import org.pentaho.di.shared.MemorySharedObjectsIO;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
@@ -37,6 +38,8 @@ import org.mockito.stubbing.Answer;
 import org.powermock.reflect.Whitebox;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.clearInvocations;
@@ -177,6 +180,39 @@ public class JobEntryDialog_ConnectionLine_Test {
     assertTotalDbs( jobMeta, 1 );
     assertNumberOfGlobalDBs( 1 );
     assertNumberOfLocalDBs( jobMeta, 0 );
+  }
+
+  @Test
+  public void edits_globalConnectionWhenRenamed_clearsObjectIdAndRefreshesEditedConnection() throws Exception {
+    JobMeta jobMeta = new JobMeta();
+    DatabaseMeta db = createDefaultDatabase();
+    ObjectId objectId = mock( ObjectId.class );
+    db.setObjectId( objectId );
+    dbMgr.add( db );
+
+    invokeEditConnectionListener( jobMeta, INPUT_NAME );
+
+    DatabaseMeta editedDb = dbMgr.get( INPUT_NAME );
+    assertNotNull( editedDb );
+    assertNull( editedDb.getObjectId() );
+    verify( mockSpoon, times( 1 ) ).refreshDbConnection( INPUT_NAME );
+  }
+
+  @Test
+  public void edits_globalConnectionWhenRenamedByCaseOnly_preservesObjectIdAndRefreshesEditedConnection() throws Exception {
+    JobMeta jobMeta = new JobMeta();
+    DatabaseMeta db = createDefaultDatabase();
+    ObjectId objectId = mock( ObjectId.class );
+    db.setObjectId( objectId );
+    dbMgr.add( db );
+
+    String editedConnectionName = INITIAL_NAME.toUpperCase();
+    invokeEditConnectionListener( jobMeta, editedConnectionName );
+
+    DatabaseMeta editedDb = dbMgr.get( editedConnectionName );
+    assertNotNull( editedDb );
+    assertNotNull( editedDb.getObjectId() );
+    verify( mockSpoon, times( 1 ) ).refreshDbConnection( editedConnectionName );
   }
 
   @Test
