@@ -204,6 +204,7 @@ public class S3CommonPipedOutputStream extends PipedOutputStream {
           new CompleteMultipartUploadRequest( bucketId, key, initResponse.getUploadId(), partETags );
 
         fileSystem.getS3Client().completeMultipartUpload( compRequest );
+        fileSystem.invalidateCachedListing( bucketId, key );
       } catch ( OutOfMemoryError oome ) {
         consoleLog.logError( BaseMessages.getString( PKG,
           "ERROR.S3MultiPart.UploadOutOfMemory", new StorageUnitConverter().byteCountToDisplaySize( partSize ) ),

@@ -32,8 +32,88 @@ public class S3KettleProperty {
 
   public static final String S3VFS_PART_SIZE = "s3.vfs.partSize";
 
+  // Controls the TTL (in seconds) of the in-memory VFS caches added to speed up S3 file-listing
+  // operations (listing-metadata reuse on attach, and bucket-existence checks). Only applies while the
+  // cache is enabled (see S3VFS_CACHE_ENABLED below); tune this to trade off staleness tolerance vs.
+  // fewer S3 calls. Defaults to 60 seconds when unset/invalid.
+  public static final String S3VFS_CACHE_TTL_SECONDS = "s3.vfs.cache.ttlSeconds";
+  public static final int S3VFS_CACHE_TTL_SECONDS_DEFAULT = 60;
+
+  // Explicit on/off switch for the S3 VFS listing/bucket-existence caches described above. Defaults to
+  // enabled (true). Set to "false" for deployments where external processes may create/delete/modify
+  // the same buckets or objects concurrently and cannot tolerate any staleness.
+  public static final String S3VFS_CACHE_ENABLED = "s3.vfs.cache.enabled";
+  public static final boolean S3VFS_CACHE_ENABLED_DEFAULT = true;
+
+  // When "true", the plugin sets the AWS SDK v1 system property com.amazonaws.sdk.disableEc2Metadata (unless
+  // already set) so the default credentials chain skips probing the EC2 Instance Metadata Service. Useful when
+  // not running on EC2/ECS, where the probe otherwise stalls on retries. Defaults to false because it is a
+  // JVM-wide switch and would break instance-role credentials on EC2.
+  public static final String S3VFS_DISABLE_EC2_METADATA = "s3.vfs.disableEc2Metadata";
+  public static final boolean S3VFS_DISABLE_EC2_METADATA_DEFAULT = false;
+
   public String getPartSize() {
     return getProperty( S3VFS_PART_SIZE );
+  }
+
+  /**
+   * @return whether the S3 VFS listing/bucket-existence caches are enabled. Defaults to {@code true}
+   * ({@link #S3VFS_CACHE_ENABLED_DEFAULT}) when the property is unset or blank. Any value other than
+   * a case-insensitive "false" is treated as enabled.
+   */
+  public boolean isCacheEnabled() {
+    String value = getProperty( S3VFS_CACHE_ENABLED );
+
+    if ( value == null || value.trim().isEmpty() ) {
+      return S3VFS_CACHE_ENABLED_DEFAULT;
+    }
+
+    return !Boolean.FALSE.toString().equalsIgnoreCase( value.trim() );
+  }
+
+  /**
+   * @return whether EC2 instance-metadata credential lookups should be disabled. Defaults to {@code false}
+   * ({@link #S3VFS_DISABLE_EC2_METADATA_DEFAULT}) when unset or blank; only a case-insensitive "true" enables it.
+   */
+  public boolean isDisableEc2Metadata() {
+    String value = getProperty( S3VFS_DISABLE_EC2_METADATA );
+
+    if ( value == null || value.trim().isEmpty() ) {
+      return S3VFS_DISABLE_EC2_METADATA_DEFAULT;
+    }
+
+    return Boolean.TRUE.toString().equalsIgnoreCase( value.trim() );
+  }
+
+  /**
+   * @return the configured TTL, in seconds, for the S3 VFS listing/bucket-existence caches (only
+   * meaningful while {@link #isCacheEnabled()} is {@code true}). Falls back to
+   * {@link #S3VFS_CACHE_TTL_SECONDS_DEFAULT} when the property is unset, blank, zero/negative, or not a
+   * valid integer.
+   */
+  public int getCacheTtlSeconds() {
+    String value = getProperty( S3VFS_CACHE_TTL_SECONDS );
+
+    if ( value == null || value.trim().isEmpty() ) {
+      return S3VFS_CACHE_TTL_SECONDS_DEFAULT;
+    }
+
+    try {
+      int ttlSeconds = Integer.parseInt( value.trim() );
+
+      if ( ttlSeconds <= 0 ) {
+        logger.warn( "Ignoring non-positive value '{}' for {}; using default of {}s. To disable the "
+            + "cache entirely, use {}=false instead.", value, S3VFS_CACHE_TTL_SECONDS,
+          S3VFS_CACHE_TTL_SECONDS_DEFAULT, S3VFS_CACHE_ENABLED );
+        return S3VFS_CACHE_TTL_SECONDS_DEFAULT;
+      }
+
+      return ttlSeconds;
+    } catch ( NumberFormatException e ) {
+      logger.warn( "Ignoring invalid value '{}' for {}; using default of {}s", value,
+        S3VFS_CACHE_TTL_SECONDS, S3VFS_CACHE_TTL_SECONDS_DEFAULT );
+      return S3VFS_CACHE_TTL_SECONDS_DEFAULT;
+    }
   }
 
   public String getProperty( String property ) {
