@@ -836,6 +836,27 @@ public class DatabaseTest {
   }
 
   @Test
+  public void testGetViewsWithSpacesReturnsQuoted() throws Exception {
+    String viewNameWithSpaces = "View with spaces";
+    String quotedViewNameWithSpaces = "\"View with spaces\"";
+    when( dbMetaMock.supportsViews() ).thenReturn( true );
+    when( rs.next() ).thenReturn( true, false );
+    when( rs.getString( "TABLE_NAME" ) ).thenReturn( viewNameWithSpaces );
+    when( dbMetaMock.getTables(
+      same( dbMetaDataMock ), or( anyString(), eq( null ) ), or( anyString(), eq( null ) ), any() )
+    ).thenReturn( rs );
+    Database db = new Database( log, dbMetaMock );
+    db.setConnection( mockConnection( dbMetaDataMock ) );
+    when( dbMetaMock.getQuotedSchemaTableCombination( null, viewNameWithSpaces ) ).thenReturn(
+      quotedViewNameWithSpaces );
+
+    String[] viewNames = db.getViews();
+
+    assertEquals( 1, viewNames.length );
+    assertEquals( quotedViewNameWithSpaces, viewNames[0] );
+  }
+
+  @Test
   public void testCheckTableExistsNoProperty() throws Exception {
     DatabaseMeta databaseMeta = new DatabaseMeta();
     Database db = spy( new Database( log, databaseMeta ) );
