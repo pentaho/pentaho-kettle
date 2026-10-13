@@ -264,30 +264,7 @@ public abstract class S3CommonFileObject extends AbstractFileObject<S3CommonFile
       return;
     }
 
-    // If this file/folder was already returned by a recent listing of its parent (e.g. Commons-VFS
-    // resolving/attaching each child right after doListChildren(), as "Get File Names" does), reuse that metadata
-    // instead of issuing a redundant per-file getObjectMetadata/listObjects call.
-    ObjectMetadata cachedFileMetadata = fileSystem.getCachedFileMetadata( bucketName, key );
-
-    if ( cachedFileMetadata != null ) {
-      if ( logger.isTraceEnabled() ) {
-        logger.trace( "Using cached listing metadata for {}", getQualifiedName() );
-      }
-
-      s3ObjectMetadata = cachedFileMetadata;
-      injectType( FileType.FILE );
-      return;
-    }
-
-    String keyWithDelimiter = withTrailingDelimiter( key );
-
-    if ( fileSystem.isCachedFolder( bucketName, keyWithDelimiter ) ) {
-      if ( logger.isTraceEnabled() ) {
-        logger.trace( "Using cached listing metadata (folder) for {}", getQualifiedName() );
-      }
-
-      injectType( FileType.FOLDER );
-      this.key = keyWithDelimiter;
+    if ( attachFromCachedListing() ) {
       return;
     }
 
@@ -301,6 +278,41 @@ public abstract class S3CommonFileObject extends AbstractFileObject<S3CommonFile
     } finally {
       closeS3Object();
     }
+  }
+
+  /**
+   * If this file/folder was already returned by a recent listing of its parent (e.g. Commons-VFS
+   * resolving/attaching each child right after doListChildren(), as "Get File Names" does), reuse that metadata
+   * instead of issuing a redundant per-file getObjectMetadata/listObjects call.
+   *
+   * @return true if the type was resolved from the cache, false if a remote lookup is still needed
+   */
+  private boolean attachFromCachedListing() {
+    ObjectMetadata cachedFileMetadata = fileSystem.getCachedFileMetadata( bucketName, key );
+
+    if ( cachedFileMetadata != null ) {
+      if ( logger.isTraceEnabled() ) {
+        logger.trace( "Using cached listing metadata for {}", getQualifiedName() );
+      }
+
+      s3ObjectMetadata = cachedFileMetadata;
+      injectType( FileType.FILE );
+      return true;
+    }
+
+    String keyWithDelimiter = withTrailingDelimiter( key );
+
+    if ( fileSystem.isCachedFolder( bucketName, keyWithDelimiter ) ) {
+      if ( logger.isTraceEnabled() ) {
+        logger.trace( "Using cached listing metadata (folder) for {}", getQualifiedName() );
+      }
+
+      injectType( FileType.FOLDER );
+      this.key = keyWithDelimiter;
+      return true;
+    }
+
+    return false;
   }
 
   private static String withTrailingDelimiter( String key ) {
