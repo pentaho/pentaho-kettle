@@ -233,12 +233,38 @@ public class KettleVFS {
   }
 
   static String getScheme( String[] schemes, String fileName ) {
-    for (String scheme : schemes) {
+    if ( fileName == null ) {
+      return null;
+    }
+
+    for ( String scheme : schemes ) {
       if ( fileName.startsWith( scheme + ":" ) ) {
         return scheme;
       }
     }
     return null;
+  }
+
+  /**
+   * Returns the VFS scheme for a filename when it matches a scheme registered with the active Kettle VFS manager.
+   * This method intentionally does not infer or accept arbitrary scheme-like prefixes; it only reports schemes that
+   * are actually known to Kettle, which keeps callers from treating non-Kettle URI patterns as valid VFS schemes.
+   *
+   * @param vfsFileName the filename or URI to inspect
+   * @return the registered scheme, or null when the filename does not have a known Kettle VFS scheme
+   */
+  public static String getScheme( String vfsFileName ) {
+    if ( vfsFileName == null ) {
+      return null;
+    }
+
+    String trimmedFileName = vfsFileName.trim();
+    if ( trimmedFileName.isEmpty() ) {
+      return null;
+    }
+
+    String[] schemes = getInstance().getFileSystemManager().getSchemes();
+    return getScheme( schemes, trimmedFileName );
   }
 
   /**
@@ -512,18 +538,7 @@ public class KettleVFS {
    * @return boolean
    */
   public static boolean startsWithScheme( String vfsFileName ) {
-    FileSystemManager fsManager = getInstance().getFileSystemManager();
-
-    boolean found = false;
-    String[] schemes = fsManager.getSchemes();
-    for (int i = 0; i < schemes.length; i++) {
-      if ( vfsFileName.startsWith( schemes[i] + ":" ) ) {
-        found = true;
-        break;
-      }
-    }
-
-    return found;
+    return getScheme( vfsFileName ) != null;
   }
 
   public static void closeEmbeddedFileSystem( String embeddedMetastoreKey ) {

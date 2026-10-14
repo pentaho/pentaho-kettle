@@ -17,6 +17,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
@@ -26,9 +27,13 @@ import java.util.Map.Entry;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.repository.RepositoryMeta;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -61,6 +66,7 @@ public class SlaveServerConfigTest {
 
   @Before
   public void setup() throws Exception {
+    KettleClientEnvironment.init();
     slServerConfig = new SlaveServerConfig();
   }
 
@@ -193,6 +199,147 @@ public class SlaveServerConfigTest {
   }
 
   @Test
+  public void testIsExecuteUrlAllowed_HandlesColonStyleVfsProtocols() {
+    assertTrue( slServerConfig.isExecuteUrlAllowed( "pvfs://repo/dir/test.ktr" ) );
+    assertFalse( slServerConfig.isExecuteUrlAllowed( "file:/tmp/test.ktr" ) );
+    assertFalse( slServerConfig.isExecuteUrlAllowed( "file:relative/path/test.ktr" ) );
+    assertFalse( slServerConfig.isExecuteUrlAllowed( "zip:/path/to/archive.zip" ) );
+    assertFalse( slServerConfig.isExecuteUrlAllowed( "C:/tmp/test.ktr" ) );
+
+    slServerConfig.setAllowedExecuteFileSchemes( java.util.Arrays.asList( "file", "zip", "pvfs" ) );
+
+    assertTrue( slServerConfig.isExecuteUrlAllowed( "file:/tmp/test.ktr" ) );
+    assertTrue( slServerConfig.isExecuteUrlAllowed( "file:relative/path/test.ktr" ) );
+    assertTrue( slServerConfig.isExecuteUrlAllowed( "zip:/path/to/archive.zip" ) );
+    assertTrue( slServerConfig.isExecuteUrlAllowed( "C:/tmp/test.ktr" ) );
+    assertFalse( slServerConfig.isExecuteUrlAllowed( "s3:/bucket/test.ktr" ) );
+  }
+
+  @Test
+  public void testIsExecuteUrlAllowed_HandlesEmptyLocalAndPvfsPaths() {
+    assertTrue( slServerConfig.isExecuteUrlAllowed( "" ) );
+    assertFalse( slServerConfig.isExecuteUrlAllowed( "path/to/relative.ktr" ) );
+    assertTrue( slServerConfig.isExecuteUrlAllowed( "pvfs://repo/dir/test.ktr" ) );
+    assertTrue( slServerConfig.isExecuteUrlAllowed( "pvfs:/repo/dir/test.ktr" ) );
+    assertFalse( slServerConfig.isExecuteUrlAllowed( "s3://bucket/test.ktr" ) );
+
+    slServerConfig.setAllowedExecuteFileSchemes( java.util.Arrays.asList( "file", "http" ) );
+    assertTrue( slServerConfig.isExecuteUrlAllowed( "path/to/relative.ktr" ) );
+    assertTrue( slServerConfig.isExecuteUrlAllowed( "C:/tmp/test.ktr" ) );
+    assertFalse( slServerConfig.isExecuteUrlAllowed( "pvfs:/repo/dir/test.ktr" ) );
+    assertFalse( slServerConfig.isExecuteUrlAllowed( "ftp://host/path/test.ktr" ) );
+  }
+
+  @Test
+  public void testKettleVfsGetScheme_HandlesPathAndProtocolVariants() {
+    assertEquals( "http", KettleVFS.getScheme( "http://example.com/test.ktr" ) );
+    assertEquals( "file", KettleVFS.getScheme( "file:/tmp/test.ktr" ) );
+    assertEquals( "file", KettleVFS.getScheme( "file:relative/path/test.ktr" ) );
+    assertEquals( "zip", KettleVFS.getScheme( "zip:/path/to/archive.zip" ) );
+    assertNull( KettleVFS.getScheme( "C:/tmp/test.ktr" ) );
+    assertNull( KettleVFS.getScheme( "relative/path/test.ktr" ) );
+    assertNull( KettleVFS.getScheme( "local-file.ktr" ) );
+    assertNull( KettleVFS.getScheme( "" ) );
+  }
+
+  @Test
+  public void testParseAllowedExecuteFileSchemes_IgnoresNullAndEmptyEntries() throws KettleXMLException {
+    slServerConfig.setAllowedExecuteFileSchemes( java.util.Arrays.asList( "file", "zip" ) );
+    slServerConfig.parseAllowedExecuteFileSchemes( null );
+    assertEquals( 2, slServerConfig.getAllowedExecuteFileSchemes().size() );
+
+    String xml = "<slave_config>"
+      + "<allowedExecuteFileSchemes>"
+      + "<scheme>file</scheme>"
+      + "<scheme> </scheme>"
+      + "<scheme>zip</scheme>"
+      + "<scheme>ftp</scheme>"
+      + "</allowedExecuteFileSchemes>"
+      + "</slave_config>";
+    Node configNode = getConfigNode( xml );
+    slServerConfig.parseAllowedExecuteFileSchemes( configNode );
+
+    assertEquals( 3, slServerConfig.getAllowedExecuteFileSchemes().size() );
+    assertEquals( "file", slServerConfig.getAllowedExecuteFileSchemes().get( 0 ) );
+    assertEquals( "zip", slServerConfig.getAllowedExecuteFileSchemes().get( 1 ) );
+    assertEquals( "ftp", slServerConfig.getAllowedExecuteFileSchemes().get( 2 ) );
+  }
+
+  @Test
+  public void testGetXmlIncludesAllowedExecuteFileSchemes() {
+    slServerConfig.setAllowedExecuteFileSchemes( java.util.Arrays.asList( "file", "zip" ) );
+
+    String xml = slServerConfig.getXML();
+
+    assertTrue( xml.contains( "<allowedExecuteFileSchemes>" ) );
+    assertTrue( xml.contains( "<scheme>file</scheme>" ) );
+    assertTrue( xml.contains( "<scheme>zip</scheme>" ) );
+  }
+
+  @Test
+  public void testGetXmlOmitsAllowedExecuteFileSchemes_WhenDefaultConfigIsUnconfigured() {
+    String xml = slServerConfig.getXML();
+
+    assertTrue( xml.contains( "<slave_config>" ) );
+    assertFalse( xml.contains( "<allowedExecuteFileSchemes>" ) );
+  }
+
+  @Test
+  public void testConstructorParsesRepositoryAndAllowedFileSchemesFromNode() throws KettleXMLException {
+    String xml = "<slave_config>"
+      + "<report_to_masters>Y</report_to_masters>"
+      + "<repository><name>repo1</name><username>user</username><password>pass</password></repository>"
+      + "<allowedExecuteFileSchemes><scheme>file</scheme><scheme>pvfs</scheme></allowedExecuteFileSchemes>"
+      + "</slave_config>";
+
+    SlaveServerConfig parsed = new SlaveServerConfig( null, getConfigNode( xml ) );
+
+    assertEquals( "repo1", parsed.getRepositoryId() );
+    assertEquals( "user", parsed.getRepositoryUsername() );
+    assertEquals( "pass", parsed.getRepositoryPassword() );
+    assertEquals( java.util.Arrays.asList( "file", "pvfs" ), parsed.getAllowedExecuteFileSchemes() );
+  }
+
+  @Test
+  public void testIsExecuteUrlAllowed_HandlesUppercaseAllowlistAndNullInputs() {
+    slServerConfig.setAllowedExecuteFileSchemes( java.util.Arrays.asList( "S3", null, "  ", "ftp", "pvfs" ) );
+
+    assertFalse( slServerConfig.isExecuteUrlAllowed( "S3:/bucket/test.ktr" ) );
+    assertFalse( slServerConfig.isExecuteUrlAllowed( "ftps:/secure/test.ktr" ) );
+    assertTrue( slServerConfig.isExecuteUrlAllowed( "pvfs:/repo/dir/test.ktr" ) );
+
+    slServerConfig.setAllowedExecuteFileSchemes( null );
+    assertFalse( slServerConfig.isExecuteUrlAllowed( "s3:/bucket/test.ktr" ) );
+
+    slServerConfig.setAllowedExecuteFileSchemes( java.util.Arrays.asList( "file", "zip" ) );
+    assertEquals( 2, slServerConfig.getAllowedExecuteFileSchemes().size() );
+  }
+
+  @Test
+  public void testParseAllowedExecuteFileSchemes_NoNodeDoesNothing() throws KettleXMLException {
+    String xml = "<slave_config><joining>Y</joining></slave_config>";
+
+    slServerConfig.setAllowedExecuteFileSchemes( java.util.Arrays.asList( "file", "zip" ) );
+    slServerConfig.parseAllowedExecuteFileSchemes( getConfigNode( xml ) );
+
+    assertEquals( 2, slServerConfig.getAllowedExecuteFileSchemes().size() );
+  }
+
+  @Test
+  public void testGetAllowedExecuteFileSchemes_UsesDefensiveCopy() {
+    slServerConfig.setAllowedExecuteFileSchemes( java.util.Arrays.asList( "file", "zip" ) );
+
+    java.util.List<String> returnedSchemes = slServerConfig.getAllowedExecuteFileSchemes();
+    assertEquals( 2, returnedSchemes.size() );
+    returnedSchemes.add( "ftp" );
+
+    assertEquals( java.util.Arrays.asList( "file", "zip" ), slServerConfig.getAllowedExecuteFileSchemes() );
+
+    slServerConfig.setAllowedExecuteFileSchemes( java.util.Arrays.asList( "s3" ) );
+    assertEquals( java.util.Arrays.asList( "s3" ), slServerConfig.getAllowedExecuteFileSchemes() );
+  }
+
+  @Test
   public void testGetXmlIncludesPreviouslyBrokenValues() {
     slServerConfig.setReportingToMasters( true );
     slServerConfig.setJoining( true );
@@ -207,6 +354,68 @@ public class SlaveServerConfigTest {
     assertTrue( xml.contains( "<max_log_lines>123</max_log_lines>" ) );
     assertTrue( xml.contains( "<max_log_timeout_minutes>456</max_log_timeout_minutes>" ) );
     assertTrue( xml.contains( "<object_timeout_minutes>789</object_timeout_minutes>" ) );
+  }
+
+  @Test
+  public void testAccessorsAndXmlBranchesForRemainingCoverage() throws Exception {
+    SlaveServer master = new SlaveServer( "master", "localhost", "8181", null, null );
+    SlaveServer slave = new SlaveServer( "slave", "localhost", "8182", null, null );
+    java.util.List<SlaveServer> masters = java.util.Arrays.asList( master );
+
+    slServerConfig.setMasters( masters );
+    slServerConfig.setSlaveServer( slave );
+    slServerConfig.setFilename( "sample.ktr" );
+    slServerConfig.setDatabases( java.util.Collections.emptyList() );
+    slServerConfig.setSlaveSequences( java.util.Collections.emptyList() );
+    slServerConfig.setAutomaticCreationAllowed( true );
+    slServerConfig.setPasswordFile( "passwords.kdb" );
+    slServerConfig.setRepositoryId( "repo-id" );
+    slServerConfig.setRepositoryUsername( "user" );
+    slServerConfig.setRepositoryPassword( "pass" );
+    slServerConfig.setMetastoreSupplier( () -> null );
+
+    assertEquals( masters, slServerConfig.getMasters() );
+    assertSame( slave, slServerConfig.getSlaveServer() );
+    assertEquals( "sample.ktr", slServerConfig.getFilename() );
+    assertTrue( slServerConfig.getDatabases().isEmpty() );
+    assertTrue( slServerConfig.getSlaveSequences().isEmpty() );
+    assertTrue( slServerConfig.isAutomaticCreationAllowed() );
+    assertEquals( "passwords.kdb", slServerConfig.getPasswordFile() );
+    assertEquals( "repo-id", slServerConfig.getRepositoryId() );
+    assertEquals( "user", slServerConfig.getRepositoryUsername() );
+    assertEquals( "pass", slServerConfig.getRepositoryPassword() );
+    assertNull( slServerConfig.getMetaStore() );
+    assertNotNull( slServerConfig.getMetastoreSupplier() );
+
+    SlaveSequence autoSequence = new SlaveSequence( "seq", 3, null, "public", "table", "sequence_field", "value_field" );
+    slServerConfig.setAutoSequence( autoSequence );
+    slServerConfig.setAutomaticCreationAllowed( false );
+    String xmlWithAutoSequence = slServerConfig.getXML();
+    assertTrue( xmlWithAutoSequence.contains( "<autosequence>" ) );
+    assertTrue( xmlWithAutoSequence.contains( "<sequence_field>sequence_field</sequence_field>" ) );
+
+    RepositoryMeta repositoryMeta = (RepositoryMeta) java.lang.reflect.Proxy.newProxyInstance(
+        RepositoryMeta.class.getClassLoader(),
+        new Class<?>[] { RepositoryMeta.class },
+        ( proxy, method, args ) -> {
+          if ( "getId".equals( method.getName() ) ) {
+            return "repo-id";
+          }
+          if ( "getXML".equals( method.getName() ) ) {
+            return "<repository/>";
+          }
+          return null;
+        } );
+
+    java.lang.reflect.Field repositoryMetaField = SlaveServerConfig.class.getDeclaredField( "repositoryMeta" );
+    repositoryMetaField.setAccessible( true );
+    repositoryMetaField.set( slServerConfig, repositoryMeta );
+
+    String xmlWithRepository = slServerConfig.getXML();
+    assertTrue( xmlWithRepository.contains( "<repository>" ) );
+    assertTrue( xmlWithRepository.contains( "<id>repo-id</id>" ) );
+    assertTrue( xmlWithRepository.contains( "<username>user</username>" ) );
+    assertTrue( xmlWithRepository.contains( "<password>" ) );
   }
 
   private Node getConfigNode( String configString ) throws KettleXMLException {

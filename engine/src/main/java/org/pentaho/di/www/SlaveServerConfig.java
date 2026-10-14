@@ -21,6 +21,7 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -41,6 +42,7 @@ import org.w3c.dom.Node;
 
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.function.Supplier;
 import java.util.HashMap;
 import java.util.List;
@@ -59,6 +61,10 @@ public class SlaveServerConfig {
   public static final String XML_TAG_ACCEPTORS = "acceptors";
   public static final String XML_TAG_ACCEPT_QUEUE_SIZE = "acceptQueueSize";
   public static final String XML_TAG_LOW_RES_MAX_IDLE_TIME = "lowResourcesMaxIdleTime";
+  public static final String XML_TAG_ALLOWED_EXECUTE_FILE_SCHEMES = "allowedExecuteFileSchemes";
+  public static final String XML_TAG_SCHEME = "scheme";
+
+  private static final List<String> DEFAULT_ALLOWED_EXECUTE_FILE_SCHEMES = java.util.Arrays.asList( "pvfs" );
 
   private List<SlaveServer> masters;
 
@@ -93,11 +99,16 @@ public class SlaveServerConfig {
 
   private String passwordFile;
 
+  private List<String> allowedExecuteFileSchemes;
+  private boolean allowedExecuteFileSchemesConfigured;
+
   public SlaveServerConfig() {
     masters = new ArrayList<SlaveServer>();
     databases = new ArrayList<DatabaseMeta>();
     slaveSequences = new ArrayList<SlaveSequence>();
     automaticCreationAllowed = false;
+    allowedExecuteFileSchemes = new ArrayList<>( DEFAULT_ALLOWED_EXECUTE_FILE_SCHEMES );
+    allowedExecuteFileSchemesConfigured = false;
     metaStoreSupplier = () -> {
       IMetaStore metastore = MetaStoreConst.getDefaultMetastoreSupplier().get();
       if ( metastore != null ) {
@@ -143,6 +154,14 @@ public class SlaveServerConfig {
     xml.append( XMLHandler.addTagValue( "max_log_lines", maxLogLines ) );
     xml.append( XMLHandler.addTagValue( "max_log_timeout_minutes", maxLogTimeoutMinutes ) );
     xml.append( XMLHandler.addTagValue( "object_timeout_minutes", objectTimeoutMinutes ) );
+
+    if ( allowedExecuteFileSchemesConfigured ) {
+      xml.append( XMLHandler.openTag( XML_TAG_ALLOWED_EXECUTE_FILE_SCHEMES ) );
+      for ( String scheme : allowedExecuteFileSchemes ) {
+        xml.append( XMLHandler.addTagValue( XML_TAG_SCHEME, scheme ) );
+      }
+      xml.append( XMLHandler.closeTag( XML_TAG_ALLOWED_EXECUTE_FILE_SCHEMES ) );
+    }
 
     xml.append( XMLHandler.openTag( XML_TAG_SEQUENCES ) );
     for ( SlaveSequence slaveSequence : slaveSequences ) {
@@ -197,6 +216,7 @@ public class SlaveServerConfig {
     maxLogLines = Const.toInt( XMLHandler.getTagValue( node, "max_log_lines" ), 0 );
     maxLogTimeoutMinutes = Const.toInt( XMLHandler.getTagValue( node, "max_log_timeout_minutes" ), 0 );
     objectTimeoutMinutes = Const.toInt( XMLHandler.getTagValue( node, "object_timeout_minutes" ), 0 );
+    parseAllowedExecuteFileSchemes( node );
 
     // Read sequence information
     //
@@ -478,6 +498,93 @@ public class SlaveServerConfig {
    */
   public void setObjectTimeoutMinutes( int objectTimeoutMinutes ) {
     this.objectTimeoutMinutes = objectTimeoutMinutes;
+  }
+
+  public List<String> getAllowedExecuteFileSchemes() {
+    return new ArrayList<>( allowedExecuteFileSchemes );
+  }
+
+  public void setAllowedExecuteFileSchemes( List<String> allowedExecuteFileSchemes ) {
+    this.allowedExecuteFileSchemes = normalizeAllowedExecuteFileSchemes( allowedExecuteFileSchemes );
+    this.allowedExecuteFileSchemesConfigured = true;
+  }
+
+  private List<String> normalizeAllowedExecuteFileSchemes( List<String> protocols ) {
+    List<String> normalizedProtocols = new ArrayList<>();
+    if ( protocols == null ) {
+      return normalizedProtocols;
+    }
+
+    for ( String protocol : protocols ) {
+      if ( protocol == null ) {
+        continue;
+      }
+      String normalizedProtocol = protocol.trim().toLowerCase( Locale.ROOT );
+      if ( !normalizedProtocol.isEmpty() ) {
+        normalizedProtocols.add( normalizedProtocol );
+      }
+    }
+    return normalizedProtocols;
+  }
+
+  public boolean isExecuteUrlAllowed( String filename ) {
+    if ( Utils.isEmpty( filename ) ) {
+      return true;
+    }
+
+    String trimmedFilename = filename.trim();
+    if ( isWindowsLocalPath( trimmedFilename ) || !looksLikeScheme( trimmedFilename ) ) {
+      return isSchemeAllowed( "file" );
+    }
+
+    String scheme = KettleVFS.getScheme( trimmedFilename );
+    if ( scheme == null ) {
+      return false;
+    }
+
+    return isSchemeAllowed( scheme );
+  }
+
+  private boolean isSchemeAllowed( String scheme ) {
+    if ( scheme == null ) {
+      return false;
+    }
+
+    String normalizedScheme = scheme.trim().toLowerCase( Locale.ROOT );
+    return allowedExecuteFileSchemes.stream()
+      .map( allowedScheme -> allowedScheme == null ? null : allowedScheme.trim().toLowerCase( Locale.ROOT ) )
+      .filter( allowedScheme -> allowedScheme != null && !allowedScheme.isEmpty() )
+      .anyMatch( allowedScheme -> allowedScheme.equals( normalizedScheme ) );
+  }
+
+  private boolean isWindowsLocalPath( String filename ) {
+    return filename != null && filename.matches( "^[A-Za-z]:.*" );
+  }
+
+  private boolean looksLikeScheme( String filename ) {
+    return filename != null && filename.matches( "^[A-Za-z][A-Za-z0-9+.-]*:.*" );
+  }
+
+  protected void parseAllowedExecuteFileSchemes( Node node ) {
+    if ( node == null ) {
+      return;
+    }
+
+    Node allowedExecuteFileSchemesNode = XMLHandler.getSubNode( node, XML_TAG_ALLOWED_EXECUTE_FILE_SCHEMES );
+    if ( allowedExecuteFileSchemesNode == null ) {
+      return;
+    }
+
+    List<String> schemes = new ArrayList<>();
+    List<Node> schemeNodes = XMLHandler.getNodes( allowedExecuteFileSchemesNode, XML_TAG_SCHEME );
+    for ( Node schemeNode : schemeNodes ) {
+      String scheme = XMLHandler.getNodeValue( schemeNode );
+      if ( scheme != null ) {
+        schemes.add( scheme );
+      }
+    }
+    allowedExecuteFileSchemes = normalizeAllowedExecuteFileSchemes( schemes );
+    allowedExecuteFileSchemesConfigured = true;
   }
 
   /**
