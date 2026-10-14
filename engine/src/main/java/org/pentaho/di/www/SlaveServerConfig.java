@@ -35,7 +35,6 @@ import org.pentaho.di.metastore.MetaStoreConst;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryMeta;
-import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
 import org.w3c.dom.Node;
@@ -134,16 +133,16 @@ public class SlaveServerConfig {
       xml.append( slaveServer.getXML() );
     }
 
-    XMLHandler.addTagValue( "report_to_masters", reportingToMasters );
+    xml.append( XMLHandler.addTagValue( "report_to_masters", reportingToMasters ) );
 
     if ( slaveServer != null ) {
       xml.append( slaveServer.getXML() );
     }
 
-    XMLHandler.addTagValue( "joining", joining );
-    XMLHandler.addTagValue( "max_log_lines", maxLogLines );
-    XMLHandler.addTagValue( "max_log_timeout_minutes", maxLogTimeoutMinutes );
-    XMLHandler.addTagValue( "object_timeout_minutes", objectTimeoutMinutes );
+    xml.append( XMLHandler.addTagValue( "joining", joining ) );
+    xml.append( XMLHandler.addTagValue( "max_log_lines", maxLogLines ) );
+    xml.append( XMLHandler.addTagValue( "max_log_timeout_minutes", maxLogTimeoutMinutes ) );
+    xml.append( XMLHandler.addTagValue( "object_timeout_minutes", objectTimeoutMinutes ) );
 
     xml.append( XMLHandler.openTag( XML_TAG_SEQUENCES ) );
     for ( SlaveSequence slaveSequence : slaveSequences ) {

@@ -192,6 +192,23 @@ public class SlaveServerConfigTest {
     assertNull( parseJettyOptions );
   }
 
+  @Test
+  public void testGetXmlIncludesPreviouslyBrokenValues() {
+    slServerConfig.setReportingToMasters( true );
+    slServerConfig.setJoining( true );
+    slServerConfig.setMaxLogLines( 123 );
+    slServerConfig.setMaxLogTimeoutMinutes( 456 );
+    slServerConfig.setObjectTimeoutMinutes( 789 );
+
+    String xml = slServerConfig.getXML();
+
+    assertTrue( xml.contains( "<report_to_masters>Y</report_to_masters>" ) );
+    assertTrue( xml.contains( "<joining>Y</joining>" ) );
+    assertTrue( xml.contains( "<max_log_lines>123</max_log_lines>" ) );
+    assertTrue( xml.contains( "<max_log_timeout_minutes>456</max_log_timeout_minutes>" ) );
+    assertTrue( xml.contains( "<object_timeout_minutes>789</object_timeout_minutes>" ) );
+  }
+
   private Node getConfigNode( String configString ) throws KettleXMLException {
     Document document = XMLHandler.loadXMLString( configString );
     Node configNode = XMLHandler.getSubNode( document, SlaveServerConfig.XML_TAG );
