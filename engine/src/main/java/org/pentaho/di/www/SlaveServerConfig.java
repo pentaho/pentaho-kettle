@@ -21,6 +21,7 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -41,6 +42,7 @@ import org.w3c.dom.Node;
 
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.function.Supplier;
 import java.util.HashMap;
 import java.util.List;
@@ -59,6 +61,9 @@ public class SlaveServerConfig {
   public static final String XML_TAG_ACCEPTORS = "acceptors";
   public static final String XML_TAG_ACCEPT_QUEUE_SIZE = "acceptQueueSize";
   public static final String XML_TAG_LOW_RES_MAX_IDLE_TIME = "lowResourcesMaxIdleTime";
+  public static final String XML_TAG_ENABLE_UNSAFE_PROTOCOLS_FOR_EXECUTE = "enableUnsafeProtocolsForExecute";
+  public static final String XML_TAG_UNSAFE_ALLOWED_PROTOCOLS_FOR_EXECUTE = "unsafeAllowedProtocolsForExecute";
+  public static final String XML_TAG_PROTOCOL = "protocol";
 
   private List<SlaveServer> masters;
 
@@ -93,11 +98,16 @@ public class SlaveServerConfig {
 
   private String passwordFile;
 
+  private boolean enableUnsafeProtocolsForExecute;
+  private List<String> unsafeAllowedProtocolsForExecute;
+
   public SlaveServerConfig() {
     masters = new ArrayList<SlaveServer>();
     databases = new ArrayList<DatabaseMeta>();
     slaveSequences = new ArrayList<SlaveSequence>();
     automaticCreationAllowed = false;
+    unsafeAllowedProtocolsForExecute = new ArrayList<>();
+    enableUnsafeProtocolsForExecute = false;
     metaStoreSupplier = () -> {
       IMetaStore metastore = MetaStoreConst.getDefaultMetastoreSupplier().get();
       if ( metastore != null ) {
@@ -143,6 +153,15 @@ public class SlaveServerConfig {
     xml.append( XMLHandler.addTagValue( "max_log_lines", maxLogLines ) );
     xml.append( XMLHandler.addTagValue( "max_log_timeout_minutes", maxLogTimeoutMinutes ) );
     xml.append( XMLHandler.addTagValue( "object_timeout_minutes", objectTimeoutMinutes ) );
+    xml.append( XMLHandler.addTagValue( XML_TAG_ENABLE_UNSAFE_PROTOCOLS_FOR_EXECUTE, enableUnsafeProtocolsForExecute ) );
+
+    if ( !unsafeAllowedProtocolsForExecute.isEmpty() ) {
+      xml.append( XMLHandler.openTag( XML_TAG_UNSAFE_ALLOWED_PROTOCOLS_FOR_EXECUTE ) );
+      for ( String protocol : unsafeAllowedProtocolsForExecute ) {
+        xml.append( XMLHandler.addTagValue( XML_TAG_PROTOCOL, protocol ) );
+      }
+      xml.append( XMLHandler.closeTag( XML_TAG_UNSAFE_ALLOWED_PROTOCOLS_FOR_EXECUTE ) );
+    }
 
     xml.append( XMLHandler.openTag( XML_TAG_SEQUENCES ) );
     for ( SlaveSequence slaveSequence : slaveSequences ) {
@@ -197,6 +216,10 @@ public class SlaveServerConfig {
     maxLogLines = Const.toInt( XMLHandler.getTagValue( node, "max_log_lines" ), 0 );
     maxLogTimeoutMinutes = Const.toInt( XMLHandler.getTagValue( node, "max_log_timeout_minutes" ), 0 );
     objectTimeoutMinutes = Const.toInt( XMLHandler.getTagValue( node, "object_timeout_minutes" ), 0 );
+    enableUnsafeProtocolsForExecute = "Y".equalsIgnoreCase( XMLHandler.getTagValue( node,
+      XML_TAG_ENABLE_UNSAFE_PROTOCOLS_FOR_EXECUTE ) )
+      || "TRUE".equalsIgnoreCase( XMLHandler.getTagValue( node, XML_TAG_ENABLE_UNSAFE_PROTOCOLS_FOR_EXECUTE ) );
+    parseUnsafeAllowedProtocolsForExecute( node );
 
     // Read sequence information
     //
@@ -478,6 +501,93 @@ public class SlaveServerConfig {
    */
   public void setObjectTimeoutMinutes( int objectTimeoutMinutes ) {
     this.objectTimeoutMinutes = objectTimeoutMinutes;
+  }
+
+  public boolean isEnableUnsafeProtocolsForExecute() {
+    return enableUnsafeProtocolsForExecute;
+  }
+
+  public void setEnableUnsafeProtocolsForExecute( boolean enableUnsafeProtocolsForExecute ) {
+    this.enableUnsafeProtocolsForExecute = enableUnsafeProtocolsForExecute;
+  }
+
+  public List<String> getUnsafeAllowedProtocolsForExecute() {
+    return new ArrayList<>( unsafeAllowedProtocolsForExecute );
+  }
+
+  public void setUnsafeAllowedProtocolsForExecute( List<String> unsafeAllowedProtocolsForExecute ) {
+    this.unsafeAllowedProtocolsForExecute = normalizeUnsafeAllowedProtocolsForExecute( unsafeAllowedProtocolsForExecute );
+  }
+
+  private List<String> normalizeUnsafeAllowedProtocolsForExecute( List<String> protocols ) {
+    List<String> normalizedProtocols = new ArrayList<>();
+    if ( protocols == null ) {
+      return normalizedProtocols;
+    }
+
+    for ( String protocol : protocols ) {
+      if ( protocol == null ) {
+        continue;
+      }
+      String normalizedProtocol = protocol.trim();
+      if ( !normalizedProtocol.isEmpty() ) {
+        normalizedProtocols.add( normalizedProtocol );
+      }
+    }
+    return normalizedProtocols;
+  }
+
+  public boolean isExecuteUrlAllowed( String filename ) {
+    if ( Utils.isEmpty( filename ) ) {
+      return true;
+    }
+
+    String trimmedFilename = filename.trim();
+    if ( isWindowsLocalPath( trimmedFilename ) || !looksLikeScheme( trimmedFilename ) ) {
+      return true;
+    }
+
+    String scheme = KettleVFS.getScheme( trimmedFilename );
+    if ( scheme == null ) {
+      return false;
+    }
+
+    String normalizedScheme = scheme.toLowerCase( Locale.ROOT );
+    if ( "pvfs".equals( normalizedScheme ) ) {
+      return true;
+    }
+
+    if ( !enableUnsafeProtocolsForExecute ) {
+      return false;
+    }
+
+    return unsafeAllowedProtocolsForExecute.stream()
+      .map( protocol -> protocol == null ? null : protocol.trim().toLowerCase( Locale.ROOT ) )
+      .filter( protocol -> protocol != null && !protocol.isEmpty() )
+      .anyMatch( protocol -> protocol.equals( normalizedScheme ) );
+  }
+
+  private boolean isWindowsLocalPath( String filename ) {
+    return filename != null && filename.matches( "^[A-Za-z]:.*" );
+  }
+
+  private boolean looksLikeScheme( String filename ) {
+    return filename != null && filename.matches( "^[A-Za-z][A-Za-z0-9+.-]*:.*" );
+  }
+
+  protected void parseUnsafeAllowedProtocolsForExecute( Node node ) {
+    Node unsafeProtocolsNode = XMLHandler.getSubNode( node, XML_TAG_UNSAFE_ALLOWED_PROTOCOLS_FOR_EXECUTE );
+    if ( unsafeProtocolsNode == null ) {
+      return;
+    }
+
+    List<String> protocols = new ArrayList<>();
+    List<Node> protocolNodes = XMLHandler.getNodes( unsafeProtocolsNode, XML_TAG_PROTOCOL );
+    for ( Node protocolNode : protocolNodes ) {
+      String protocol = XMLHandler.getNodeValue( protocolNode );
+      protocols.add( protocol );
+    }
+    unsafeAllowedProtocolsForExecute = normalizeUnsafeAllowedProtocolsForExecute( protocols );
   }
 
   /**

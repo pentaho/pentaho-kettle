@@ -38,12 +38,24 @@ public class KettleVFSTest {
   private static final String PROVIDER_PATTERN_SCHEME = "^[\\w\\d]+://(.*)";
 
   @Test
-  public void testStartsWithScheme() {
-    String fileName = "zip:file:///SavedLinkedres.zip!Calculate median and percentiles using the group by steps.ktr";
-    assertTrue( KettleVFS.startsWithScheme( fileName ) );
+  public void testGetSchemeAndStartsWithScheme() {
+    assertEquals( "zip", KettleVFS.getScheme( "zip:file:///SavedLinkedres.zip!Calculate median and percentiles using the group by steps.ktr" ) );
+    assertEquals( "file", KettleVFS.getScheme( "file:/tmp/test.ktr" ) );
+    assertEquals( "file", KettleVFS.getScheme( "file:relative/path/test.ktr" ) );
+    assertEquals( "file", KettleVFS.getScheme( "file://tmp/test.ktr" ) );
+    assertEquals( "zip", KettleVFS.getScheme( "zip:file:///SavedLinkedres.zip!Calculate median and percentiles using the group by steps.ktr" ) );
+    assertEquals( "pvfs", KettleVFS.getScheme( "pvfs://repo/dir/test.ktr" ) );
+    assertNull( KettleVFS.getScheme( "C:/tmp/test.ktr" ) );
+    assertNull( KettleVFS.getScheme( "relative/path/test.ktr" ) );
+    assertNull( KettleVFS.getScheme( "" ) );
+    assertNull( KettleVFS.getScheme( null ) );
+    assertNull( KettleVFS.getScheme( "notaschema://one/two/three.ktr" ) );
 
-    fileName = "SavedLinkedres.zip!Calculate median and percentiles using the group by steps.ktr";
-    assertFalse( KettleVFS.startsWithScheme( fileName ) );
+    assertTrue( KettleVFS.startsWithScheme( "zip:file:///SavedLinkedres.zip!Calculate median and percentiles using the group by steps.ktr" ) );
+    assertTrue( KettleVFS.startsWithScheme( "file:/tmp/test.ktr" ) );
+    assertFalse( KettleVFS.startsWithScheme( "SavedLinkedres.zip!Calculate median and percentiles using the group by steps.ktr" ) );
+    assertFalse( KettleVFS.startsWithScheme( "C:/tmp/test.ktr" ) );
+    assertFalse( KettleVFS.startsWithScheme( "notaschema://one/two/three.ktr" ) );
   }
 
   @Test

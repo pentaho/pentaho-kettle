@@ -586,6 +586,7 @@ curl "http://localhost:8080/kettle/stopJob?name=my-job&xml=Y"
 2. **Use HTTPS**: Configure SSL/TLS for production environments
 3. **Network Security**: Restrict access to Carte ports using firewalls
 4. **Input Validation**: Carte validates input parameters to prevent injection attacks
+5. **Safe execution URL defaults**: Direct job/transformation execution is restricted to `pvfs://` and no-scheme paths by default. Additional VFS protocols are denied unless explicitly enabled.
 
 ---
 
@@ -607,6 +608,16 @@ Sample carte configuration (`carte-config.xml`):
   <max_log_lines>10000</max_log_lines>
   <max_log_timeout_minutes>1440</max_log_timeout_minutes>
   <object_timeout_minutes>1440</object_timeout_minutes>
+
+  <!--
+    Default: only pvfs:// and no-scheme paths are allowed for direct execution.
+    Set this to true only when you intentionally want to permit other VFS schemes.
+  -->
+  <enableUnsafeProtocolsForExecute>false</enableUnsafeProtocolsForExecute>
+  <unsafeAllowedProtocolsForExecute>
+    <protocol>file</protocol>
+    <protocol>http</protocol>
+  </unsafeAllowedProtocolsForExecute>
 </slave_config>
 ```
 
