@@ -4355,30 +4355,32 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
         // First export the job...
         //
-        FileObject tempFile = KettleVFS.getInstance( DefaultBowl.getInstance() )
-          .createTempFile( "transExport", KettleVFS.Suffix.ZIP, transMeta );
+        try ( FileObject tempFile = KettleVFS.getInstance( DefaultBowl.getInstance() )
+          .createTempFile( "transExport", KettleVFS.Suffix.ZIP, transMeta ) ) {
 
-        //the executionConfiguration should not include a repository here because all the resources should be
-        //retrieved from the exported zip file
-        TransExecutionConfiguration clonedConfiguration = (TransExecutionConfiguration) executionConfiguration.clone();
-        clonedConfiguration.setRepository( null );
-        TopLevelResource topLevelResource =
-          ResourceUtil.serializeResourceExportInterface( transMeta.getBowl(), null, tempFile.getName().toString(),
-            transMeta, transMeta, repository, metaStore, clonedConfiguration.getXML(),
-            CONFIGURATION_IN_EXPORT_FILENAME );
+          //the executionConfiguration should not include a repository here because all the resources should be
+          //retrieved from the exported zip file
+          TransExecutionConfiguration clonedConfiguration = (TransExecutionConfiguration) executionConfiguration.clone();
+          clonedConfiguration.setRepository( null );
+          Bowl globalBowl = repository != null ? repository.getBowl() : DefaultBowl.getInstance();
+          TopLevelResource topLevelResource =
+            ResourceUtil.serializeResourceExportInterface( transMeta.getBowl(), globalBowl, tempFile.getName().toString(),
+              transMeta, transMeta, repository, metaStore, clonedConfiguration.getXML(),
+              CONFIGURATION_IN_EXPORT_FILENAME );
 
-        // Send the zip file over to the slave server...
-        //
-        String result = slaveServer.sendExport(
-          topLevelResource.getArchiveName(),
-          RegisterPackageServlet.TYPE_TRANS,
-          topLevelResource.getBaseResourceName() );
-        WebResult webResult = WebResult.fromXMLString( result );
-        if ( !webResult.getResult().equalsIgnoreCase( WebResult.STRING_OK ) ) {
-          throw new KettleException( "There was an error passing the exported transformation to the remote server: "
-            + Const.CR + webResult.getMessage() );
+          // Send the zip file over to the slave server...
+          //
+          String result = slaveServer.sendExport(
+            topLevelResource.getArchiveName(),
+            RegisterPackageServlet.TYPE_TRANS,
+            topLevelResource.getBaseResourceName() );
+          WebResult webResult = WebResult.fromXMLString( result );
+          if ( !webResult.getResult().equalsIgnoreCase( WebResult.STRING_OK ) ) {
+            throw new KettleException( "There was an error passing the exported transformation to the remote server: "
+              + Const.CR + webResult.getMessage() );
+          }
+          carteObjectId = webResult.getId();
         }
-        carteObjectId = webResult.getId();
       } else {
 
         // Now send it off to the remote server...
