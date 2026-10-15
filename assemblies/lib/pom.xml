@@ -47,7 +47,6 @@
     <LucidDbClient-minimal.version>0.9.4</LucidDbClient-minimal.version>
     <sapdbc.version>7.4.4</sapdbc.version>
     <asm.version>3.2</asm.version>
-    <flexjson.version>2.1</flexjson.version>
     <mimepull.version>1.9.3</mimepull.version>
     <enunciate-jersey-rt.version>1.27</enunciate-jersey-rt.version>
     <enunciate-core-annotations.version>1.27</enunciate-core-annotations.version>
