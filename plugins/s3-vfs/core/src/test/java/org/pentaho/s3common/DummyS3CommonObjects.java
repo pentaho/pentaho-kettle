@@ -20,6 +20,9 @@ import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.provider.AbstractFileName;
 import org.pentaho.di.core.util.StorageUnitConverter;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 public class DummyS3CommonObjects {
 
   protected static class DummyS3FileName extends AbstractFileName {
@@ -77,4 +80,16 @@ public class DummyS3CommonObjects {
     return new DummyS3FileSystem( rootName, fileSystemOptions );
   }
 
+  /**
+   * @param cacheEnabled the value to stub {@link S3KettleProperty#isCacheEnabled()} with, e.g. {@code false}
+   *                     to build an instance with both the listing-metadata and bucket-exists caches disabled.
+   */
+  protected static DummyS3FileSystem getDummyInstance( boolean cacheEnabled ) {
+    DummyS3FileName rootName = new DummyS3FileName( "s3", "bucket", "/bucket/key", FileType.FOLDER );
+    FileSystemOptions fileSystemOptions = new FileSystemOptions();
+    S3KettleProperty s3KettleProperty = mock( S3KettleProperty.class );
+    when( s3KettleProperty.isCacheEnabled() ).thenReturn( cacheEnabled );
+    when( s3KettleProperty.getCacheTtlSeconds() ).thenReturn( S3KettleProperty.S3VFS_CACHE_TTL_SECONDS_DEFAULT );
+    return new DummyS3FileSystem( rootName, fileSystemOptions, new StorageUnitConverter(), s3KettleProperty );
+  }
 }
