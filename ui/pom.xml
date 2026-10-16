@@ -58,6 +58,46 @@
       <artifactId>kettle-dbdialog</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>eval-job-entry-plugins-impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>shell-job-entry-plugins-impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>exec-process-plugins-impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>exec-sql-plugins-impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>exec-sql-row-plugins-impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>script-values-mod-plugins-impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>user-defined-java-class-plugins-impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>user-defined-java-expression-plugins-impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
     <!-- Pentaho dependencies -->
     <dependency>
