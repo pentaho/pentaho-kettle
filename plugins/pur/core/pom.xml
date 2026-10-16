@@ -141,7 +141,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-
     <!-- Third-party dependencies -->
     <dependency>
       <groupId>org.eclipse.swt</groupId>
