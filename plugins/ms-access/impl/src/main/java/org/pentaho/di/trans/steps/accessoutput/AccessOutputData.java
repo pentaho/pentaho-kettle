@@ -22,13 +22,13 @@ import java.util.List;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 
-import com.healthmarketscience.jackcess.ColumnBuilder;
-import com.healthmarketscience.jackcess.Cursor;
-import com.healthmarketscience.jackcess.Database;
-import com.healthmarketscience.jackcess.DatabaseBuilder;
-import com.healthmarketscience.jackcess.CursorBuilder;
-import com.healthmarketscience.jackcess.Table;
-import com.healthmarketscience.jackcess.TableBuilder;
+import io.github.spannm.jackcess.ColumnBuilder;
+import io.github.spannm.jackcess.Cursor;
+import io.github.spannm.jackcess.Database;
+import io.github.spannm.jackcess.DatabaseBuilder;
+import io.github.spannm.jackcess.CursorBuilder;
+import io.github.spannm.jackcess.Table;
+import io.github.spannm.jackcess.TableBuilder;
 
 /**
  * @author Matt

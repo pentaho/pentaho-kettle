@@ -55,12 +55,12 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-import com.healthmarketscience.jackcess.Column;
-import com.healthmarketscience.jackcess.ColumnBuilder;
-import com.healthmarketscience.jackcess.DataType;
-import com.healthmarketscience.jackcess.Database;
-import com.healthmarketscience.jackcess.DatabaseBuilder;
-import com.healthmarketscience.jackcess.Table;
+import io.github.spannm.jackcess.Column;
+import io.github.spannm.jackcess.ColumnBuilder;
+import io.github.spannm.jackcess.DataType;
+import io.github.spannm.jackcess.Database;
+import io.github.spannm.jackcess.DatabaseBuilder;
+import io.github.spannm.jackcess.Table;
 
 /*
  * Created on 2-jun-2003

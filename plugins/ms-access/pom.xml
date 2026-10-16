@@ -101,9 +101,9 @@
        </dependency>
 
       <dependency>
-        <groupId>com.healthmarketscience.jackcess</groupId>
+        <groupId>io.github.spannm</groupId>
         <artifactId>jackcess</artifactId>
-        <version>4.0.11</version>
+        <version>5.1.7</version>
         <scope>compile</scope>
         <exclusions>
           <exclusion>
