@@ -19,6 +19,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -207,19 +208,12 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
     String root = request.getRequestURI() == null ? StatusServletUtils.PENTAHO_ROOT
       : request.getRequestURI().substring( 0, request.getRequestURI().indexOf( CONTEXT_PATH ) );
     String prefix = isJettyMode() ? StatusServletUtils.STATIC_PATH : root + StatusServletUtils.RESOURCES_PATH;
-    boolean useXML = "Y".equalsIgnoreCase( request.getParameter( "xml" ) );
+    boolean useXML = useXML( request );
     int startLineNr = Const.toInt( request.getParameter( "from" ), 0 );
 
     response.setStatus( HttpServletResponse.SC_OK );
 
-    if ( useXML ) {
-      response.setContentType( "text/xml" );
-      response.setCharacterEncoding( Const.XML_ENCODING );
-    } else {
-      response.setCharacterEncoding( "UTF-8" );
-      response.setContentType( "text/html;charset=UTF-8" );
-
-    }
+    String encoding = contentTypeAndHeader( useXML, response, null, StandardCharsets.UTF_8.name() );
 
     // ID is optional...
     //
@@ -318,18 +312,16 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
         int lastLineNr = KettleLogStore.getLastBufferLineNr();
         int tableBorder = 0;
 
-        response.setContentType( "text/html;charset=UTF-8" );
-
         out.println( "<HTML>" );
         out.println( "<HEAD>" );
         out.println( "<TITLE>"
           + BaseMessages.getString( PKG, "TransStatusServlet.KettleTransStatus" ) + "</TITLE>" );
         if ( EnvUtil.getSystemProperty( Const.KETTLE_CARTE_REFRESH_STATUS, "N" ).equalsIgnoreCase( "Y" ) ) {
           out.println( "<META http-equiv=\"Refresh\" content=\"10;url="
-            + convertContextPath( CONTEXT_PATH ) + "?name=" + URLEncoder.encode( transName, "UTF-8" ) + "&id="
-            + URLEncoder.encode( id, "UTF-8" ) + "\">" );
+            + convertContextPath( CONTEXT_PATH ) + "?name=" + URLEncoder.encode( transName, encoding ) + "&id="
+            + URLEncoder.encode( id, encoding ) + "\">" );
         }
-        out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">" );
+        out.println( "<META http-equiv=\"Content-Type\" content=\"text/html; charset=" + encoding + "\">" );
 
         if ( isJettyMode() ) {
           out.println( "<link rel=\"stylesheet\" type=\"text/css\" href=\"/static/css/carte.css\" />" );

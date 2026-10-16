@@ -236,13 +236,20 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
 
     response.setStatus( HttpServletResponse.SC_OK );
 
-    String encoding = System.getProperty( "KETTLE_DEFAULT_SERVLET_ENCODING", null );
-    if ( encoding != null && !Utils.isEmpty( encoding.trim() ) ) {
-      response.setCharacterEncoding( encoding );
-      response.setContentType( "text/html; charset=" + encoding );
-    }
-
     PrintWriter out = response.getWriter();
+    
+    /* When running transformations with executeTrans, 
+     * the transformation may print output to the response.
+     * 
+     * This follows the previous pattern, which was to only add
+     * a text/html header if the KETTLE_DEFAULT_SERVLET_ENCODING
+     * system property is set.
+     */
+    if( Utils.isEmpty( contentTypeAndHeader( false, response, null, null ) ) ) {
+      //The contentTypeAndHeader method would have set this to text/html. 
+      //However, prior behavior just not set the header
+      response.setContentType( null );
+    }
 
     if ( transOption == null ) {
       response.setStatus( HttpServletResponse.SC_BAD_REQUEST );
