@@ -114,10 +114,15 @@
         <module>rest</module>
         <module>put-a-file-with-ftp</module>
         <module>email-messages</module>
+        <module>eval-job-entry</module>
+        <module>exec-process</module>
+        <module>exec-sql</module>
         <module>mail-job</module>
         <module>repo-vfs</module>
         <module>s3-vfs</module>
+        <module>script-values-mod</module>
         <module>kafka</module>
+        <module>janino</module>
       </modules>
     </profile>
 
