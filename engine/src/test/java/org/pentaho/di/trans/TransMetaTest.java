@@ -53,9 +53,6 @@ import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.trans.steps.datagrid.DataGridMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta;
-import org.pentaho.di.trans.steps.userdefinedjavaclass.InfoStepDefinition;
-import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassDef;
-import org.pentaho.di.trans.steps.userdefinedjavaclass.UserDefinedJavaClassMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
 import org.w3c.dom.Node;
@@ -365,27 +362,26 @@ public class TransMetaTest {
 
     StepMeta dg1 = new StepMeta( "input1", dgm1 );
     StepMeta dg2 = new StepMeta( "input2", dgm2 );
+    StepIOMeta receiverIOMeta = new StepIOMeta( true, true, false, false, false, false );
+    receiverIOMeta.addStream( new org.pentaho.di.trans.step.errorhandling.Stream(
+      org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType.INFO,
+      dg2,
+      "info_data",
+      null,
+      null ) );
+    StepMetaInterface receiverInterface = mock( StepMetaInterface.class );
+    when( receiverInterface.getStepIOMeta() ).thenReturn( receiverIOMeta );
+    StepMeta receiver = new StepMeta( "receiver", receiverInterface );
 
-    final String UDJC_METHOD =
-      "public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException { return "
-        + "false; }";
-    UserDefinedJavaClassMeta udjcMeta = new UserDefinedJavaClassMeta();
-    udjcMeta.getInfoStepDefinitions().add( new InfoStepDefinition( dg2.getName(), dg2.getName(), dg2, "info_data" ) );
-    udjcMeta.replaceDefinitions( singletonList(
-      new UserDefinedJavaClassDef( UserDefinedJavaClassDef.ClassType.TRANSFORM_CLASS, "MainClass", UDJC_METHOD ) ) );
-
-    StepMeta udjc = new StepMeta( "PDI-14910", udjcMeta );
-
-    TransHopMeta hop1 = new TransHopMeta( dg1, udjc, true );
-    TransHopMeta hop2 = new TransHopMeta( dg2, udjc, true );
+    TransHopMeta hop1 = new TransHopMeta( dg1, receiver, true );
+    TransHopMeta hop2 = new TransHopMeta( dg2, receiver, true );
     transMeta.addStep( dg1 );
     transMeta.addStep( dg2 );
-    transMeta.addStep( udjc );
+    transMeta.addStep( receiver );
     transMeta.addTransHop( hop1 );
     transMeta.addTransHop( hop2 );
 
-    RowMetaInterface row;
-    row = transMeta.getPrevInfoFields( udjc );
+    RowMetaInterface row = transMeta.getPrevInfoFields( receiver );
     assertNotNull( row );
     assertEquals( 1, row.size() );
     assertEquals( "moreData", row.getValueMeta( 0 ).getName() );
