@@ -28,6 +28,7 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
+import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.xssf.eventusermodel.XSSFReader;
 import org.pentaho.di.core.exception.KettleException;
@@ -36,12 +37,15 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.spreadsheet.KSheet;
 import org.pentaho.di.core.spreadsheet.KWorkbook;
 import org.pentaho.di.core.xml.XMLParserFactoryProducer;
+import org.pentaho.di.i18n.BaseMessages;
 
 /**
  * Streaming reader for XLSX files.<br>
  * Does not open XLS.
  */
 public class StaxPoiWorkbook implements KWorkbook {
+
+  private static final Class<?> PKG = StaxPoiWorkbook.class; // for i18n purposes, needed by Translator2!!
 
   private static final String RELATION_NS_URI = "http://schemas.openxmlformats.org/officeDocument/2006/relationships";
 
@@ -69,6 +73,10 @@ public class StaxPoiWorkbook implements KWorkbook {
     try {
       opcpkg = OPCPackage.open( filename );
       openFile( opcpkg, encoding );
+    } catch ( OpenXML4JException e ) {
+        throw new KettleException( BaseMessages.getString( PKG, "ExcelInput.Log.UnsafeFileException" ) +
+                e
+        );
     } catch ( Exception e ) {
       throw new KettleException( e );
     }
@@ -79,7 +87,12 @@ public class StaxPoiWorkbook implements KWorkbook {
     try {
       opcpkg = OPCPackage.open( inputStream );
       openFile( opcpkg, encoding );
-    } catch ( Exception e ) {
+    } catch ( IOException | OpenXML4JException e ) {
+        throw new KettleException( BaseMessages.getString( PKG, "ExcelInput.Log.UnsafeFileException" ) +
+                e
+        );
+    }
+    catch ( Exception e ) {
       throw new KettleException( e );
     }
   }
