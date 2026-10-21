@@ -119,6 +119,7 @@ public class EditConnectionListenerTest {
     verify( managementDbMgr, times( 1 ) ).add( addedDatabaseCaptor.capture() );
     assertNull( addedDatabaseCaptor.getValue().getObjectId() );
     verify( spoon, times( 1 ) ).refreshDbConnection( "RENAMED" );
+    verify( spoon, times( 1 ) ).refreshDbConnection( TEST_NAME );
   }
 
   @Test
@@ -144,6 +145,7 @@ public class EditConnectionListenerTest {
     verify( managementDbMgr, times( 1 ) ).add( addedDatabaseCaptor.capture() );
     assertNotNull( addedDatabaseCaptor.getValue().getObjectId() );
     verify( spoon, times( 1 ) ).refreshDbConnection( editedConnectionName );
+    verify( spoon, times( 1 ) ).refreshDbConnection( any() );
   }
 
   private static class PropsSettingAnswer implements Answer<String> {

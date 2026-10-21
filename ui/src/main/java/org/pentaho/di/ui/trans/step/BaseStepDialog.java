@@ -1561,6 +1561,10 @@ public class BaseStepDialog extends Dialog {
             DialogUtils.persistEditedConnection( applicableDbMgr, databaseMeta, clone, editedConnectionName );
             reinitConnectionDropDown( wConnection, editedConnectionName );
             spoonSupplier.get().refreshDbConnection( editedConnectionName );
+            // on rename, other steps using the original name must re-resolve it (e.g. to a connection at another level)
+            if ( !editedConnectionName.equalsIgnoreCase( originalName ) ) {
+              spoonSupplier.get().refreshDbConnection( originalName );
+            }
             spoonSupplier.get().refreshTree( DBConnectionFolderProvider.STRING_CONNECTIONS );
           }
         } catch ( KettleException ex ) {

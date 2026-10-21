@@ -45,6 +45,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.times;
@@ -196,6 +197,7 @@ public class JobEntryDialog_ConnectionLine_Test {
     assertNotNull( editedDb );
     assertNull( editedDb.getObjectId() );
     verify( mockSpoon, times( 1 ) ).refreshDbConnection( INPUT_NAME );
+    verify( mockSpoon, times( 1 ) ).refreshDbConnection( INITIAL_NAME );
   }
 
   @Test
@@ -213,6 +215,7 @@ public class JobEntryDialog_ConnectionLine_Test {
     assertNotNull( editedDb );
     assertNotNull( editedDb.getObjectId() );
     verify( mockSpoon, times( 1 ) ).refreshDbConnection( editedConnectionName );
+    verify( mockSpoon, never() ).refreshDbConnection( INITIAL_NAME );
   }
 
   @Test
