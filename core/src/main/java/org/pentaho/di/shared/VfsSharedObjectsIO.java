@@ -90,6 +90,22 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
 
 
   /**
+   * Initialize the shared objects by loading them from the XML file if not already initialized.
+   * <p>
+   * NOTE: must hold the lock when calling this. It calls checkLock().
+   *
+   * @throws KettleXMLException if there is an error loading the shared objects.
+   */
+  private void initialize() throws KettleXMLException {
+    checkLock();
+    if ( !isInitialized ) {
+      // Load the shared.xml file
+      loadSharedObjectNodeMap( sharedObjectFile );
+      isInitialized = true;
+    }
+  }
+
+  /**
    * Return the Map of names and the corresponding nodes for the given shared object type.
    * The parsing of shared.xml happens when this method is called.
    * 
@@ -99,12 +115,7 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
    */
   @Override
   public Map<String, Node> getSharedObjects( String type ) throws KettleXMLException {
-    checkLock();
-    if ( !isInitialized ) {
-      // Load the shared.xml file
-      loadSharedObjectNodeMap( sharedObjectFile );
-      isInitialized = true;
-    }
+    initialize();
     return getNodesMapForType( type );
   }
 
@@ -213,7 +224,7 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
    */
   @Override
   public void saveSharedObject( String type, String name, Node node ) throws KettleException {
-    checkLock();
+    initialize();
     // Get the map for the type
     Map<String, Node> nodeMap = getNodesMapForType( type );
 
@@ -326,7 +337,7 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
    */
   @Override
   public Node getSharedObject( String type, String name ) throws KettleException {
-    checkLock();
+    initialize();
     // Get the Map using the type
     Map<String, Node> nodeMap = getNodesMapForType( type );
     return nodeMap.get( SharedObjectsIO.findSharedObjectIgnoreCase( name, nodeMap.keySet() ) );
@@ -344,6 +355,7 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
   public void delete( String type, String name ) throws KettleException {
     try {
       lock();
+      initialize();
       // Get the nodeMap for the type
       Map<String, Node> nodeTypeMap = getNodesMapForType( type );
       String existingName = SharedObjectsIO.findSharedObjectIgnoreCase( name, nodeTypeMap.keySet() );
@@ -360,6 +372,7 @@ public class VfsSharedObjectsIO implements SharedObjectsIO {
   public void clear( String type ) throws KettleException {
     try {
       lock();
+      initialize();
       switch ( SharedObjectType.valueOf( type.toUpperCase() ) ) {
         case CONNECTION:
           connectionsNodes.clear();
