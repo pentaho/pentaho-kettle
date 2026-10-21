@@ -216,7 +216,7 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
   }
 
   public String getRealNbrPackets() {
-    return getValidatedValue( getNbrPackets(), "JobPing.NrPackets.Label" );
+    return environmentSubstitute( getNbrPackets() );
   }
 
   public void setNbrPackets( String nbrPackets ) {
@@ -244,17 +244,23 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
   }
 
   public String getRealTimeOut() {
-    return getValidatedValue( getTimeOut(), "JobPing.TimeOut.Label" );
+    return environmentSubstitute( getTimeOut() );
   }
 
   // Validate only after substitution, without changing the persisted configuration.
-  private String getValidatedValue( String configuredValue, String labelKey ) {
-    String realValue = environmentSubstitute( configuredValue );
-    if ( !isPositiveInteger( realValue ) ) {
-      throw new IllegalArgumentException( BaseMessages.getString( PKG, "JobPing.ErrorOnlyPositiveInteger",
-        BaseMessages.getString( PKG, labelKey ), realValue ) );
+  private int resolvePositiveInt( String configured, String labelKey ) throws KettleException {
+    String realValue = environmentSubstitute( configured );
+    String errorMessage = BaseMessages.getString( PKG, "JobPing.ErrorOnlyPositiveInteger",
+      BaseMessages.getString( PKG, labelKey ), realValue );
+    try {
+      int value = Integer.parseInt( realValue == null ? "" : realValue.trim() );
+      if ( value > 0 ) {
+        return value;
+      }
+    } catch ( NumberFormatException ex ) {
+      throw new KettleException( errorMessage, ex );
     }
-    return realValue.trim();
+    throw new KettleException( errorMessage );
   }
 
   public void setTimeOut( String timeout ) {
@@ -267,12 +273,16 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
     result.setNrErrors( 1 );
     result.setResult( false );
 
-    int timeoutInt;
-    int packets;
+    int timeoutInt = 0;
+    int packets = 0;
     try {
-      timeoutInt = Integer.parseInt( getRealTimeOut() );
-      packets = Integer.parseInt( getRealNbrPackets() );
-    } catch ( IllegalArgumentException ex ) {
+      if ( ipingtype == isystemPing || ipingtype == ibothPings ) {
+        timeoutInt = resolvePositiveInt( getTimeOut(), "JobPing.TimeOut.Label" );
+      }
+      if ( ipingtype == iclassicPing || ipingtype == ibothPings ) {
+        packets = resolvePositiveInt( getNbrPackets(), "JobPing.NrPackets.Label" );
+      }
+    } catch ( KettleException ex ) {
       logError( BaseMessages.getString( PKG, "JobPing.Error.Label" ) + ex.getMessage() );
       return result;
     }

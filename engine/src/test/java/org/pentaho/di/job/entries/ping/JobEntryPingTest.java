@@ -16,7 +16,6 @@ package org.pentaho.di.job.entries.ping;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
-import static org.junit.Assert.fail;
 import static org.pentaho.di.core.util.Assert.assertFalse;
 import static org.pentaho.di.core.util.Assert.assertTrue;
 
@@ -94,7 +93,7 @@ public class JobEntryPingTest extends JobEntryLoadSaveTestSupport<JobEntryPing> 
     for ( String value : posInt) {
       jEPing.setNbrPackets( value );
       assertEquals( value, jEPing.getNbrPackets() );
-      assertEquals( value.trim(), jEPing.getRealNbrPackets() );
+      assertEquals( value, jEPing.getRealNbrPackets() );
     }
   }
 
@@ -102,7 +101,7 @@ public class JobEntryPingTest extends JobEntryLoadSaveTestSupport<JobEntryPing> 
   public void test_getRealNbrPackets_ForValueOtherThanPositiveIntegers() {
     for ( String value : notPosInt) {
       jEPing.setNbrPackets( value );
-      assertInvalidValue( jEPing::getRealNbrPackets );
+      assertEquals( value, jEPing.getRealNbrPackets() );
       assertEquals( value, jEPing.getNbrPackets() );
     }
   }
@@ -110,7 +109,7 @@ public class JobEntryPingTest extends JobEntryLoadSaveTestSupport<JobEntryPing> 
   @Test
   public void test_getNbrPackets_ForNull() {
     jEPing.setNbrPackets( null );
-    assertInvalidValue( jEPing::getRealNbrPackets );
+    assertNull( jEPing.getRealNbrPackets() );
     assertNull( jEPing.getNbrPackets() );
   }
 
@@ -119,14 +118,14 @@ public class JobEntryPingTest extends JobEntryLoadSaveTestSupport<JobEntryPing> 
     for ( String value : posInt ) {
       jEPing.setTimeOut( value );
       assertEquals( value, jEPing.getTimeOut() );
-      assertEquals( value.trim(), jEPing.getRealTimeOut() );
+      assertEquals( value, jEPing.getRealTimeOut() );
     }
   }
   @Test
   public void test_getRealTimeOut_ForValueOtherThanPositiveIntegers() {
     for ( String value : notPosInt ) {
       jEPing.setTimeOut( value );
-      assertInvalidValue( jEPing::getRealTimeOut );
+      assertEquals( value, jEPing.getRealTimeOut() );
       assertEquals( value, jEPing.getTimeOut() );
     }
   }
@@ -134,29 +133,29 @@ public class JobEntryPingTest extends JobEntryLoadSaveTestSupport<JobEntryPing> 
   @Test
   public void test_getTimeOut_ForNull() {
     jEPing.setTimeOut( null );
-    assertInvalidValue( jEPing::getRealTimeOut );
+    assertNull( jEPing.getRealTimeOut() );
     assertNull( jEPing.getTimeOut() );
   }
 
   @Test
-  public void testVariableValuesAreResolvedBeforeValidation() {
+  public void testVariableValuesAreResolvedWithoutChangingMetadata() {
     jEPing.setNbrPackets( "${ping}" );
     jEPing.setTimeOut( "${ping}" );
     for ( String value : posInt ) {
       jEPing.setVariable( "ping", value );
-      assertEquals( value.trim(), jEPing.getRealNbrPackets() );
-      assertEquals( value.trim(), jEPing.getRealTimeOut() );
+      assertEquals( value, jEPing.getRealNbrPackets() );
+      assertEquals( value, jEPing.getRealTimeOut() );
       assertConfiguredValues( jEPing, "${ping}" );
     }
   }
 
   @Test
-  public void testInvalidVariableValuesAreRejectedWithoutChangingMetadata() {
+  public void testInvalidVariableValuesAreReturnedWithoutChangingMetadata() {
     jEPing.setNbrPackets( "${ping}" );
     jEPing.setTimeOut( "${ping}" );
     for ( String value : notPosInt ) {
       jEPing.setVariable( "ping", value );
-      assertInvalidRuntimeValues( jEPing );
+      assertResolvedValues( jEPing, value );
       assertConfiguredValues( jEPing, "${ping}" );
     }
     // A later execution can resolve the same expression to a valid value.
@@ -166,10 +165,11 @@ public class JobEntryPingTest extends JobEntryLoadSaveTestSupport<JobEntryPing> 
   }
 
   @Test
-  public void testUnresolvedVariablesAreRejectedWithoutChangingMetadata() {
+  public void testUnresolvedVariablesAreReturnedWithoutChangingMetadata() {
     jEPing.setNbrPackets( "${unresolved_ping_packets}" );
     jEPing.setTimeOut( "${unresolved_ping_timeout}" );
-    assertInvalidRuntimeValues( jEPing );
+    assertEquals( "${unresolved_ping_packets}", jEPing.getRealNbrPackets() );
+    assertEquals( "${unresolved_ping_timeout}", jEPing.getRealTimeOut() );
     assertEquals( "${unresolved_ping_packets}", jEPing.getNbrPackets() );
     assertEquals( "${unresolved_ping_timeout}", jEPing.getTimeOut() );
   }
@@ -213,6 +213,64 @@ public class JobEntryPingTest extends JobEntryLoadSaveTestSupport<JobEntryPing> 
   }
 
   @Test
+  public void testClassicPingIgnoresUnusedTimeout() {
+    for ( String value : notPosInt ) {
+      assertUnusedSettingIsNotValidated( value, true, false );
+      assertUnusedSettingIsNotValidated( value, true, true );
+    }
+    assertUnusedSettingIsNotValidated( null, true, false );
+    assertUnusedSettingIsNotValidated( "${unresolved_ping_timeout}", true, false );
+  }
+
+  @Test
+  public void testSystemPingIgnoresUnusedPacketCount() {
+    for ( String value : notPosInt ) {
+      assertUnusedSettingIsNotValidated( value, false, false );
+      assertUnusedSettingIsNotValidated( value, false, true );
+    }
+    assertUnusedSettingIsNotValidated( null, false, false );
+    assertUnusedSettingIsNotValidated( "${unresolved_ping_packets}", false, false );
+  }
+
+  @Test
+  public void testExecutionAcceptsPositiveLiteralsAndVariables() {
+    for ( int pingType = 0; pingType <= 2; pingType++ ) {
+      for ( String value : posInt ) {
+        for ( boolean variable : new boolean[] { false, true } ) {
+          final boolean[] hostnameResolved = { false };
+          JobEntryPing entry = new JobEntryPing( "Ping" ) {
+            @Override
+            public String getRealHostname() {
+              hostnameResolved[ 0 ] = true;
+              // Stop before network access, after the numeric settings have been accepted.
+              return null;
+            }
+          };
+          entry.ipingtype = pingType;
+          entry.setVariable( "ping", value );
+          String configuredValue = variable ? "${ping}" : value;
+          entry.setNbrPackets( configuredValue );
+          entry.setTimeOut( configuredValue );
+          entry.execute( new Result(), 0 );
+          assertTrue( hostnameResolved[ 0 ] );
+          assertConfiguredValues( entry, configuredValue );
+        }
+      }
+    }
+  }
+
+  @Test( expected = IllegalArgumentException.class )
+  public void testExecutionDoesNotSwallowUnrelatedIllegalArgumentException() {
+    JobEntryPing entry = new JobEntryPing( "Ping" ) {
+      @Override
+      public String environmentSubstitute( String value ) {
+        throw new IllegalArgumentException( "Unrelated substitution failure" );
+      }
+    };
+    entry.execute( new Result(), 0 );
+  }
+
+  @Test
   public void testXmlRoundTripPreservesConfiguredValues() throws Exception {
     for ( String value : new String[] { "0", "${ping}", "25", "   22   " } ) {
       jEPing.setNbrPackets( value );
@@ -222,8 +280,8 @@ public class JobEntryPingTest extends JobEntryLoadSaveTestSupport<JobEntryPing> 
       JobEntryPing restored = new JobEntryPing();
       restored.loadXML( XMLHandler.loadXMLString( xml ).getDocumentElement(), null, null, null, null );
       assertConfiguredValues( restored, value );
-      // Reading runtime values must not change a subsequent export.
-      validateRuntimeValues( restored, value );
+      // Reading resolved values must not change a subsequent export.
+      assertResolvedValues( restored, value );
       assertEquals( xml, "<entry>" + restored.getXML() + "</entry>" );
     }
   }
@@ -239,7 +297,7 @@ public class JobEntryPingTest extends JobEntryLoadSaveTestSupport<JobEntryPing> 
       JobEntryPing restored = new JobEntryPing();
       restored.loadRep( repository, null, null, null, null );
       assertConfiguredValues( restored, value );
-      validateRuntimeValues( restored, value );
+      assertResolvedValues( restored, value );
       repository = new MemoryRepository();
       restored.saveRep( repository, null, null );
       assertEquals( value, repository.getJobEntryAttributeString( null, "nbr_packets" ) );
@@ -263,31 +321,17 @@ public class JobEntryPingTest extends JobEntryLoadSaveTestSupport<JobEntryPing> 
     assertEquals( value, entry.getTimeOut() );
   }
 
-  private void validateRuntimeValues( JobEntryPing entry, String value ) {
-    if ( JobEntryPing.isPositiveInteger( value ) ) {
-      assertEquals( value.trim(), entry.getRealNbrPackets() );
-      assertEquals( value.trim(), entry.getRealTimeOut() );
-    } else {
-      assertInvalidRuntimeValues( entry );
-    }
-  }
-
-  private void assertInvalidRuntimeValues( JobEntryPing entry ) {
-    assertInvalidValue( entry::getRealNbrPackets );
-    assertInvalidValue( entry::getRealTimeOut );
-  }
-
-  private void assertInvalidValue( Runnable getter ) {
-    try {
-      getter.run();
-      fail( "Invalid resolved ping values must not be replaced by defaults" );
-    } catch ( IllegalArgumentException expected ) {
-      // Validation must reject the value without changing the configured text.
-    }
+  private void assertResolvedValues( JobEntryPing entry, String value ) {
+    assertEquals( value, entry.getRealNbrPackets() );
+    assertEquals( value, entry.getRealTimeOut() );
   }
 
   private void assertExecutionFails( String value, boolean timeout, boolean variable ) {
     for ( int pingType = 0; pingType <= 2; pingType++ ) {
+      boolean required = timeout ? pingType != jEPing.iclassicPing : pingType != jEPing.isystemPing;
+      if ( !required ) {
+        continue;
+      }
       JobEntryPing entry = new JobEntryPing( "Ping" ) {
         @Override
         public String getRealHostname() {
@@ -310,5 +354,46 @@ public class JobEntryPingTest extends JobEntryLoadSaveTestSupport<JobEntryPing> 
       assertEquals( 1L, result.getNrErrors() );
       assertEquals( configuredValue, timeout ? entry.getTimeOut() : entry.getNbrPackets() );
     }
+  }
+
+  private void assertUnusedSettingIsNotValidated( String value, boolean timeout, boolean variable ) {
+    final boolean[] hostnameResolved = { false };
+    JobEntryPing entry = new JobEntryPing( "Ping" ) {
+      @Override
+      public String getTimeOut() {
+        if ( timeout ) {
+          throw new AssertionError( "Classic ping must not resolve or validate the timeout" );
+        }
+        return super.getTimeOut();
+      }
+
+      @Override
+      public String getNbrPackets() {
+        if ( !timeout ) {
+          throw new AssertionError( "System ping must not resolve or validate the packet count" );
+        }
+        return super.getNbrPackets();
+      }
+
+      @Override
+      public String getRealHostname() {
+        hostnameResolved[ 0 ] = true;
+        // Stop after configuration validation so this test does not send network traffic.
+        return null;
+      }
+    };
+    entry.ipingtype = timeout ? entry.iclassicPing : entry.isystemPing;
+    String configuredValue = variable ? "${ping}" : value;
+    entry.setVariable( "ping", value );
+    if ( timeout ) {
+      entry.setTimeOut( configuredValue );
+    } else {
+      entry.setNbrPackets( configuredValue );
+    }
+    String xml = entry.getXML();
+    Result previousResult = new Result();
+    assertSame( previousResult, entry.execute( previousResult, 0 ) );
+    assertTrue( hostnameResolved[ 0 ] );
+    assertEquals( xml, entry.getXML() );
   }
 }
