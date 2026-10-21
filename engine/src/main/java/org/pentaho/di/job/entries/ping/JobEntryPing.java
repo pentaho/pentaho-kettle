@@ -14,9 +14,6 @@
 
 package org.pentaho.di.job.entries.ping;
 
-import org.pentaho.di.job.entry.validator.AndValidator;
-import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -26,18 +23,20 @@ import java.util.List;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.job.entry.validator.AndValidator;
+import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
@@ -217,7 +216,7 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
   }
 
   public String getRealNbrPackets() {
-    return getValidatedValue( getNbrPackets(), DEFAULT_PACKETS, "JobPing.NrPackets.Label" );
+    return getValidatedValue( getNbrPackets(), "JobPing.NrPackets.Label" );
   }
 
   public void setNbrPackets( String nbrPackets ) {
@@ -245,16 +244,15 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
   }
 
   public String getRealTimeOut() {
-    return getValidatedValue( getTimeOut(), DEFAULT_TIMEOUT_MS, "JobPing.TimeOut.Label" );
+    return getValidatedValue( getTimeOut(), "JobPing.TimeOut.Label" );
   }
 
-  // Validate only after substitution, keeping defaults out of the persisted configuration.
-  private String getValidatedValue( String configuredValue, String defaultValue, String labelKey ) {
+  // Validate only after substitution, without changing the persisted configuration.
+  private String getValidatedValue( String configuredValue, String labelKey ) {
     String realValue = environmentSubstitute( configuredValue );
     if ( !isPositiveInteger( realValue ) ) {
-      logMinimal( BaseMessages.getString( PKG, "JobPing.WarningOnlyPositiveInteger",
-        BaseMessages.getString( PKG, labelKey ), defaultValue ) );
-      return defaultValue;
+      throw new IllegalArgumentException( BaseMessages.getString( PKG, "JobPing.ErrorOnlyPositiveInteger",
+        BaseMessages.getString( PKG, labelKey ), realValue ) );
     }
     return realValue.trim();
   }
@@ -269,9 +267,17 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
     result.setNrErrors( 1 );
     result.setResult( false );
 
+    int timeoutInt;
+    int packets;
+    try {
+      timeoutInt = Integer.parseInt( getRealTimeOut() );
+      packets = Integer.parseInt( getRealNbrPackets() );
+    } catch ( IllegalArgumentException ex ) {
+      logError( BaseMessages.getString( PKG, "JobPing.Error.Label" ) + ex.getMessage() );
+      return result;
+    }
+
     String hostname = getRealHostname();
-    int timeoutInt = Integer.parseInt( getRealTimeOut() );
-    int packets = Integer.parseInt( getRealNbrPackets() );
     boolean status = false;
 
     if ( Utils.isEmpty( hostname ) ) {
