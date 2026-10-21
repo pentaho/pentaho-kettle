@@ -209,22 +209,15 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
   }
 
   /**
-   * Incase, if a kjb/ktr already has non-numeric value, 0 & negative integers ,
-   * value will be replaced with {@link #DEFAULT_PACKETS } during runtime and user
-   * will be notified about this replacement in logs
+   * Returns the configured value without resolving variables or changing the saved metadata.
    * @return nbrPackets
    */
   public String getNbrPackets() {
-    if ( !isPositiveInteger( nbrPackets ) ) {
-      logMinimal( BaseMessages.getString( PKG, "JobPing.WarningOnlyPositiveInteger",
-              BaseMessages.getString( PKG, "JobPing.NrPackets.Label" ), DEFAULT_PACKETS ) );
-      nbrPackets = DEFAULT_PACKETS;
-    }
-    return nbrPackets.trim();
+    return nbrPackets;
   }
 
   public String getRealNbrPackets() {
-    return environmentSubstitute( getNbrPackets() );
+    return getValidatedValue( getNbrPackets(), DEFAULT_PACKETS, "JobPing.NrPackets.Label" );
   }
 
   public void setNbrPackets( String nbrPackets ) {
@@ -244,22 +237,26 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
   }
 
   /**
-   * Incase, if a kjb/ktr already has non-numeric value, 0 & negative integers ,
-   * value will be replaced with {@link #DEFAULT_TIMEOUT_MS } during runtime and user
-   * will be notified about this replacement in logs
+   * Returns the configured value without resolving variables or changing the saved metadata.
    * @return timeout
    */
   public String getTimeOut() {
-    if ( !isPositiveInteger( timeout ) ) {
-      logMinimal( BaseMessages.getString( PKG, "JobPing.WarningOnlyPositiveInteger",
-              BaseMessages.getString( PKG, "JobPing.TimeOut.Label" ), DEFAULT_TIMEOUT_MS ) );
-      timeout = DEFAULT_TIMEOUT_MS;
-    }
-    return timeout.trim();
+    return timeout;
   }
 
   public String getRealTimeOut() {
-    return environmentSubstitute( getTimeOut() );
+    return getValidatedValue( getTimeOut(), DEFAULT_TIMEOUT_MS, "JobPing.TimeOut.Label" );
+  }
+
+  // Validate only after substitution, keeping defaults out of the persisted configuration.
+  private String getValidatedValue( String configuredValue, String defaultValue, String labelKey ) {
+    String realValue = environmentSubstitute( configuredValue );
+    if ( !isPositiveInteger( realValue ) ) {
+      logMinimal( BaseMessages.getString( PKG, "JobPing.WarningOnlyPositiveInteger",
+        BaseMessages.getString( PKG, labelKey ), defaultValue ) );
+      return defaultValue;
+    }
+    return realValue.trim();
   }
 
   public void setTimeOut( String timeout ) {

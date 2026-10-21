@@ -111,15 +111,6 @@ public class JobEntryPingDialog extends JobEntryDialog implements JobEntryDialog
     };
     changed = jobEntry.hasChanged();
 
-    ModifyListener lsValidate = event -> {
-      String currentText = ((Text) event.getSource()).getText().trim();
-      boolean isPosInt = JobEntryPing.isPositiveInteger( currentText );
-      if ( !isPosInt && !( currentText.equals( "" ) ) ) {
-        displayInfoMessage( BaseMessages.getString( PKG, "JobPing.InfoOnlyPositiveInteger" ) );
-        ((Text) event.getSource()).setText( "" );
-      }
-    };
-
     FormLayout formLayout = new FormLayout();
     formLayout.marginWidth = Const.FORM_MARGIN;
     formLayout.marginHeight = Const.FORM_MARGIN;
@@ -214,7 +205,6 @@ public class JobEntryPingDialog extends JobEntryDialog implements JobEntryDialog
     wlTimeOut.setToolTipText( BaseMessages.getString( PKG, "JobPing.TimeOut.Tooltip" ) );
     props.setLook( wTimeOut );
     wTimeOut.addModifyListener( lsMod );
-    wTimeOut.addModifyListener( lsValidate );
     fdTimeOut = new FormData();
     fdTimeOut.left = new FormAttachment( middle, 0 );
     fdTimeOut.top = new FormAttachment( wPingType, margin );
@@ -234,7 +224,6 @@ public class JobEntryPingDialog extends JobEntryDialog implements JobEntryDialog
     wNbrPackets = new TextVar( jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wNbrPackets );
     wNbrPackets.addModifyListener( lsMod );
-    wNbrPackets.addModifyListener( lsValidate );
     fdNbrPackets = new FormData();
     fdNbrPackets.left = new FormAttachment( middle, 0 );
     fdNbrPackets.top = new FormAttachment( wTimeOut, margin );
