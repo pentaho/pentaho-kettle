@@ -34,6 +34,11 @@
       <artifactId>pentaho-s3-vfs</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>pentaho</groupId>
+      <artifactId>pentaho-s3-file-output</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <!-- v2 plugin zip dependency -->
     <dependency>
       <groupId>pentaho</groupId>

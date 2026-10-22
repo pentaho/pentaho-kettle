@@ -11,7 +11,7 @@
  ******************************************************************************/
 
 
-package org.pentaho.amazon.s3;
+package org.pentaho.amazon.s3.fileoutput;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -25,7 +25,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.trans.steps.mock.StepMockHelper;
 import org.pentaho.di.trans.steps.textfileoutput.TextFileOutputData;
-import org.pentaho.s3common.TestCleanupUtil;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -35,6 +34,9 @@ import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.never;
 
 public class S3FileOutputTest {
+
+  private static final String ACCESS_KEY_PROPERTY = "aws.accessKeyId";
+  private static final String SECRET_KEY_PROPERTY = "aws.secretAccessKey";
 
   private S3FileOutput s3FileOutput;
   private StepMockHelper<S3FileOutputMeta, TextFileOutputData> stepMockHelper;
@@ -67,15 +69,15 @@ public class S3FileOutputTest {
     s3FileOutput = new S3FileOutput( stepMockHelper.stepMeta, stepMockHelper.stepDataInterface, 0, stepMockHelper.transMeta,
       stepMockHelper.trans );
 
-    System.setProperty( "aws.accessKeyId", "" );
-    System.setProperty( "aws.secretKey", "" );
+    System.setProperty( ACCESS_KEY_PROPERTY, "" );
+    System.setProperty( SECRET_KEY_PROPERTY, "" );
   }
 
   @After
   public void tearDown() {
     stepMockHelper.cleanUp();
-    System.setProperty( "aws.accessKeyId", "" );
-    System.setProperty( "aws.secretKey", "" );
+    System.setProperty( ACCESS_KEY_PROPERTY, "" );
+    System.setProperty( SECRET_KEY_PROPERTY, "" );
   }
 
   @Test
@@ -83,8 +85,8 @@ public class S3FileOutputTest {
     System.setProperty( Const.KETTLE_USE_AWS_DEFAULT_CREDENTIALS, "Y" );
     s3FileOutput.init( smi );
 
-    Assert.assertEquals( "", System.getProperty( "aws.accessKeyId" ) );
-    Assert.assertEquals( "", System.getProperty( "aws.secretKey" ) );
+    Assert.assertEquals( "", System.getProperty( ACCESS_KEY_PROPERTY ) );
+    Assert.assertEquals( "", System.getProperty( SECRET_KEY_PROPERTY ) );
   }
 
   @Test
@@ -95,8 +97,8 @@ public class S3FileOutputTest {
 
     s3FileOutput.init( smi );
 
-    Assert.assertEquals( "", System.getProperty( "aws.accessKeyId" ) );
-    Assert.assertEquals( "", System.getProperty( "aws.secretKey" ) );
+    Assert.assertEquals( "", System.getProperty( ACCESS_KEY_PROPERTY ) );
+    Assert.assertEquals( "", System.getProperty( SECRET_KEY_PROPERTY ) );
   }
 
   @Test
@@ -107,8 +109,8 @@ public class S3FileOutputTest {
 
     s3FileOutput.init( smi );
 
-    Assert.assertEquals( "accessKey", System.getProperty( "aws.accessKeyId" ) );
-    Assert.assertEquals( "secretKey", System.getProperty( "aws.secretKey" ) );
+    Assert.assertEquals( "accessKey", System.getProperty( ACCESS_KEY_PROPERTY ) );
+    Assert.assertEquals( "secretKey", System.getProperty( SECRET_KEY_PROPERTY ) );
   }
 
   @Test
@@ -119,7 +121,7 @@ public class S3FileOutputTest {
 
     s3FileOutput.init( smi );
 
-    Assert.assertEquals( "accessKey", System.getProperty( "aws.accessKeyId" ) );
-    Assert.assertEquals( "secretKey", System.getProperty( "aws.secretKey" ) );
+    Assert.assertEquals( "accessKey", System.getProperty( ACCESS_KEY_PROPERTY ) );
+    Assert.assertEquals( "secretKey", System.getProperty( SECRET_KEY_PROPERTY ) );
   }
 }

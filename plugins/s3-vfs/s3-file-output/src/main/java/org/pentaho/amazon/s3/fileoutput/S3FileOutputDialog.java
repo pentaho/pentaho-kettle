@@ -12,15 +12,11 @@
 
 
 
-package org.pentaho.amazon.s3;
+package org.pentaho.amazon.s3.fileoutput;
 
-import com.amazonaws.auth.AWSCredentials;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
-import org.apache.commons.vfs2.FileSystemOptions;
-import org.apache.commons.vfs2.auth.StaticUserAuthenticator;
-import org.apache.commons.vfs2.impl.DefaultFileSystemConfigBuilder;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
@@ -47,7 +43,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-import org.pentaho.amazon.AmazonSpoonPlugin;
+import org.pentaho.amazon.s3.S3Util;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.compress.CompressionProviderFactory;
@@ -89,7 +85,7 @@ import java.util.Set;
 
 public class S3FileOutputDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> BASE_PKG = TextFileOutputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
-  private static Class<?> PKG = AmazonSpoonPlugin.class;
+  private static Class<?> PKG = S3FileOutputDialog.class;
 
   private CTabFolder wTabFolder;
   private FormData fdTabFolder;
@@ -312,7 +308,7 @@ public class S3FileOutputDialog extends BaseStepDialog implements StepDialogInte
     wbFilename.setLayoutData( fdbFilename );
 
     wFilename = new TextVar( transMeta, wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wFilename.setText( "s3n://" );
+    wFilename.setText( "s3a://" );
     props.setLook( wFilename );
     wFilename.addModifyListener( lsMod );
     fdFilename = new FormData();
@@ -1167,7 +1163,7 @@ public class S3FileOutputDialog extends BaseStepDialog implements StepDialogInte
 
 
             FileObject selectedFile =
-              getFileChooserHelper().browse( fileFilters, fileFilterNames, wFilename.getText(), getFileSystemOptions(),
+              getFileChooserHelper().browse( fileFilters, fileFilterNames, wFilename.getText(),
                 VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE_OR_DIRECTORY );
 
           System.setProperty( S3Util.ACCESS_KEY_SYSTEM_PROPERTY, "" );
@@ -1467,7 +1463,7 @@ public class S3FileOutputDialog extends BaseStepDialog implements StepDialogInte
     tfoi.setSecretKey( input.getSecretKey() );
 
     if ( StringUtils.isEmpty( wFilename.getText().trim() ) ) {
-      wFilename.setText( "s3n://" );
+      wFilename.setText( "s3a://" );
     }
 
     tfoi.setFileName( wFilename.getText() );
@@ -1620,7 +1616,7 @@ public class S3FileOutputDialog extends BaseStepDialog implements StepDialogInte
 
   protected VfsFileChooserHelper getFileChooserHelper() throws KettleFileException, FileSystemException {
     if ( helper == null ) {
-      helper = new S3AVfsFileChooserHelper( shell, getFileChooserDialog(), getVariableSpace(), getFileSystemOptions() );
+      helper = new S3AVfsFileChooserHelper( shell, getFileChooserDialog(), getVariableSpace() );
     }
     return helper;
   }
@@ -1628,10 +1624,8 @@ public class S3FileOutputDialog extends BaseStepDialog implements StepDialogInte
   protected VfsFileChooserDialog getFileChooserDialog() throws KettleFileException {
     if ( this.fileChooserDialog == null ) {
       String filename = wFilename.getText();
-      String defaultFileObject = "s3n://";
-      if ( !StringUtils.isEmpty( filename ) && filename.startsWith( "s3://" ) ) {
-        defaultFileObject = "s3://";
-      }
+      String defaultFileObject = "s3a://";
+
       FileObject defaultInitialFile = KettleVFS.getInstance( transMeta.getBowl() )
         .getFileObject( defaultFileObject );
 
@@ -1644,23 +1638,5 @@ public class S3FileOutputDialog extends BaseStepDialog implements StepDialogInte
 
   public VariableSpace getVariableSpace() {
     return transMeta;
-  }
-
-  protected FileSystemOptions getFileSystemOptions() throws FileSystemException {
-    FileSystemOptions opts = new FileSystemOptions();
-    S3Util.S3Keys keys = S3Util.getKeysFromURI( wFilename.getText() );
-    if ( keys == null ) {
-      AWSCredentials credentials = S3CredentialsProvider.getAWSCredentials();
-      if ( credentials != null ) {
-        StaticUserAuthenticator userAuthenticator =
-                new StaticUserAuthenticator( null, credentials.getAWSAccessKeyId(), credentials.getAWSSecretKey() );
-        DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator( opts, userAuthenticator );
-      }
-    } else {
-      StaticUserAuthenticator userAuthenticator =
-              new StaticUserAuthenticator( null, keys.getAccessKey(), keys.getSecretKey() );
-      DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator( opts, userAuthenticator );
-    }
-    return opts;
   }
 }

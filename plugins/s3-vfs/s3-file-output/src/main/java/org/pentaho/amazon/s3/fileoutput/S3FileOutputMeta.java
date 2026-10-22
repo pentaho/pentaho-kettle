@@ -12,7 +12,7 @@
 
 
 
-package org.pentaho.amazon.s3;
+package org.pentaho.amazon.s3.fileoutput;
 
 import java.util.List;
 
@@ -42,7 +42,7 @@ import org.w3c.dom.Node;
     description = "S3FileOutput.Description",
     documentationUrl = "pdi-transformation-steps-reference-overview/s3-file-output-cp",
     categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Output",
-    i18nPackageName = "org.pentaho.amazon.s3" )
+    i18nPackageName = "org.pentaho.amazon.s3.fileoutput" )
 @InjectionSupported( localizationPrefix = "S3FileOutput.Injection.", groups = { "OUTPUT_FIELDS" } )
 public class S3FileOutputMeta extends TextFileOutputMeta {
 
@@ -76,7 +76,7 @@ public class S3FileOutputMeta extends TextFileOutputMeta {
 
     // now set the default for the
     // filename to an empty string
-    setFileName( "s3n://" );
+    setFileName( "s3://" );
   }
 
   @Override
@@ -167,7 +167,7 @@ public class S3FileOutputMeta extends TextFileOutputMeta {
    */
   protected void processFilename( String filename ) throws Exception {
     if ( Utils.isEmpty( filename ) ) {
-      filename = "s3n://";
+      filename = "s3://";
     }
     setFileName( filename );
   }

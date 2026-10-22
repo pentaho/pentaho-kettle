@@ -119,12 +119,6 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.pentaho</groupId>
-      <artifactId>shim-api</artifactId>
-      <version>${pentaho-hadoop-shims.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-core</artifactId>
       <version>${pdi.version}</version>

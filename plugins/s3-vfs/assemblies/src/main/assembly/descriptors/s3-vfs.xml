@@ -20,6 +20,7 @@
             <outputDirectory>.</outputDirectory>
             <includes>
                 <include>pentaho:pentaho-s3-vfs:jar</include>
+                <include>pentaho:pentaho-s3-file-output:jar</include>
             </includes>
             <useProjectArtifact>false</useProjectArtifact>
         </dependencySet>

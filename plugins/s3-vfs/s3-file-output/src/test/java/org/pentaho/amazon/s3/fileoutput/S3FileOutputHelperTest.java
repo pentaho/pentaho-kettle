@@ -11,16 +11,16 @@
  ******************************************************************************/
 
 
-package org.pentaho.amazon.s3;
+package org.pentaho.amazon.s3.fileoutput;
 
-import com.amazonaws.services.s3.model.ListObjectsV2Request;
-import com.amazonaws.services.s3.model.ListObjectsV2Result;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
-import com.amazonaws.services.s3.AmazonS3;
 import junit.framework.TestCase;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.vfs2.VFS;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.pentaho.amazon.s3.S3Details;
 import org.pentaho.amazon.s3.provider.S3Provider;
 import org.pentaho.di.connections.vfs.VFSRoot;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -29,10 +29,13 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.textfileoutput.TextFileField;
 
 import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
@@ -232,57 +235,70 @@ public class S3FileOutputHelperTest extends TestCase {
     assertNull( result.get( "contents" ) );
   }
 
-  public void testProcessS3PathSuccess() throws Exception {
-    S3FileOutputHelper helper = new S3FileOutputHelper();
+  public void testProcessS3PathListsFoldersThenFiles() throws Exception {
+    Path dir = Files.createTempDirectory( "s3-file-output" );
+    try {
+      Files.createDirectory( dir.resolve( "sub" ) );
+      Files.writeString( dir.resolve( "file1.txt" ), "abc" );
+      S3Provider s3Provider = providerServing( "my-bucket/folder1", dir );
 
-    // Mocks
-    TransMeta transMeta = mock( TransMeta.class );
-    StepMeta stepMeta = mock( StepMeta.class );
-    S3FileOutputMeta meta = mock( S3FileOutputMeta.class );
+      JSONArray contents = new JSONArray();
+      helperWith( s3Provider ).processS3Path( transMetaWithStep(), Map.of( "stepName", "step1" ),
+        "s3://my-bucket/folder1/", contents );
+
+      assertEquals( 2, contents.size() );
+      JSONObject folder = (JSONObject) contents.get( 0 );
+      assertEquals( "folder", folder.get( "type" ) );
+      assertEquals( "sub", folder.get( "name" ) );
+      assertEquals( "s3://my-bucket/folder1/sub/", folder.get( "path" ) );
+      JSONObject file = (JSONObject) contents.get( 1 );
+      assertEquals( "file", file.get( "type" ) );
+      assertEquals( "file1.txt", file.get( "name" ) );
+      assertEquals( "s3://my-bucket/folder1/file1.txt", file.get( "path" ) );
+      assertEquals( 3L, file.get( "size" ) );
+      assertNotNull( file.get( "lastModified" ) );
+    } finally {
+      FileUtils.deleteDirectory( dir.toFile() );
+    }
+  }
+
+  public void testProcessS3PathOnFileReturnsNoContents() throws Exception {
+    Path file = Files.createTempFile( "s3-file-output", ".txt" );
+    try {
+      S3Provider s3Provider = providerServing( "my-bucket/out.txt", file );
+
+      JSONArray contents = new JSONArray();
+      helperWith( s3Provider ).processS3Path( transMetaWithStep(), Map.of( "stepName", "step1" ),
+        "s3://my-bucket/out.txt", contents );
+
+      assertTrue( contents.isEmpty() );
+    } finally {
+      Files.delete( file );
+    }
+  }
+
+  private static S3Provider providerServing( String s3Path, Path localPath ) throws Exception {
     S3Provider s3Provider = mock( S3Provider.class );
-    AmazonS3 s3Client = mock( AmazonS3.class );
-    ListObjectsV2Result listing = mock( ListObjectsV2Result.class );
+    when( s3Provider.prepare( any() ) ).thenAnswer( invocation -> invocation.getArgument( 0 ) );
+    when( s3Provider.getDirectFile( any(), any(), eq( s3Path ) ) )
+      .thenReturn( VFS.getManager().toFileObject( localPath.toFile() ) );
+    return s3Provider;
+  }
 
-    Map<String, String> queryParams = Map.of( "stepName", "step1" );
-
-    // Inject s3Provider via reflection
+  private static S3FileOutputHelper helperWith( S3Provider s3Provider ) throws Exception {
+    S3FileOutputHelper helper = new S3FileOutputHelper();
     Field providerField = S3FileOutputHelper.class.getDeclaredField( "s3Provider" );
     providerField.setAccessible( true );
     providerField.set( helper, s3Provider );
+    return helper;
+  }
 
-    // TransMeta → StepMeta → Meta
+  private static TransMeta transMetaWithStep() {
+    TransMeta transMeta = mock( TransMeta.class );
+    StepMeta stepMeta = mock( StepMeta.class );
     when( transMeta.findStep( "step1" ) ).thenReturn( stepMeta );
-    when( stepMeta.getStepMetaInterface() ).thenReturn( meta );
-    when( meta.getAccessKey() ).thenReturn( "ak" );
-    when( meta.getSecretKey() ).thenReturn( "sk" );
-
-    // Provider behavior
-    when( s3Provider.prepare( any() ) ).thenAnswer( invocation -> invocation.getArgument( 0 ) );
-    when( s3Provider.getS3Client( any() ) ).thenReturn( s3Client );
-
-    // Folder
-    when( listing.getCommonPrefixes() ).thenReturn( List.of( "folder1/" ) );
-
-    // File
-    S3ObjectSummary summary = new S3ObjectSummary();
-    summary.setKey( "folder1/file1.txt" );
-    summary.setSize( 123L );
-
-    when( listing.getObjectSummaries() ).thenReturn( List.of( summary ) );
-    when( listing.isTruncated() ).thenReturn( false );
-    when( listing.getNextContinuationToken() ).thenReturn( null );
-
-    // S3 call
-    when( s3Client.listObjectsV2( any( ListObjectsV2Request.class ) ) ).thenReturn( listing );
-    JSONArray contents = new JSONArray();
-    helper.processS3Path(
-        transMeta,
-        queryParams,
-        "s3://my-bucket/folder1",
-        contents
-    );
-    // Assertions
-    assertEquals( 2, contents.size() );
+    when( stepMeta.getStepMetaInterface() ).thenReturn( mock( S3FileOutputMeta.class ) );
+    return transMeta;
   }
 
   public void testListS3ContentsActionException() throws Exception {
@@ -305,34 +321,6 @@ public class S3FileOutputHelperTest extends TestCase {
     JSONObject result = helper.listS3ContentsAction( transMeta, queryParams );
 
     assertEquals( "Action failed", result.get( "actionStatus" ) );
-  }
-
-  public void testAddFilesAndFoldersAddsFoldersAndFiles() {
-    S3FileOutputHelper helper = new S3FileOutputHelper();
-
-    ListObjectsV2Result listing = mock( ListObjectsV2Result.class );
-    JSONArray contents = new JSONArray();
-
-    // Mock folders
-    when( listing.getCommonPrefixes() ).thenReturn( List.of( "folder1/" ) );
-
-    // Mock files
-    S3ObjectSummary summary = new S3ObjectSummary();
-    summary.setKey( "file1.txt" );
-    summary.setSize( 100L );
-
-    when( listing.getObjectSummaries() ).thenReturn( List.of( summary ) );
-
-    helper.addFilesAndFolders( listing, "bucket", "", contents );
-
-    assertEquals( 2, contents.size() );
-
-    JSONObject folder = (JSONObject) contents.get( 0 );
-    assertEquals( "folder", folder.get( "type" ) );
-
-    JSONObject file = (JSONObject) contents.get( 1 );
-    assertEquals( "file", file.get( "type" ) );
-    assertEquals( 100L, file.get( "size" ) );
   }
 
   public void testCreateS3DetailsAccessKeyAuth() {

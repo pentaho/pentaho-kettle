@@ -9,6 +9,8 @@
             <outputDirectory>.</outputDirectory>
             <includes>
                 <include>pentaho:pentaho-s3-vfs-v2:jar</include>
+                <!-- legacy S3FileOutput step-->
+                <include>pentaho:pentaho-s3-file-output:jar</include>
             </includes>
             <useProjectArtifact>false</useProjectArtifact>
         </dependencySet>

@@ -12,7 +12,7 @@
 
 
 
-package org.pentaho.amazon.s3;
+package org.pentaho.amazon.s3.fileoutput;
 
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -23,7 +23,6 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.s3common.TestCleanupUtil;
 
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Document;

@@ -12,12 +12,12 @@
 
 
 
-package org.pentaho.amazon.s3;
+package org.pentaho.amazon.s3.fileoutput;
 
 import org.apache.commons.vfs2.FileSystemOptions;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.s3a.vfs.S3AFileProvider;
+import org.pentaho.s3.vfs.S3FileProvider;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
 
@@ -25,15 +25,15 @@ public class S3AVfsFileChooserHelper extends VfsFileChooserHelper {
 
   public S3AVfsFileChooserHelper( Shell shell, VfsFileChooserDialog fileChooserDialog, VariableSpace variableSpace ) {
     super( shell, fileChooserDialog, variableSpace );
-    setDefaultScheme( S3AFileProvider.SCHEME );
-    setSchemeRestriction( S3AFileProvider.SCHEME );
+    setDefaultScheme( S3FileProvider.S3A_SCHEME );
+    setSchemeRestriction( S3FileProvider.S3A_SCHEME );
   }
 
   public S3AVfsFileChooserHelper( Shell shell, VfsFileChooserDialog fileChooserDialog, VariableSpace variableSpace,
                                   FileSystemOptions fileSystemOptions ) {
     super( shell, fileChooserDialog, variableSpace, fileSystemOptions );
-    setDefaultScheme( S3AFileProvider.SCHEME );
-    setSchemeRestriction( S3AFileProvider.SCHEME );
+    setDefaultScheme( S3FileProvider.S3A_SCHEME );
+    setSchemeRestriction( S3FileProvider.S3A_SCHEME );
   }
 
   @Override

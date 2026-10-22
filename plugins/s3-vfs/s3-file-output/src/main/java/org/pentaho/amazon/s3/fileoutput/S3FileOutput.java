@@ -12,9 +12,10 @@
 
 
 
-package org.pentaho.amazon.s3;
+package org.pentaho.amazon.s3.fileoutput;
 
 import com.google.common.annotations.VisibleForTesting;
+import org.pentaho.amazon.s3.S3Util;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.row.value.ValueMetaBase;

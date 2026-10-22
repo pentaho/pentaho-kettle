@@ -11,17 +11,18 @@
  ******************************************************************************/
 
 
-package org.pentaho.amazon.s3;
+package org.pentaho.amazon.s3.fileoutput;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.ListObjectsV2Request;
-import com.amazonaws.services.s3.model.ListObjectsV2Result;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.vfs2.FileContent;
+import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.FileSystemException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.pentaho.amazon.s3.S3Details;
+import org.pentaho.amazon.s3.S3Util;
 import org.pentaho.amazon.s3.provider.S3Provider;
 import org.pentaho.di.connections.vfs.VFSRoot;
 import org.pentaho.di.core.exception.KettleException;
@@ -38,6 +39,7 @@ import org.pentaho.s3.vfs.S3FileName;
 import org.pentaho.s3.vfs.S3FileProvider;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -285,72 +287,62 @@ public JSONObject getEOLFormatsAction() {
   public void processS3Path( TransMeta transMeta,
                              Map<String, String> queryParams,
                              String path,
-                             JSONArray contents ) throws KettleException {
+                             JSONArray contents ) throws KettleException, FileSystemException {
     String s3Prefix = S3FileProvider.SCHEME + "://";
     S3Details s3Details = createS3DetailsFromParams( transMeta, queryParams );
     s3Details.setSpace( new Variables() );
     s3Details = s3Provider.prepare( s3Details );
-    AmazonS3 s3Client = s3Provider.getS3Client( s3Details );
-    if ( s3Client == null ) {
+    String cleanPath = StringUtils.removeEnd( path.replace( s3Prefix, "" ), S3FileName.DELIMITER );
+    FileObject folder = s3Provider.getDirectFile( transMeta.getBowl(), s3Details, cleanPath );
+    if ( folder == null ) {
       throw new IllegalStateException(
           BaseMessages.getString( PKG, "S3FileOutput.Error.S3ClientInitFailed" )
       );
     }
-    String cleanPath = path.replace( s3Prefix, "" );
-    String bucketName = cleanPath.contains( S3FileName.DELIMITER )
-        ? cleanPath.substring( 0, cleanPath.indexOf( S3FileName.DELIMITER ) )
-        : cleanPath;
-    String prefix = cleanPath.contains( S3FileName.DELIMITER )
-        ? cleanPath.substring( cleanPath.indexOf( S3FileName.DELIMITER ) + 1 )
-        : "";
-    if ( !prefix.isEmpty() && !prefix.endsWith( S3FileName.DELIMITER ) ) {
-      prefix += S3FileName.DELIMITER;
+    if ( folder.getType().hasChildren() ) {
+      addFilesAndFolders( folder.getChildren(), s3Prefix + cleanPath + S3FileName.DELIMITER, contents );
     }
-
-    ListObjectsV2Request listRequest = new ListObjectsV2Request()
-        .withBucketName( bucketName )
-        .withPrefix( prefix )
-        .withDelimiter( S3FileName.DELIMITER );
-    ListObjectsV2Result listing;
-    do {
-      listing = s3Client.listObjectsV2( listRequest );
-      addFilesAndFolders( listing, bucketName, prefix, contents );
-      listRequest.setContinuationToken( listing.getNextContinuationToken() );
-    } while ( listing.isTruncated() );
   }
 
-  public void addFilesAndFolders( ListObjectsV2Result listing,
-                                  String bucketName,
-                                  String prefix,
-                                  JSONArray contents ) {
-    String s3Prefix = S3FileProvider.SCHEME + "://";
-    // Folders
-    for ( String commonPrefix : listing.getCommonPrefixes() ) {
-      String folderName = commonPrefix.substring( prefix.length() );
-      if ( folderName.endsWith( S3FileName.DELIMITER ) ) {
-        folderName = folderName.substring( 0, folderName.length() - 1 );
+  @SuppressWarnings( "unchecked" )
+  public void addFilesAndFolders( FileObject[] children, String parentPath, JSONArray contents )
+    throws FileSystemException {
+    for ( FileObject child : children ) {
+      if ( child.isFolder() ) {
+        contents.add( toFolderItem( child, parentPath ) );
       }
-      JSONObject item = new JSONObject();
-      item.put( NAME_KEY, folderName );
-      item.put( TYPE_KEY, TYPE_FOLDER );
-      item.put( PATH_KEY, s3Prefix + bucketName + S3FileName.DELIMITER + commonPrefix );
-      contents.add( item );
     }
+    for ( FileObject child : children ) {
+      if ( child.isFile() ) {
+        contents.add( toFileItem( child, parentPath ) );
+      }
+    }
+  }
 
-    // Files
-    for ( S3ObjectSummary summary : listing.getObjectSummaries() ) {
-      if ( !summary.getKey().equals( prefix ) ) {
-        JSONObject item = new JSONObject();
-        item.put( NAME_KEY, summary.getKey().substring( prefix.length() ) );
-        item.put( TYPE_KEY, TYPE_FILE );
-        item.put( PATH_KEY, s3Prefix + bucketName + S3FileName.DELIMITER + summary.getKey() );
-        item.put( SIZE_KEY, summary.getSize() );
-        if ( summary.getLastModified() != null ) {
-          item.put( LAST_MODIFIED_KEY, summary.getLastModified().toString() );
-        }
-        contents.add( item );
-      }
+  @SuppressWarnings( "unchecked" )
+  private JSONObject toFolderItem( FileObject folder, String parentPath ) {
+    String name = folder.getName().getBaseName();
+    JSONObject item = new JSONObject();
+    item.put( NAME_KEY, name );
+    item.put( TYPE_KEY, TYPE_FOLDER );
+    item.put( PATH_KEY, parentPath + name + S3FileName.DELIMITER );
+    return item;
+  }
+
+  @SuppressWarnings( "unchecked" )
+  private JSONObject toFileItem( FileObject file, String parentPath ) throws FileSystemException {
+    String name = file.getName().getBaseName();
+    FileContent content = file.getContent();
+    JSONObject item = new JSONObject();
+    item.put( NAME_KEY, name );
+    item.put( TYPE_KEY, TYPE_FILE );
+    item.put( PATH_KEY, parentPath + name );
+    item.put( SIZE_KEY, content.getSize() );
+    long lastModified = content.getLastModifiedTime();
+    if ( lastModified > 0 ) {
+      item.put( LAST_MODIFIED_KEY, new Date( lastModified ).toString() );
     }
+    return item;
   }
 
   /**

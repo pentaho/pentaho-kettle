@@ -12,7 +12,7 @@
 
 
 
-package org.pentaho.amazon.s3;
+package org.pentaho.amazon.s3.fileoutput;
 
 import org.junit.Before;
 

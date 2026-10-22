@@ -63,6 +63,7 @@
 
   <modules>
     <module>core</module>
+    <module>s3-file-output</module>
     <module>core-v2</module>
     <module>assemblies</module>
   </modules>
