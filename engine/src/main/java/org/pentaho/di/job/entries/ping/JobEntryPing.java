@@ -14,9 +14,6 @@
 
 package org.pentaho.di.job.entries.ping;
 
-import org.pentaho.di.job.entry.validator.AndValidator;
-import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -26,18 +23,20 @@ import java.util.List;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.job.entry.validator.AndValidator;
+import org.pentaho.di.job.entry.validator.JobEntryValidatorUtils;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
@@ -60,6 +59,7 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
   private String timeout;
   private static final String DEFAULT_TIMEOUT_MS = "3000";
   private static final String DEFAULT_PACKETS = "2";
+  private static final String ERROR_LABEL = "JobPing.Error.Label";
   private String nbrPackets;
   private String Windows_CHAR = "-n";
   private String NIX_CHAR = "-c";
@@ -209,18 +209,11 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
   }
 
   /**
-   * Incase, if a kjb/ktr already has non-numeric value, 0 & negative integers ,
-   * value will be replaced with {@link #DEFAULT_PACKETS } during runtime and user
-   * will be notified about this replacement in logs
+   * Returns the configured value without resolving variables or changing the saved metadata.
    * @return nbrPackets
    */
   public String getNbrPackets() {
-    if ( !isPositiveInteger( nbrPackets ) ) {
-      logMinimal( BaseMessages.getString( PKG, "JobPing.WarningOnlyPositiveInteger",
-              BaseMessages.getString( PKG, "JobPing.NrPackets.Label" ), DEFAULT_PACKETS ) );
-      nbrPackets = DEFAULT_PACKETS;
-    }
-    return nbrPackets.trim();
+    return nbrPackets;
   }
 
   public String getRealNbrPackets() {
@@ -244,22 +237,31 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
   }
 
   /**
-   * Incase, if a kjb/ktr already has non-numeric value, 0 & negative integers ,
-   * value will be replaced with {@link #DEFAULT_TIMEOUT_MS } during runtime and user
-   * will be notified about this replacement in logs
+   * Returns the configured value without resolving variables or changing the saved metadata.
    * @return timeout
    */
   public String getTimeOut() {
-    if ( !isPositiveInteger( timeout ) ) {
-      logMinimal( BaseMessages.getString( PKG, "JobPing.WarningOnlyPositiveInteger",
-              BaseMessages.getString( PKG, "JobPing.TimeOut.Label" ), DEFAULT_TIMEOUT_MS ) );
-      timeout = DEFAULT_TIMEOUT_MS;
-    }
-    return timeout.trim();
+    return timeout;
   }
 
   public String getRealTimeOut() {
     return environmentSubstitute( getTimeOut() );
+  }
+
+  // Validate only after substitution, without changing the persisted configuration.
+  private int resolvePositiveInt( String configured, String labelKey ) throws KettleException {
+    String realValue = environmentSubstitute( configured );
+    String errorMessage = BaseMessages.getString( PKG, "JobPing.ErrorOnlyPositiveInteger",
+      BaseMessages.getString( PKG, labelKey ), realValue );
+    try {
+      int value = Integer.parseInt( realValue == null ? "" : realValue.trim() );
+      if ( value > 0 ) {
+        return value;
+      }
+    } catch ( NumberFormatException ex ) {
+      throw new KettleException( errorMessage, ex );
+    }
+    throw new KettleException( errorMessage );
   }
 
   public void setTimeOut( String timeout ) {
@@ -272,9 +274,21 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
     result.setNrErrors( 1 );
     result.setResult( false );
 
+    int timeoutInt = 0;
+    int packets = 0;
+    try {
+      if ( ipingtype == isystemPing || ipingtype == ibothPings ) {
+        timeoutInt = resolvePositiveInt( getTimeOut(), "JobPing.TimeOut.Label" );
+      }
+      if ( ipingtype == iclassicPing || ipingtype == ibothPings ) {
+        packets = resolvePositiveInt( getNbrPackets(), "JobPing.NrPackets.Label" );
+      }
+    } catch ( KettleException ex ) {
+      logError( BaseMessages.getString( PKG, ERROR_LABEL ) + ex.getMessage() );
+      return result;
+    }
+
     String hostname = getRealHostname();
-    int timeoutInt = Integer.parseInt( getRealTimeOut() );
-    int packets = Integer.parseInt( getRealNbrPackets() );
     boolean status = false;
 
     if ( Utils.isEmpty( hostname ) ) {
@@ -287,42 +301,38 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
       if ( ipingtype == isystemPing || ipingtype == ibothPings ) {
         // Perform a system (Java) ping ...
         status = systemPing( hostname, timeoutInt );
-        if ( status ) {
-          if ( log.isDetailed() ) {
-            log.logDetailed( BaseMessages.getString( PKG, "JobPing.SystemPing" ), BaseMessages.getString(
-              PKG, "JobPing.OK.Label", hostname ) );
-          }
-        } else {
-          log.logError( BaseMessages.getString( PKG, "JobPing.SystemPing" ), BaseMessages.getString(
-            PKG, "JobPing.NOK.Label", hostname ) );
-        }
+        logPingResult( status, "JobPing.SystemPing", hostname );
       }
       if ( ( ipingtype == iclassicPing ) || ( ipingtype == ibothPings && !status ) ) {
         // Perform a classic ping ..
         status = classicPing( hostname, packets );
-        if ( status ) {
-          if ( log.isDetailed() ) {
-            log.logDetailed( BaseMessages.getString( PKG, "JobPing.ClassicPing" ), BaseMessages.getString(
-              PKG, "JobPing.OK.Label", hostname ) );
-          }
-        } else {
-          log.logError( BaseMessages.getString( PKG, "JobPing.ClassicPing" ), BaseMessages.getString(
-            PKG, "JobPing.NOK.Label", hostname ) );
-        }
+        logPingResult( status, "JobPing.ClassicPing", hostname );
       }
     } catch ( Exception ex ) {
-      logError( BaseMessages.getString( PKG, "JobPing.Error.Label" ) + ex.getMessage() );
+      logError( BaseMessages.getString( PKG, ERROR_LABEL ) + ex.getMessage() );
     }
+    if ( !status ) {
+      logError( BaseMessages.getString( PKG, "JobPing.NOK.Label", hostname ) );
+      return result;
+    }
+    if ( log.isDetailed() ) {
+      logDetailed( BaseMessages.getString( PKG, "JobPing.OK.Label", hostname ) );
+    }
+    result.setNrErrors( 0 );
+    result.setResult( true );
+    return result;
+  }
+
+  private void logPingResult( boolean status, String pingTypeKey, String hostname ) {
     if ( status ) {
       if ( log.isDetailed() ) {
-        logDetailed( BaseMessages.getString( PKG, "JobPing.OK.Label", hostname ) );
+        log.logDetailed( BaseMessages.getString( PKG, pingTypeKey ), BaseMessages.getString(
+          PKG, "JobPing.OK.Label", hostname ) );
       }
-      result.setNrErrors( 0 );
-      result.setResult( true );
     } else {
-      logError( BaseMessages.getString( PKG, "JobPing.NOK.Label", hostname ) );
+      log.logError( BaseMessages.getString( PKG, pingTypeKey ), BaseMessages.getString(
+        PKG, "JobPing.NOK.Label", hostname ) );
     }
-    return result;
   }
 
   public boolean evaluates() {
@@ -390,7 +400,7 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
         retval = true;
       }
     } catch ( IOException ex ) {
-      logError( BaseMessages.getString( PKG, "JobPing.Error.Label" ) + ex.getMessage() );
+      logError( BaseMessages.getString( PKG, ERROR_LABEL ) + ex.getMessage() );
     }
     return retval;
   }
