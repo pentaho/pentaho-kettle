@@ -59,6 +59,7 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
   private String timeout;
   private static final String DEFAULT_TIMEOUT_MS = "3000";
   private static final String DEFAULT_PACKETS = "2";
+  private static final String ERROR_LABEL = "JobPing.Error.Label";
   private String nbrPackets;
   private String Windows_CHAR = "-n";
   private String NIX_CHAR = "-c";
@@ -283,7 +284,7 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
         packets = resolvePositiveInt( getNbrPackets(), "JobPing.NrPackets.Label" );
       }
     } catch ( KettleException ex ) {
-      logError( BaseMessages.getString( PKG, "JobPing.Error.Label" ) + ex.getMessage() );
+      logError( BaseMessages.getString( PKG, ERROR_LABEL ) + ex.getMessage() );
       return result;
     }
 
@@ -300,42 +301,38 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
       if ( ipingtype == isystemPing || ipingtype == ibothPings ) {
         // Perform a system (Java) ping ...
         status = systemPing( hostname, timeoutInt );
-        if ( status ) {
-          if ( log.isDetailed() ) {
-            log.logDetailed( BaseMessages.getString( PKG, "JobPing.SystemPing" ), BaseMessages.getString(
-              PKG, "JobPing.OK.Label", hostname ) );
-          }
-        } else {
-          log.logError( BaseMessages.getString( PKG, "JobPing.SystemPing" ), BaseMessages.getString(
-            PKG, "JobPing.NOK.Label", hostname ) );
-        }
+        logPingResult( status, "JobPing.SystemPing", hostname );
       }
       if ( ( ipingtype == iclassicPing ) || ( ipingtype == ibothPings && !status ) ) {
         // Perform a classic ping ..
         status = classicPing( hostname, packets );
-        if ( status ) {
-          if ( log.isDetailed() ) {
-            log.logDetailed( BaseMessages.getString( PKG, "JobPing.ClassicPing" ), BaseMessages.getString(
-              PKG, "JobPing.OK.Label", hostname ) );
-          }
-        } else {
-          log.logError( BaseMessages.getString( PKG, "JobPing.ClassicPing" ), BaseMessages.getString(
-            PKG, "JobPing.NOK.Label", hostname ) );
-        }
+        logPingResult( status, "JobPing.ClassicPing", hostname );
       }
     } catch ( Exception ex ) {
-      logError( BaseMessages.getString( PKG, "JobPing.Error.Label" ) + ex.getMessage() );
+      logError( BaseMessages.getString( PKG, ERROR_LABEL ) + ex.getMessage() );
     }
+    if ( !status ) {
+      logError( BaseMessages.getString( PKG, "JobPing.NOK.Label", hostname ) );
+      return result;
+    }
+    if ( log.isDetailed() ) {
+      logDetailed( BaseMessages.getString( PKG, "JobPing.OK.Label", hostname ) );
+    }
+    result.setNrErrors( 0 );
+    result.setResult( true );
+    return result;
+  }
+
+  private void logPingResult( boolean status, String pingTypeKey, String hostname ) {
     if ( status ) {
       if ( log.isDetailed() ) {
-        logDetailed( BaseMessages.getString( PKG, "JobPing.OK.Label", hostname ) );
+        log.logDetailed( BaseMessages.getString( PKG, pingTypeKey ), BaseMessages.getString(
+          PKG, "JobPing.OK.Label", hostname ) );
       }
-      result.setNrErrors( 0 );
-      result.setResult( true );
     } else {
-      logError( BaseMessages.getString( PKG, "JobPing.NOK.Label", hostname ) );
+      log.logError( BaseMessages.getString( PKG, pingTypeKey ), BaseMessages.getString(
+        PKG, "JobPing.NOK.Label", hostname ) );
     }
-    return result;
   }
 
   public boolean evaluates() {
@@ -403,7 +400,7 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
         retval = true;
       }
     } catch ( IOException ex ) {
-      logError( BaseMessages.getString( PKG, "JobPing.Error.Label" ) + ex.getMessage() );
+      logError( BaseMessages.getString( PKG, ERROR_LABEL ) + ex.getMessage() );
     }
     return retval;
   }
