@@ -75,6 +75,14 @@
     <pentaho-s3-vfs-plugin.version>${project.version}</pentaho-s3-vfs-plugin.version>
     <pdi-avro-format-plugin.version>${project.version}</pdi-avro-format-plugin.version>
     <mail-plugin.version>${project.version}</mail-plugin.version>
+    <exec-sql-plugin.version>${project.version}</exec-sql-plugin.version>
+    <exec-sql-row-plugin.version>${project.version}</exec-sql-row-plugin.version>
+    <exec-process-plugin.version>${project.version}</exec-process-plugin.version>
+    <shell-job-entry-plugin.version>${project.version}</shell-job-entry-plugin.version>
+    <eval-job-entry-plugin.version>${project.version}</eval-job-entry-plugin.version>
+    <script-values-mod-plugin.version>${project.version}</script-values-mod-plugin.version>
+    <janino-plugin.version>${project.version}</janino-plugin.version>
+    <user-defined-java-expression-plugin.version>${project.version}</user-defined-java-expression-plugin.version>
     <pentaho-metaverse.version>11.1.0.0-SNAPSHOT</pentaho-metaverse.version>
     <pdi-xml-plugin.version>11.1.0.0-SNAPSHOT</pdi-xml-plugin.version>
     <pdi-json-plugin.version>11.1.0.0-SNAPSHOT</pdi-json-plugin.version>
@@ -157,6 +165,102 @@
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>mail-job-plugins</artifactId>
       <version>${mail-job-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>janino-plugins</artifactId>
+      <version>${janino-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>user-defined-java-expression-plugins</artifactId>
+      <version>${user-defined-java-expression-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>exec-sql-plugins</artifactId>
+      <version>${exec-sql-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>exec-sql-row-plugins</artifactId>
+      <version>${exec-sql-row-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>exec-process-plugins</artifactId>
+      <version>${exec-process-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>shell-job-entry-plugins</artifactId>
+      <version>${shell-job-entry-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>eval-job-entry-plugins</artifactId>
+      <version>${eval-job-entry-plugin.version}</version>
+      <type>zip</type>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>script-values-mod-plugins</artifactId>
+      <version>${script-values-mod-plugin.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>
