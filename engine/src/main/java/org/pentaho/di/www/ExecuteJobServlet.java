@@ -328,6 +328,13 @@ public class ExecuteJobServlet extends BaseHttpServlet implements CartePluginInt
   private JobMeta loadJob( Repository repository, String job, VariableSpace parentVariableSpace ) throws KettleException {
 
     if ( repository == null ) {
+      SlaveServerConfig serverConfig = getJobMap() != null ? getJobMap().getSlaveServerConfig() : null;
+      if ( serverConfig == null ) {
+        serverConfig = new SlaveServerConfig();
+      }
+      if ( !serverConfig.isExecuteUrlAllowed( job ) ) {
+        throw new KettleException( "Execution is not allowed for URL protocol in job path: " + job );
+      }
 
       // Without a repository it's a filename --> file:///foo/bar/job.kjb
       //

@@ -357,6 +357,13 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
   private TransMeta loadTransformation( Repository repository, String trans, VariableSpace parentVariableSpace ) throws KettleException {
 
     if ( repository == null ) {
+      SlaveServerConfig serverConfig = getTransformationMap() != null ? getTransformationMap().getSlaveServerConfig() : null;
+      if ( serverConfig == null ) {
+        serverConfig = new SlaveServerConfig();
+      }
+      if ( !serverConfig.isExecuteUrlAllowed( trans ) ) {
+        throw new KettleException( "Execution is not allowed for URL protocol in transformation path: " + trans );
+      }
 
       // Without a repository it's a filename --> file:///foo/bar/trans.ktr
       //
