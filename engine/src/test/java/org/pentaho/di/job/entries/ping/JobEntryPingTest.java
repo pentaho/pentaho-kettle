@@ -236,7 +236,7 @@ public class JobEntryPingTest extends JobEntryLoadSaveTestSupport<JobEntryPing> 
   public void testExecutionAcceptsPositiveLiteralsAndVariables() {
     for ( int pingType = 0; pingType <= 2; pingType++ ) {
       for ( String value : posInt ) {
-        for ( boolean variable : new boolean[] { false, true } ) {
+        for ( String configuredValue : new String[] { value, "${ping}", "%%ping%%" } ) {
           final boolean[] hostnameResolved = { false };
           JobEntryPing entry = new JobEntryPing( "Ping" ) {
             @Override
@@ -248,7 +248,6 @@ public class JobEntryPingTest extends JobEntryLoadSaveTestSupport<JobEntryPing> 
           };
           entry.ipingtype = pingType;
           entry.setVariable( "ping", value );
-          String configuredValue = variable ? "${ping}" : value;
           entry.setNbrPackets( configuredValue );
           entry.setTimeOut( configuredValue );
           entry.execute( new Result(), 0 );
@@ -256,6 +255,38 @@ public class JobEntryPingTest extends JobEntryLoadSaveTestSupport<JobEntryPing> 
           assertConfiguredValues( entry, configuredValue );
         }
       }
+    }
+  }
+
+  @Test
+  public void testExecutionAcceptsHexAndMixedSubstitutionSyntaxes() {
+    for ( int pingType = 0; pingType <= 2; pingType++ ) {
+      for ( String value : new String[] { "$[31,32]", "1${digit}", "1%%digit%%", "$[31]${digit}" } ) {
+        final boolean[] hostnameResolved = { false };
+        JobEntryPing entry = new JobEntryPing( "Ping" ) {
+          @Override
+          public String getRealHostname() {
+            hostnameResolved[ 0 ] = true;
+            return null;
+          }
+        };
+        entry.ipingtype = pingType;
+        entry.setVariable( "digit", "2" );
+        entry.setNbrPackets( value );
+        entry.setTimeOut( value );
+        assertResolvedValues( entry, "12" );
+        entry.execute( new Result(), 0 );
+        assertTrue( hostnameResolved[ 0 ] );
+        assertConfiguredValues( entry, value );
+      }
+    }
+  }
+
+  @Test
+  public void testExecutionRejectsInvalidWindowsAndHexSubstitutions() {
+    for ( String value : new String[] { "%%unresolved_ping%%", "$[61]", "$[30]", "$[2D,31]" } ) {
+      assertExecutionFails( value, true, false );
+      assertExecutionFails( value, false, false );
     }
   }
 
@@ -272,7 +303,7 @@ public class JobEntryPingTest extends JobEntryLoadSaveTestSupport<JobEntryPing> 
 
   @Test
   public void testXmlRoundTripPreservesConfiguredValues() throws Exception {
-    for ( String value : new String[] { "0", "${ping}", "25", "   22   " } ) {
+    for ( String value : new String[] { "0", "${ping}", "%%ping%%", "$[31,32]", "25", "   22   " } ) {
       jEPing.setNbrPackets( value );
       jEPing.setTimeOut( value );
       assertConfiguredValues( jEPing, value );
@@ -281,14 +312,14 @@ public class JobEntryPingTest extends JobEntryLoadSaveTestSupport<JobEntryPing> 
       restored.loadXML( XMLHandler.loadXMLString( xml ).getDocumentElement(), null, null, null, null );
       assertConfiguredValues( restored, value );
       // Reading resolved values must not change a subsequent export.
-      assertResolvedValues( restored, value );
+      assertResolvedValues( restored, "$[31,32]".equals( value ) ? "12" : value );
       assertEquals( xml, "<entry>" + restored.getXML() + "</entry>" );
     }
   }
 
   @Test
   public void testRepositoryRoundTripPreservesConfiguredValues() throws Exception {
-    for ( String value : new String[] { "0", "${ping}", "25", "   22   " } ) {
+    for ( String value : new String[] { "0", "${ping}", "%%ping%%", "$[31,32]", "25", "   22   " } ) {
       jEPing.setNbrPackets( value );
       jEPing.setTimeOut( value );
       assertConfiguredValues( jEPing, value );
@@ -297,7 +328,7 @@ public class JobEntryPingTest extends JobEntryLoadSaveTestSupport<JobEntryPing> 
       JobEntryPing restored = new JobEntryPing();
       restored.loadRep( repository, null, null, null, null );
       assertConfiguredValues( restored, value );
-      assertResolvedValues( restored, value );
+      assertResolvedValues( restored, "$[31,32]".equals( value ) ? "12" : value );
       repository = new MemoryRepository();
       restored.saveRep( repository, null, null );
       assertEquals( value, repository.getJobEntryAttributeString( null, "nbr_packets" ) );
