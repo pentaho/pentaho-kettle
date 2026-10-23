@@ -27,6 +27,16 @@
       <artifactId>janino-plugins-ui</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>user-defined-java-expression-plugins-impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>user-defined-java-expression-plugins-ui</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -43,7 +53,7 @@
             <configuration>
               <outputDirectory>${project.build.directory}/assembly/lib</outputDirectory>
               <includeScope>compile</includeScope>
-              <excludeArtifactIds>janino-plugins-impl,janino-plugins-ui</excludeArtifactIds>
+              <excludeArtifactIds>janino-plugins-impl,janino-plugins-ui,user-defined-java-expression-plugins-impl,user-defined-java-expression-plugins-ui</excludeArtifactIds>
             </configuration>
           </execution>
         </executions>
