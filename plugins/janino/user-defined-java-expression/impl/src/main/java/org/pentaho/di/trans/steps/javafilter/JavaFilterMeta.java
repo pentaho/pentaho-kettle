@@ -15,6 +15,7 @@
 package org.pentaho.di.trans.steps.javafilter;
 
 import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.StringConditionMeta;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -55,7 +56,7 @@ import java.util.Objects;
 @Step( id = "JavaFilter", i18nPackageName = "org.pentaho.di.trans.step",
   name = "BaseStep.TypeLongDesc.JavaFilter", description = "BaseStep.TypeTooltipDesc.JavaFilter",
   categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Scripting" )
-public class JavaFilterMeta extends BaseStepMeta implements StepMetaInterface {
+public class JavaFilterMeta extends BaseStepMeta implements StepMetaInterface, StringConditionMeta {
   private static Class<?> PKG = JavaFilterMeta.class; // for i18n purposes, needed by Translator2!!
 
   /** The formula calculations to be performed */
@@ -65,6 +66,7 @@ public class JavaFilterMeta extends BaseStepMeta implements StepMetaInterface {
     super(); // allocate BaseStepMeta
   }
 
+  @Override
   public String getCondition() {
     return condition;
   }
