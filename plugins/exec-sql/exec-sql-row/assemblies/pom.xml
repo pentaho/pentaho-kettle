@@ -7,11 +7,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>exec-sql-row</artifactId>
-    <version>11.1.0.0-SNAPSHOT</version>
+    <version>11.1.0.0-449</version>
   </parent>
 
   <artifactId>exec-sql-row-assemblies</artifactId>
-  <version>11.1.0.0-SNAPSHOT</version>
+  <version>11.1.0.0-449</version>
   <packaging>pom</packaging>
 
   <name>PDI Exec SQL Row Plugin Assemblies</name>
