@@ -40,9 +40,9 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
-import com.healthmarketscience.jackcess.Column;
-import com.healthmarketscience.jackcess.Database;
-import com.healthmarketscience.jackcess.DatabaseBuilder;
+import io.github.spannm.jackcess.Column;
+import io.github.spannm.jackcess.Database;
+import io.github.spannm.jackcess.DatabaseBuilder;
 
 /**
  * Read all Access files, convert them to rows and writes these to one or more output streams.
