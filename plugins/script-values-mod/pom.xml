@@ -7,11 +7,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>pdi-plugins</artifactId>
-    <version>11.1.0.0-SNAPSHOT</version>
+    <version>11.1.0.0-451</version>
   </parent>
 
   <artifactId>script-values-mod</artifactId>
-  <version>11.1.0.0-SNAPSHOT</version>
+  <version>11.1.0.0-451</version>
   <packaging>pom</packaging>
 
   <name>PDI Script Values Mod Plugin</name>
@@ -23,7 +23,7 @@
   </modules>
 
   <properties>
-    <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
+    <pdi.version>11.1.0.0-451</pdi.version>
   </properties>
 
   <dependencyManagement>
