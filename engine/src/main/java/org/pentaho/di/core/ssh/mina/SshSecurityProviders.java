@@ -50,18 +50,33 @@ public final class SshSecurityProviders {
    * Ensures the provider registered as {@code BC} is the signed {@link BouncyCastleProvider}. A foreign provider that
    * owns the name is replaced; if none is registered the signed one is added.
    */
-  public static synchronized void ensureSignedBouncyCastleProvider() {
+  public static void ensureSignedBouncyCastleProvider() {
     try {
-      Provider current = Security.getProvider( BC_PROVIDER_NAME );
-      if ( current instanceof BouncyCastleProvider ) {
+      if ( Security.getProvider( BC_PROVIDER_NAME ) instanceof BouncyCastleProvider ) {
         return;
       }
-      if ( current != null ) {
-        LOGGER.log( Level.INFO, "Replacing the ''{0}'' security provider {1} with the signed Bouncy Castle provider used "
-          + "for SSH.", new Object[] { BC_PROVIDER_NAME, current.getClass().getName() } );
-        Security.removeProvider( BC_PROVIDER_NAME );
+      // Built before touching the registry so that a failure here cannot leave the BC name unregistered.
+      Provider signed = new BouncyCastleProvider();
+      Provider replaced = null;
+      // Security.addProvider/removeProvider are static synchronized, i.e. they lock Security.class. Holding the same
+      // monitor makes recheck + remove + add atomic: a driver initializing concurrently cannot register its own
+      // provider under the BC name between the removal and the addition (addProvider would then silently return -1
+      // and leave the unsigned provider installed).
+      synchronized ( Security.class ) {
+        Provider current = Security.getProvider( BC_PROVIDER_NAME );
+        if ( current instanceof BouncyCastleProvider ) {
+          return;
+        }
+        if ( current != null ) {
+          Security.removeProvider( BC_PROVIDER_NAME );
+          replaced = current;
+        }
+        Security.addProvider( signed );
       }
-      Security.addProvider( new BouncyCastleProvider() );
+      if ( replaced != null ) {
+        LOGGER.log( Level.INFO, "Replaced the ''{0}'' security provider {1} with the signed Bouncy Castle provider used "
+          + "for SSH.", new Object[] { BC_PROVIDER_NAME, replaced.getClass().getName() } );
+      }
     } catch ( RuntimeException e ) {
       // Never block start-up or a connection attempt because the provider could not be adjusted.
       LOGGER.log( Level.WARNING, "Unable to register the signed Bouncy Castle security provider", e );

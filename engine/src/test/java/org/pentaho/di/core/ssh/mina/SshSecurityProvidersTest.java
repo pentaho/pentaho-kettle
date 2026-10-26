@@ -84,6 +84,23 @@ public class SshSecurityProvidersTest {
   }
 
   @Test
+  public void waitsForTheSecurityMonitorSoProviderMutationsAreNotInterleaved() throws Exception {
+    Security.addProvider( new ForeignBcProvider() );
+    Thread worker = new Thread( SshSecurityProviders::ensureSignedBouncyCastleProvider );
+
+    synchronized ( Security.class ) {
+      worker.start();
+      worker.join( 300 );
+      // Registry untouched while another party holds the JCA provider-mutation monitor.
+      assertTrue( worker.isAlive() );
+      assertTrue( Security.getProvider( "BC" ) instanceof ForeignBcProvider );
+    }
+
+    worker.join( 10_000 );
+    assertTrue( Security.getProvider( "BC" ) instanceof BouncyCastleProvider );
+  }
+
+  @Test
   public void leavesOnlyOneProviderNamedBc() {
     Security.addProvider( new ForeignBcProvider() );
 
