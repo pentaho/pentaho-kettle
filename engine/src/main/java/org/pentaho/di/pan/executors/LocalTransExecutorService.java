@@ -31,6 +31,7 @@ import java.util.Map;
 public class LocalTransExecutorService implements TransExecutorService {
 
   private static Class<?> pkg = LocalTransExecutorService.class;
+  private Trans executionTrans;
 
   /**
    * Executes a transformation locally.
@@ -48,6 +49,7 @@ public class LocalTransExecutorService implements TransExecutorService {
                          TransExecutionConfiguration executionConfiguration, String[] arguments ) throws KettleException {
     log.logBasic( BaseMessages.getString( pkg, "PanTransformationDelegate.Log.ExecutingLocally" ) );
 
+    executionTrans = null;
     Trans trans = DefaultTransFactoryManager.getInstance().getTransFactory(
       executionConfiguration.getRunConfiguration() ).create( transMeta, transMeta );
     return execute( trans, repository, executionConfiguration, arguments );
@@ -65,6 +67,7 @@ public class LocalTransExecutorService implements TransExecutorService {
    */
   protected Result execute(  Trans trans, Repository repository,
                              TransExecutionConfiguration executionConfiguration, String[] arguments ) throws KettleException {
+    executionTrans = trans;
     trans.setRepository( repository );
 
     // Copy execution configuration settings
@@ -86,5 +89,10 @@ public class LocalTransExecutorService implements TransExecutorService {
     trans.waitUntilFinished();
 
     return trans.getResult();
+  }
+
+  @Override
+  public Trans getTransToLog() {
+    return executionTrans;
   }
 }

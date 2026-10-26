@@ -47,6 +47,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * EnhancedPanCommandExecutor that uses the PanTransformationDelegate
@@ -186,6 +188,14 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
    * This method shows how to integrate the PanTransformationDelegate
    * into the existing command executor framework.
    */
+  protected void logExecutionStats( Trans trans, int completionTimeSeconds ) {
+    if ( trans == null || trans.getSteps() == null || trans.getSteps().isEmpty() ) {
+      return;
+    }
+
+    trans.printStats( completionTimeSeconds );
+  }
+
   public Result executeWithDelegate( Trans trans, Params params, String[] arguments ) {
 
     // Initialize repository if repository parameters are provided
@@ -203,14 +213,25 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
     getTransformationDelegate().setRepository( repository );
 
     try {
+      Date start = Calendar.getInstance().getTime(); // capture execution start time
+
       // Use the delegate to execute the transformation
       Result result = getTransformationDelegate().executeTransformation( trans, executionConfiguration, arguments );
 
       // Set the result for the command executor
       setResult( result );
 
+      getLog().logMinimal( BaseMessages.getString( getPkgClazz(), "Pan.Log.Finished" ) );
+      Date stop = Calendar.getInstance().getTime(); // capture execution stop time
+
+      int completionTimeSeconds = calculateAndPrintElapsedTime( start, stop, "Pan.Log.StartStop", "Pan.Log.ProcessingEndAfter",
+        "Pan.Log.ProcessingEndAfterLong", "Pan.Log.ProcessingEndAfterLonger", "Pan.Log.ProcessingEndAfterLongest" );
+      getResult().setElapsedTimeMillis( stop.getTime() - start.getTime() );
+
       // Return appropriate exit code based on result
       if ( result.getNrErrors() == 0 ) {
+        Trans loggableTrans = getTransformationDelegate().getLastExecutedTrans();
+        logExecutionStats( loggableTrans != null ? loggableTrans : trans, completionTimeSeconds );
         return exitWithStatus( CommandExecutorCodes.Pan.SUCCESS.getCode() );
       } else {
         return exitWithStatus( CommandExecutorCodes.Pan.ERRORS_DURING_PROCESSING.getCode() );

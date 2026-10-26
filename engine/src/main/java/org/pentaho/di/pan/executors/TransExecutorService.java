@@ -17,6 +17,7 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
 
@@ -38,4 +39,13 @@ public interface TransExecutorService {
    */
   Result execute( LogChannelInterface log, TransMeta transMeta, Repository repository, TransExecutionConfiguration executionConfiguration, String[] arguments ) throws
     KettleException;
+
+  /**
+   * Returns the concrete transformation instance that was actually executed for the purposes of
+   * summary/logging, when one exists in the current JVM. Local execution creates a fresh Trans from
+   * the metadata, while remote/clustered execution may not create such a runtime object here.
+   */
+  default Trans getTransToLog() {
+    return null;
+  }
 }
