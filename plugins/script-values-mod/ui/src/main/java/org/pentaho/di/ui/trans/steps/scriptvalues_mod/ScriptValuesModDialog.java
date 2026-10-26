@@ -119,7 +119,7 @@ import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
-@PluginDialog( id = "ScriptValuesMod", image = "SVM.svg", pluginType = PluginDialog.PluginType.STEP )
+@PluginDialog( id = "ScriptValueMod,ScriptValue", image = "SVM.svg", pluginType = PluginDialog.PluginType.STEP )
 public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogInterface {
   private static Class<?> PKG = ScriptValuesMetaMod.class; // for i18n purposes, needed by Translator2!!
 

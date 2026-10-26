@@ -72,7 +72,7 @@ import org.w3c.dom.Node;
  * Created on 2-jun-2003
  *
  */
-@Step( id = "ScriptValuesMod", i18nPackageName = "org.pentaho.di.trans.steps.scriptvalues_mod",
+@Step( id = "ScriptValueMod,ScriptValue", i18nPackageName = "org.pentaho.di.trans.steps.scriptvalues_mod",
   name = "ScriptValuesMod.Name", description = "ScriptValuesMod.Description",
   categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Scripting" )
 @InjectionSupported( localizationPrefix = "ScriptValuesMod.Injection.", groups = { "FIELDS", "SCRIPTS" }  )
