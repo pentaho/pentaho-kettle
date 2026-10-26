@@ -25,6 +25,7 @@ import org.pentaho.di.trans.TransExecutionConfiguration;
 
 import java.util.Map;
 
+import static org.junit.Assert.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.openMocks;
@@ -61,6 +62,7 @@ public class LocalTransExecutorServiceTest {
     verify( mockTrans ).prepareExecution( params );
     verify( mockTrans ).startThreads();
     verify( mockTrans ).waitUntilFinished();
+    assertSame( mockTrans, localTransExecutorService.getTransToLog() );
   }
 
 }

@@ -14,6 +14,7 @@
 package org.pentaho.di.pan;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Objects;
 import org.junit.After;
@@ -45,6 +46,7 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.stores.delegate.DelegatingMetaStore;
 
@@ -59,6 +61,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.nullable;
@@ -66,6 +69,7 @@ import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -346,6 +350,28 @@ public class PanCommandExecutorTest {
     // Verify delegate was called
     verify( mockDelegate, times( 1 ) ).executeTransformation(
       eq( mockTrans ), any( TransExecutionConfiguration.class ), any( String[].class ) );
+  }
+
+  @Test
+  public void testExecuteWithDelegateLogsExecutedTransStepStats() throws Throwable {
+    Result successResult = new Result();
+    successResult.setNrErrors( 0 );
+    Trans executedTrans = mock( Trans.class );
+    ArrayList<StepMetaDataCombi> steps = new ArrayList<>();
+    steps.add( new StepMetaDataCombi() );
+    when( executedTrans.getSteps() ).thenReturn( steps );
+    when( mockDelegate.createDefaultExecutionConfiguration() ).thenReturn( new TransExecutionConfiguration() );
+    when( mockDelegate.executeTransformation( any( Trans.class ),
+      any( TransExecutionConfiguration.class ), any( String[].class ) ) )
+      .thenReturn( successResult );
+    when( mockDelegate.getLastExecutedTrans() ).thenReturn( executedTrans );
+
+    Params testParams = new Params.Builder().build();
+
+    executorWithMocks.executeWithDelegate( mockTrans, testParams, new String[0] );
+
+    verify( executedTrans, times( 1 ) ).printStats( anyInt() );
+    verify( mockTrans, never() ).printStats( anyInt() );
   }
 
   @Test
