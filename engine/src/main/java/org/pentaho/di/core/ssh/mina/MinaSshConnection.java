@@ -114,6 +114,8 @@ public class MinaSshConnection implements SshConnection {
   }
 
   private void setupSshClient() {
+    SshSecurityProviders.ensureSignedBouncyCastleProvider();
+
     client = SshClient.setUpDefaultClient();
 
     // Disable strict host key checking to avoid key exchange issues
