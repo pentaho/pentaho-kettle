@@ -7,11 +7,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>user-defined-java-expression-assemblies</artifactId>
-    <version>11.1.0.0-SNAPSHOT</version>
+    <version>11.1.0.0-453</version>
   </parent>
 
   <artifactId>user-defined-java-expression-plugins</artifactId>
-  <version>11.1.0.0-SNAPSHOT</version>
+  <version>11.1.0.0-453</version>
   <packaging>pom</packaging>
 
   <name>PDI User Defined Java Expression Plugin</name>
