@@ -17,6 +17,7 @@ import org.glassfish.jersey.client.ClientConfig;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -24,14 +25,17 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
@@ -138,7 +142,8 @@ public class RestTest {
   }
 
   /**
-   * Verifies that a PUT request with an empty body does not trigger an IllegalStateException
+   * Verifies that a PUT request with a null body value is normalized to an empty-string entity before the
+   * actual HTTP call is invoked.
    * @throws KettleException
    */
   @Test
@@ -147,48 +152,53 @@ public class RestTest {
     Invocation.Builder builder = mock( Invocation.Builder.class );
 
     WebTarget resource = mock( WebTarget.class );
+
+    // Original bug: this path was producing a null entity for an empty body, which Jersey surfaces as an
+    // IllegalStateException when the PUT request is built. The fix is to normalize the value to the empty string
+    // before calling builder.method(..., Entity.entity(...)), so the request carries an explicit empty payload instead
+    // of a null one.
     lenient().doReturn( builder ).when( resource ).request();
+    lenient().when( builder.put( Mockito.<Entity<?>>argThat( entity ->
+      entity.getEntity() instanceof String && "".equals( entity.getEntity() ) ) ) )
+      .thenReturn( Response.ok( "true" ).build() );
 
     Client client = mock( Client.class );
     lenient().doReturn( resource ).when( client ).target( anyString() );
-
-    ClientBuilder clientBuilder = mock( ClientBuilder.class );
-    lenient().when( clientBuilder.build() ).thenReturn( client );
 
     RestMeta meta = mock( RestMeta.class );
     lenient().doReturn( false ).when( meta ).isUrlInField();
     lenient().doReturn( false ).when( meta ).isDynamicMethod();
 
     RowMetaInterface rmi = mock( RowMetaInterface.class );
+    lenient().doReturn( 1 ).when( rmi ).size();
+    lenient().doReturn( null ).when( rmi ).getString( any(), eq( 0 ) );
 
     RestData data = mock( RestData.class );
     data.method = RestMeta.HTTP_METHOD_PUT;
     data.config = new ClientConfig();
     data.inputRowMeta = rmi;
-    // should be non-routable so we can consistetly not connect
-    data.realUrl = "http://192.0.2.1:8080/pentaho";
+    data.resultFieldName = "result";
+    data.resultCodeFieldName = "status";
+    data.realUrl = "http://localhost:8080/pentaho";
     data.mediaType = MediaType.TEXT_PLAIN_TYPE;
     data.useBody = true;
-    // do not set data.indexOfBodyField
+    data.indexOfBodyField = 0;
 
     Rest rest = mock( Rest.class );
-    doCallRealMethod().when( rest ).callRest( any() );
-    doCallRealMethod().when( rest ).getClient( any() );
-    doCallRealMethod().when( rest ).buildRequest( any(), any() );
+    lenient().doCallRealMethod().when( rest ).callRest( any() );
+    lenient().doReturn( client ).when( rest ).getClient( any() );
+    lenient().doCallRealMethod().when( rest ).buildRequest( any(), any() );
+    lenient().doCallRealMethod().when( rest ).searchForHeaders( any() );
 
     ReflectionTestUtils.setField( rest, "meta", meta );
     ReflectionTestUtils.setField( rest, "data", data );
 
-    try {
-      rest.callRest( new Object[] { 0 } );
-      Assert.fail( "Expected an exception" );
-    } catch ( KettleException exception ) {
-      // Ignore the ConnectException which is expected as rest call to localhost:8080 will fail in unit test
-      // IllegalStateException is throws when the body is null
-      if ( exception.getCause().getCause() instanceof IllegalStateException ) {
-          Assert.fail( "PUT request with an empty body should not have failed with an IllegalStateException" );
-      }
-    }
+    Object[] output = rest.callRest( new Object[] { 0 } );
+    Assert.assertNotNull( output );
+    Assert.assertEquals( 200L, output[ 2 ] );
+
+    Mockito.verify( builder ).put( Mockito.<Entity<?>>argThat( entity ->
+      entity.getEntity() instanceof String && "".equals( entity.getEntity() ) ) );
   }
 
 }
