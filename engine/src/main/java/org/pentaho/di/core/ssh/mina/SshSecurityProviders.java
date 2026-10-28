@@ -30,11 +30,9 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
  * an already registered provider, so SSHD then ends up using the unsigned one, and JDKs that enforce JCE provider
  * signature verification reject it ("The JCE Provider ... is not signed").
  * <p>
- * Whoever registers the {@code BC} name first wins, so this class is invoked at Kettle start-up (covers Spoon, Pan,
- * Kitchen, Carte and the Pentaho Server, CE and EE). That repairs a driver that was loaded earlier and prevents one
- * loaded later from taking the name. It is also invoked before each SSH client is created as a safeguard for JVMs
- * where Kettle start-up did not run or the provider was changed afterwards. Calls are cheap and idempotent once the
- * signed provider owns the {@code BC} name.
+ * This class is invoked immediately before each SSH client is created. That repairs a driver that registered an
+ * unsigned provider earlier and prevents SSHD from using it, without making non-SSH Kettle initialization require
+ * Bouncy Castle. Calls are cheap and idempotent once the signed provider owns the {@code BC} name.
  */
 public final class SshSecurityProviders {
 
