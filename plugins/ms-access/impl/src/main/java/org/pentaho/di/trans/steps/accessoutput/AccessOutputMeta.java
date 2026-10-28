@@ -41,6 +41,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.msaccess.MSAccessDatabaseUtil;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
@@ -59,7 +60,6 @@ import com.healthmarketscience.jackcess.Column;
 import com.healthmarketscience.jackcess.ColumnBuilder;
 import com.healthmarketscience.jackcess.DataType;
 import com.healthmarketscience.jackcess.Database;
-import com.healthmarketscience.jackcess.DatabaseBuilder;
 import com.healthmarketscience.jackcess.Table;
 
 /*
@@ -252,9 +252,9 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface 
       }
 
       // Open the database in read-only mode and get the table metadata.
-      try ( Database db = new DatabaseBuilder( file ).setReadOnly( true ).open() ) {
+      try ( Database db = MSAccessDatabaseUtil.open( file, true ) ) {
         String realTablename = space.environmentSubstitute( tablename );
-        Table table = db.getTable( realTablename );
+        Table table = MSAccessDatabaseUtil.getTable( db, realTablename );
         if ( table == null ) {
           throw new KettleException( BaseMessages.getString(
             PKG, "AccessOutputMeta.Exception.TableDoesNotExist", realTablename ) );

@@ -32,6 +32,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.msaccess.MSAccessDatabaseUtil;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -42,7 +43,6 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 import com.healthmarketscience.jackcess.Column;
 import com.healthmarketscience.jackcess.Database;
-import com.healthmarketscience.jackcess.DatabaseBuilder;
 
 /**
  * Read all Access files, convert them to rows and writes these to one or more output streams.
@@ -335,13 +335,13 @@ public class AccessInput extends BaseStep implements StepInterface {
       // Read mdb file
       data.file.getName().getPathDecoded();
 
-      data.d = new DatabaseBuilder( new File( AccessInputMeta.getFilename( data.file ) ) ).setReadOnly( true ).open();
+      data.d = MSAccessDatabaseUtil.open( new File( AccessInputMeta.getFilename( data.file ) ), true );
 
       // Get table
       if ( data.isTableSystem ) {
         data.t = data.d.getSystemTable( data.tableName );
       } else {
-        data.t = data.d.getTable( data.tableName );
+        data.t = MSAccessDatabaseUtil.getTable( data.d, data.tableName );
       }
 
       if ( log.isDetailed() ) {

@@ -20,12 +20,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.msaccess.MSAccessDatabaseUtil;
 import org.pentaho.di.trans.step.BaseStepData;
 
 import com.healthmarketscience.jackcess.ColumnBuilder;
 import com.healthmarketscience.jackcess.Cursor;
 import com.healthmarketscience.jackcess.Database;
-import com.healthmarketscience.jackcess.DatabaseBuilder;
 import com.healthmarketscience.jackcess.CursorBuilder;
 import com.healthmarketscience.jackcess.Table;
 import com.healthmarketscience.jackcess.TableBuilder;
@@ -48,11 +48,11 @@ public class AccessOutputData extends BaseStepData {
   }
 
   void createDatabase( File databaseFile ) throws IOException {
-    db = new DatabaseBuilder( databaseFile ).setFileFormat( Database.FileFormat.V2000 ).create();
+    db = MSAccessDatabaseUtil.create( databaseFile, Database.FileFormat.V2000 );
   }
 
   void openDatabase( File databaseFile ) throws IOException {
-    db = DatabaseBuilder.open( databaseFile );
+    db = MSAccessDatabaseUtil.open( databaseFile, false );
   }
 
   void closeDatabase() throws IOException {
