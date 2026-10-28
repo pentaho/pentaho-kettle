@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>shell-job-entry</artifactId>
-    <version>11.1.0.0-SNAPSHOT</version>
+    <version>11.1.0.0-454</version>
   </parent>
 
   <artifactId>shell-job-entry-plugins-impl</artifactId>
