@@ -45,13 +45,13 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
+import org.pentaho.di.msaccess.MSAccessDatabaseUtil;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
 import com.healthmarketscience.jackcess.Database;
-import com.healthmarketscience.jackcess.DatabaseBuilder;
 import com.healthmarketscience.jackcess.util.ImportUtil;
 
 /**
@@ -388,15 +388,15 @@ public class JobEntryMSAccessBulkLoad extends JobEntryBase implements Cloneable,
       File targetDbFile = new File( targetFilename );
       boolean dbAlreadyExists = targetDbFile.exists();
 
-      try ( Database db = dbAlreadyExists ? DatabaseBuilder.open( targetDbFile )
-        : new DatabaseBuilder( targetDbFile ).setFileFormat( Database.FileFormat.V2000 ).create() ) {
+      try ( Database db = dbAlreadyExists ? MSAccessDatabaseUtil.open( targetDbFile, false )
+        : MSAccessDatabaseUtil.create( targetDbFile, Database.FileFormat.V2000 ) ) {
         if ( !dbAlreadyExists ) {
           logBasic( BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Log.DbCreated", targetFilename ) );
         } else {
           // Database exists
           logBasic( BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Log.DbOpened", targetFilename ) );
           // Let's check table
-          if ( db.getTable( tablename ) != null ) {
+          if ( MSAccessDatabaseUtil.getTable( db, tablename ) != null ) {
             logBasic( BaseMessages.getString( PKG, "JobEntryMSAccessBulkLoad.Log.TableExists", tablename ) );
           }
         }

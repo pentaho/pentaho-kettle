@@ -25,6 +25,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.msaccess.MSAccessDatabaseUtil;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -112,7 +113,7 @@ public class AccessOutput extends BaseStep implements StepInterface {
       // First open or create the table
       try {
         String realTablename = environmentSubstitute( meta.getTablename() );
-        data.table = data.db.getTable( realTablename );
+        data.table = MSAccessDatabaseUtil.getTable( data.db, realTablename );
         if ( data.table == null ) {
           if ( meta.isTableCreated() ) {
             // Create the table
