@@ -53,8 +53,8 @@ import org.pentaho.di.ui.core.events.dialog.SelectionOperation;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
-import com.healthmarketscience.jackcess.Database;
-import com.healthmarketscience.jackcess.DatabaseBuilder;
+import io.github.spannm.jackcess.Database;
+import io.github.spannm.jackcess.DatabaseBuilder;
 import org.pentaho.di.ui.util.DialogHelper;
 
 @PluginDialog( id = "AccessOutput", image = "ACO.svg", pluginType = PluginDialog.PluginType.STEP,
