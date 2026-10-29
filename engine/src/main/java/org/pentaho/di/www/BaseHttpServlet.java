@@ -15,6 +15,7 @@
 package org.pentaho.di.www;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -25,10 +26,13 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.bowl.DefaultBowl;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.service.PluginServiceLoader;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.kettle.repository.locator.api.KettleRepositoryLocator;
 
 
 public class BaseHttpServlet extends HttpServlet {
@@ -199,6 +203,25 @@ public class BaseHttpServlet extends HttpServlet {
       variableSpace.setVariable( parameter, values != null && values.length > 0 ? values[0] : "" );
     }
     return variableSpace;
+  }
+
+  protected Repository getRepositoryFromLocator() {
+    try {
+      Collection<KettleRepositoryLocator> repositoryLocators = PluginServiceLoader.loadServices( KettleRepositoryLocator.class );
+      if ( repositoryLocators != null ) {
+        for ( KettleRepositoryLocator repositoryLocator : repositoryLocators ) {
+          if ( repositoryLocator != null ) {
+            Repository repository = repositoryLocator.getRepository();
+            if ( repository != null ) {
+              return repository;
+            }
+          }
+        }
+      }
+    } catch ( KettlePluginException e ) {
+      logError( "Error finding repository from KettleRepositoryLocator", e );
+    }
+    return null;
   }
 
   protected void clearBowlCache( Repository repository ) {

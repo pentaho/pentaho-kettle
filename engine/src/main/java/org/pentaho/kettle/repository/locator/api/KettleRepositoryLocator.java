@@ -10,7 +10,6 @@
  * Change Date: 2030-06-15
  ******************************************************************************/
 
-
 package org.pentaho.kettle.repository.locator.api;
 
 import org.pentaho.di.repository.Repository;
