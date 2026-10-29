@@ -43,7 +43,27 @@ mvn -o -B -q -pl plugins/pur/core \
 
 The suite includes checks that the repository write lock is available during job/transformation decoding, database decoding, individual object assembly, and shared-object assembly, plus lock release after a failed shared-object update.
 
-Unit tests do not reproduce the original concurrent HTTP/KTR workload. A bounded live test that runs imports and repository reads concurrently, checks request timeouts, and verifies imported content by read-back remains necessary before calling the PUR fix fully validated.
+The five tests in `PurRepositoryLoadLockTest` are `repositoryLoadsReleaseReadLockBeforeDeserialization`, `databaseListReadReleasesReadLockBeforeDeserialization`, `batchJobAndTransformationLoadsReleaseReadLockBeforeDeserialization`, `sharedObjectCacheLoadReleasesReadLockBeforeAssembly` and `sharedObjectLoadFailureReleasesRepositoryLocks`.
+
+### Evidence of the original inversion
+
+A thread dump taken on stock suite-release #319 during concurrent KTR imports (2026-10-27, JDK 17) shows both sides of the inversion in the import request threads:
+
+- One thread is in `StreamToTransNodeConverter.convert` -> `SharedObjectUtil.moveAllSharedObjects` -> `DatabaseConnectionManager` (monitor held) -> `RepositorySharedObjectsIO.saveSharedObject` -> `PurRepository.save`.
+- Another is in `convertPostRepoSave` -> `PurRepository.loadTransformation` -> `TransDelegate.dataNodeToElement` -> `AbstractMeta.getDatabases` -> `RepositorySharedObjectsIO.lock`, waiting on the shared-object lock.
+- A third is in `convert` -> `AbstractMeta.setRepository` -> `getDatabases` -> `RepositorySharedObjectsIO.getSharedObjects` -> `PurRepository.getConnections` -> `getRepositoryObjects`, reading under the repository lock.
+
+The dump contains no JVM-reported "Java-level deadlock" because the repository lock is a `ReadWriteLock`; the threads are blocked on lock acquisition instead.
+
+### Live check with the platform harness
+
+The patched Pentaho Server used for the BISERVER-15820 runs was stock #454 with a `pdi-pur-plugin-core` jar built from the PDI-21058 branch state at that time, plus the patched platform repository jar. It ran the 300 s, 48-thread mixed workload from `tools/repository-concurrency` with the harness stall watchdog enabled. The patched run showed no hangs or timeouts and no JCR exception lines in the server log (stock: 20). See `BISERVER-15820-JCR-VERSION-READ-WRITE-COORDINATION.md` for the full tables.
+
+That workload is file and JCR oriented (REST and SOAP file and version operations). It does not import or load KTR/KJB files, so it does not substitute for the dedicated concurrent KTR import test below.
+
+### Still required
+
+A bounded live test that runs KTR imports with shared connections and repository transformation loads concurrently, checks request timeouts, and verifies imported content by read-back. Until it runs, the PUR fix is validated by unit tests and the thread-dump analysis only.
 
 ## 4. Scope and limits
 
