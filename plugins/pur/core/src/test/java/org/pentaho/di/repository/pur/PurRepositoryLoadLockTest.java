@@ -34,17 +34,19 @@ import org.pentaho.platform.api.repository2.unified.data.node.NodeRepositoryFile
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReadWriteLock;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -53,12 +55,17 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith( MockitoJUnitRunner.class )
 public class PurRepositoryLoadLockTest {
+
+  private static final int SHARED_OBJECT_TYPES = 4;
 
   @Test
   public void repositoryLoadsReleaseReadLockBeforeDeserialization() throws Exception {
@@ -216,29 +223,61 @@ public class PurRepositoryLoadLockTest {
   }
 
   @Test
-  public void sharedObjectLoadFailureReleasesRepositoryLocks() throws Exception {
-    PurRepository repository = spy( new PurRepository() );
-    doThrow( new KettleException( "load failed" ) ).when( repository ).loadAndCacheSharedObjects( false );
-    Method updateSharedObjectCache = PurRepository.class.getDeclaredMethod( "updateSharedObjectCache",
-      RepositoryElementInterface.class, RepositoryObjectType.class, org.pentaho.di.repository.ObjectId.class );
-    updateSharedObjectCache.setAccessible( true );
+  public void coldCacheLoadDoesNotHoldSharedObjectsLockWhileReadingRepository() throws Exception {
+    PurRepository repository = newRepository();
+    AtomicBoolean cacheLockFreeDuringRead = new AtomicBoolean( true );
+    doAnswer( invocation -> {
+      cacheLockFreeDuringRead.compareAndSet( true, isWriteLockFreeForOtherThread( sharedObjectsLock() ) );
+      return Collections.emptyList();
+    } ).when( repository ).getAllFilesOfType( any(), any( RepositoryObjectType.class ), anyBoolean() );
 
-    FutureTask<Void> failedUpdate = new FutureTask<>( () -> {
+    repository.loadAndCacheSharedObjects( true );
+
+    assertTrue( "The cache lock must not be held while the repository is read", cacheLockFreeDuringRead.get() );
+  }
+
+  @Test
+  public void cacheUpdateOnColdCacheDoesNotReadRepository() throws Exception {
+    PurRepository repository = newRepository();
+
+    invokeCacheUpdate( repository, RepositoryObjectType.DATABASE );
+
+    verify( repository, never() ).getAllFilesOfType( any(), any( RepositoryObjectType.class ), anyBoolean() );
+  }
+
+  @Test
+  public void cacheClearedDuringColdLoadIsNotPublishedStale() throws Exception {
+    PurRepository repository = newRepository();
+
+    loadAndAssertReloadedAfter( repository, repository::clearSharedObjectCache );
+  }
+
+  @Test
+  public void cacheUpdatedDuringColdLoadIsNotPublishedStale() throws Exception {
+    PurRepository repository = newRepository();
+
+    loadAndAssertReloadedAfter( repository, () -> invokeCacheUpdate( repository, RepositoryObjectType.DATABASE ) );
+  }
+
+  @Test
+  public void sharedObjectLoadFailureReleasesRepositoryLocks() throws Exception {
+    PurRepository repository = newRepository();
+    doThrow( new IllegalStateException( "load failed" ) ).when( repository )
+      .getAllFilesOfType( any(), any( RepositoryObjectType.class ), anyBoolean() );
+
+    FutureTask<Void> failedLoad = new FutureTask<>( () -> {
       try {
-        updateSharedObjectCache.invoke( repository, null, RepositoryObjectType.DATABASE,
-          new StringObjectId( "database-id" ) );
-        throw new AssertionError( "Expected shared-object load to fail" );
-      } catch ( InvocationTargetException e ) {
-        if ( !( e.getCause() instanceof KettleException ) ) {
-          throw e;
-        }
+        repository.loadAndCacheSharedObjects( true );
+        fail( "Expected the shared-object load to fail" );
+      } catch ( KettleException expected ) {
+        assertNotNull( expected.getCause() );
       }
       return null;
     } );
-    Thread updateThread = new Thread( failedUpdate );
-    updateThread.setDaemon( true );
-    updateThread.start();
-    failedUpdate.get( 2, TimeUnit.SECONDS );
+    Thread loadThread = new Thread( failedLoad );
+    loadThread.setDaemon( true );
+    loadThread.start();
+    failedLoad.get( 2, TimeUnit.SECONDS );
 
     Field repositoryLockField = PurRepository.class.getDeclaredField( "readWriteLock" );
     repositoryLockField.setAccessible( true );
@@ -263,6 +302,63 @@ public class PurRepositoryLoadLockTest {
     verificationThread.start();
     assertTrue( "A failed cache load must release both repository locks",
       locksAvailable.get( 2, TimeUnit.SECONDS ) );
+  }
+
+  private static PurRepository newRepository() {
+    PurRepository repository = spy( new PurRepository() );
+    repository.init( mock( PurRepositoryMeta.class ) );
+    repository.setTest( mock( IUnifiedRepository.class ) );
+    return repository;
+  }
+
+  private static ReadWriteLock sharedObjectsLock() throws Exception {
+    Field field = PurRepository.class.getDeclaredField( "sharedObjectsLock" );
+    field.setAccessible( true );
+    return (ReadWriteLock) field.get( null );
+  }
+
+  private static boolean isWriteLockFreeForOtherThread( ReadWriteLock lock ) throws Exception {
+    FutureTask<Boolean> attempt = new FutureTask<>( () -> {
+      boolean acquired = lock.writeLock().tryLock( 500, TimeUnit.MILLISECONDS );
+      if ( acquired ) {
+        lock.writeLock().unlock();
+      }
+      return acquired;
+    } );
+    Thread thread = new Thread( attempt );
+    thread.setDaemon( true );
+    thread.start();
+    return attempt.get( 2, TimeUnit.SECONDS );
+  }
+
+  private static void invokeCacheUpdate( PurRepository repository, RepositoryObjectType type ) {
+    try {
+      Method update = PurRepository.class.getDeclaredMethod( "updateSharedObjectCache",
+        RepositoryElementInterface.class, RepositoryObjectType.class, org.pentaho.di.repository.ObjectId.class );
+      update.setAccessible( true );
+      update.invoke( repository, null, type, new StringObjectId( "database-id" ) );
+    } catch ( ReflectiveOperationException e ) {
+      throw new IllegalStateException( e );
+    }
+  }
+
+  private static void loadAndAssertReloadedAfter( PurRepository repository, Runnable invalidation )
+    throws Exception {
+    AtomicBoolean invalidated = new AtomicBoolean();
+    doAnswer( invocation -> {
+      if ( invalidated.compareAndSet( false, true ) ) {
+        invalidation.run();
+      }
+      return Collections.emptyList();
+    } ).when( repository ).getAllFilesOfType( any(), any( RepositoryObjectType.class ), anyBoolean() );
+
+    assertNotNull( repository.loadAndCacheSharedObjects( true ) );
+    verify( repository, times( 2 * SHARED_OBJECT_TYPES ) )
+      .getAllFilesOfType( any(), any( RepositoryObjectType.class ), anyBoolean() );
+
+    assertNotNull( repository.loadAndCacheSharedObjects( true ) );
+    verify( repository, times( 2 * SHARED_OBJECT_TYPES ) )
+      .getAllFilesOfType( any(), any( RepositoryObjectType.class ), anyBoolean() );
   }
 
   private void assertWriteLockAvailableDuringDeserialization( PurRepository repository, String delegateName,

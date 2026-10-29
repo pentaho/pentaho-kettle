@@ -213,6 +213,9 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
   private Map<RepositoryObjectType, List<? extends SharedObjectInterface<?>>> sharedObjectsByType = null;
 
+  // Guarded by sharedObjectsLock; bumped whenever a load in flight could become stale.
+  private long sharedObjectsGeneration;
+
   private boolean connected = false;
 
   private String connectMessage = null;
@@ -1360,6 +1363,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     sharedObjectsLock.writeLock().lock();
     try {
       sharedObjectsByType = null;
+      sharedObjectsGeneration++;
     } finally {
       sharedObjectsLock.writeLock().unlock();
     }
@@ -1953,20 +1957,49 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
   protected Map<RepositoryObjectType, List<? extends SharedObjectInterface<?>>> loadAndCacheSharedObjects(
     final boolean deepCopy ) throws KettleException {
-    sharedObjectsLock.writeLock().lock();
-    try {
-      if ( sharedObjectsByType == null ) {
-        sharedObjectsByType =
-          new EnumMap<RepositoryObjectType, List<? extends SharedObjectInterface<?>>>( RepositoryObjectType.class );
-        // Slave Servers are referenced by Cluster Schemas so they must be loaded first
-        readSharedObjects( sharedObjectsByType, RepositoryObjectType.DATABASE, RepositoryObjectType.PARTITION_SCHEMA,
-          RepositoryObjectType.SLAVE_SERVER, RepositoryObjectType.CLUSTER_SCHEMA );
+    Map<RepositoryObjectType, List<? extends SharedObjectInterface<?>>> result = null;
+    while ( result == null ) {
+      long loadGeneration = -1;
+      sharedObjectsLock.writeLock().lock();
+      try {
+        if ( sharedObjectsByType != null ) {
+          result = deepCopy ? deepCopy( sharedObjectsByType ) : sharedObjectsByType;
+        } else {
+          loadGeneration = sharedObjectsGeneration;
+        }
+      } finally {
+        sharedObjectsLock.writeLock().unlock();
       }
-      return deepCopy ? deepCopy( sharedObjectsByType ) : sharedObjectsByType;
+      if ( result == null ) {
+        publishSharedObjects( loadGeneration, readAllSharedObjects() );
+      }
+    }
+    return result;
+  }
+
+  // Reads without the cache lock: holding it while waiting for the repository lock deadlocks against saves.
+  private Map<RepositoryObjectType, List<? extends SharedObjectInterface<?>>> readAllSharedObjects()
+    throws KettleException {
+    Map<RepositoryObjectType, List<? extends SharedObjectInterface<?>>> loaded =
+      new EnumMap<>( RepositoryObjectType.class );
+    try {
+      // Slave Servers are referenced by Cluster Schemas so they must be loaded first
+      readSharedObjects( loaded, RepositoryObjectType.DATABASE, RepositoryObjectType.PARTITION_SCHEMA,
+        RepositoryObjectType.SLAVE_SERVER, RepositoryObjectType.CLUSTER_SCHEMA );
     } catch ( Exception e ) {
-      sharedObjectsByType = null;
       // TODO i18n
       throw new KettleException( "Unable to read shared objects from repository", e ); //$NON-NLS-1$
+    }
+    return loaded;
+  }
+
+  private void publishSharedObjects( final long loadGeneration,
+    final Map<RepositoryObjectType, List<? extends SharedObjectInterface<?>>> loaded ) {
+    sharedObjectsLock.writeLock().lock();
+    try {
+      if ( sharedObjectsByType == null && sharedObjectsGeneration == loadGeneration ) {
+        sharedObjectsByType = loaded;
+      }
     } finally {
       sharedObjectsLock.writeLock().unlock();
     }
@@ -2895,7 +2928,11 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
     sharedObjectsLock.writeLock().lock();
     try {
-      loadAndCacheSharedObjects( false );
+      if ( sharedObjectsByType == null ) {
+        // The next load reads this change from the repository; discard any load already in flight.
+        sharedObjectsGeneration++;
+        return;
+      }
 
       boolean remove = element == null;
       ObjectId idToFind = element != null ? element.getObjectId() : id;

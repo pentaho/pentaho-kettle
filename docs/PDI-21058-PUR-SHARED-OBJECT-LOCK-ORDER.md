@@ -32,6 +32,23 @@ The repository read lock now protects repository enumeration and the batched ret
 
 `readSharedObjects` retains the read lock for `getFilesByType`, `getDataForReadInBatch`, and `getVersionSummaryInBatch`; it assembles the returned values after the lock is released. Per-object assembly errors retain the existing log-and-skip behavior. Other failure paths still release locks through `finally` blocks.
 
+### Second inversion: shared-object cache lock vs repository lock
+
+A review of this change found a second inversion between the two static locks in `PurRepository`: the shared-object cache lock (`sharedObjectsLock`) and the repository lock (`readWriteLock`). It is present in `master` with the same lock order.
+
+- Loader: `loadAndCacheSharedObjects` held the cache write lock while `readSharedObjects` waited for the repository read lock.
+- Saver: `save`/`deleteDatabaseMeta` held the repository write lock and then waited for the cache write lock in `updateSharedObjectCache`.
+
+With a cold cache, a loader and a saver block each other permanently. Two further effects of the old code: `updateSharedObjectCache` itself loaded the cache, so every saver on a cold cache could trigger the load, and a failed load cleared the cache while other threads might have been using it.
+
+Fix:
+
+- The cache is read from the repository without the cache lock and then published under the lock only if no invalidation happened meanwhile. A generation counter, bumped by `clearSharedObjectCache` and by cache updates on a cold cache, detects this; the loader then retries.
+- `updateSharedObjectCache` never reads the repository. On a cold cache it only invalidates, because the next load reads the saved change from the repository.
+- A failed load leaves the cache untouched and still throws `KettleException("Unable to read shared objects from repository")`.
+
+Reproduction against a live server (stock 11.1 #454 with the PDI-21058 jars): a client harness ran concurrent cold-cache loads and `saveDatabaseMeta` calls. Before the fix it ended with `DEADLOCK DETECTED loads=257 saves=0`, with the loader blocked in `loadAndCacheSharedObjects` and the saver in `updateSharedObjectCache`. After the fix, a 60 s run ended with `NO DEADLOCK loads=2 saves=1434`. The low load count is expected: every save on a cold cache invalidates it, so loads are retried.
+
 ## 3. Validation
 
 The focused PUR test suite passed on the `master` worktree:
@@ -43,7 +60,7 @@ mvn -o -B -q -pl plugins/pur/core \
 
 The suite includes checks that the repository write lock is available during job/transformation decoding, database decoding, individual object assembly, and shared-object assembly, plus lock release after a failed shared-object update.
 
-The five tests in `PurRepositoryLoadLockTest` are `repositoryLoadsReleaseReadLockBeforeDeserialization`, `databaseListReadReleasesReadLockBeforeDeserialization`, `batchJobAndTransformationLoadsReleaseReadLockBeforeDeserialization`, `sharedObjectCacheLoadReleasesReadLockBeforeAssembly` and `sharedObjectLoadFailureReleasesRepositoryLocks`.
+The nine tests in `PurRepositoryLoadLockTest` are `repositoryLoadsReleaseReadLockBeforeDeserialization`, `databaseListReadReleasesReadLockBeforeDeserialization`, `batchJobAndTransformationLoadsReleaseReadLockBeforeDeserialization`, `sharedObjectCacheLoadReleasesReadLockBeforeAssembly`, `sharedObjectLoadFailureReleasesRepositoryLocks`, and, for the cache-lock inversion, `coldCacheLoadDoesNotHoldSharedObjectsLockWhileReadingRepository`, `cacheUpdateOnColdCacheDoesNotReadRepository`, `cacheClearedDuringColdLoadIsNotPublishedStale` and `cacheUpdatedDuringColdLoadIsNotPublishedStale`. The four cache-lock tests failed before the fix and pass after it; the full `plugins/pur/core` suite passes (456 tests).
 
 ### Evidence of the original inversion
 
