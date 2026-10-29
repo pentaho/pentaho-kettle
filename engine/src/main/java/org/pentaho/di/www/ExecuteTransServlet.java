@@ -24,7 +24,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
@@ -50,6 +52,7 @@ import org.pentaho.di.trans.TransAdapter;
 import org.pentaho.di.trans.TransConfiguration;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.www.exception.ExecutionNotAllowedException;
 
 public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginInterface {
 
@@ -255,7 +258,9 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
 
       final Repository repository = openRepository( repOption, userOption, passOption );
       clearBowlCache( repository );
-      final TransMeta transMeta = loadTransformation( repository, transOption, getPopulatedVariableSpaceFromRequest( request, new Variables() ) );
+
+      final TransMeta transMeta = loadTransformation( repository, transOption,
+        getPopulatedVariableSpaceFromRequest( request, new Variables() ) );
 
       // Set the servlet parameters as variables in the transformation
       //
@@ -299,7 +304,7 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
       getTransformationMap().addTransformation( transMeta.getName(), carteObjectId, trans, transConfiguration );
       trans.setContainerObjectId( carteObjectId );
 
-      if ( repository != null ) {
+      if ( repository != null && !Utils.isEmpty( repOption ) ) {
         // The repository connection is open: make sure we disconnect from the repository once we
         // are done with this transformation.
         //
@@ -331,6 +336,9 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
         String logging = KettleLogStore.getAppender().getBuffer( trans.getLogChannelId(), false ).toString();
         throw new KettleException( BaseMessages.getString( PKG, "ExecuteTransServlet.Error.ErrorExecutingTrans", logging ), executionException );
       }
+    } catch ( ExecutionNotAllowedException ex ) {
+      response.setStatus( HttpServletResponse.SC_BAD_REQUEST );
+      out.println( new WebResult( WebResult.STRING_ERROR, ex.getMessage() ) );
     } catch ( Exception ex ) {
       // When we get to this point KettleAuthenticationException has already been wrapped in an Execution Exception
       // and that in a KettleException
@@ -355,57 +363,71 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
   }
 
   private TransMeta loadTransformation( Repository repository, String trans, VariableSpace parentVariableSpace ) throws KettleException {
-
-    if ( repository == null ) {
-      SlaveServerConfig serverConfig = getTransformationMap() != null ? getTransformationMap().getSlaveServerConfig() : null;
-      if ( serverConfig == null ) {
-        serverConfig = new SlaveServerConfig();
-      }
-      if ( !serverConfig.isExecuteUrlAllowed( trans ) ) {
-        throw new KettleException( "Execution is not allowed for URL protocol in transformation path: " + trans );
-      }
-
-      // Without a repository it's a filename --> file:///foo/bar/trans.ktr
-      //
-      // Repository doesn't need bowl-specific VFS. Use DefaultBowl.
-      TransMeta transMeta = new TransMeta( DefaultBowl.getInstance(), trans, parentVariableSpace );
-      return transMeta;
-
-    } else {
-
-      // With a repository we need to load it from /foo/bar/Transformation
-      // We need to extract the folder name from the path in front of the name...
-      //
-      String directoryPath;
-      String name;
-      int lastSlash = trans.lastIndexOf( RepositoryDirectory.DIRECTORY_SEPARATOR );
-      if ( lastSlash < 0 ) {
-        directoryPath = "/";
-        name = trans;
-      } else {
-        directoryPath = trans.substring( 0, lastSlash );
-        name = trans.substring( lastSlash + 1 );
-      }
-      RepositoryDirectoryInterface directory =
-        repository.loadRepositoryDirectoryTree().findDirectory( directoryPath );
-      if ( directory == null ) {
-        throw new KettleException( "Unable to find directory path '" + directoryPath + "' in the repository" );
-      }
-
-      ObjectId transformationID = repository.getTransformationID( name, directory );
-      if ( transformationID == null ) {
-        throw new KettleException( "Unable to find transformation '" + name + "' in directory :" + directory );
-      }
-      // TODO BACKLOG-44138 need to pass parent variablespace
-      TransMeta transMeta = repository.loadTransformation( transformationID, null, parentVariableSpace );
-      return transMeta;
+    // Scheme-based paths (file:/..., zip:/..., pvfs://...) are treated as filesystem/VFS sources.
+    // Local Windows paths like C:/... are not repository paths and should not be resolved through repository lookups.
+    if ( repository == null || SlaveServerConfig.looksLikeScheme( trans ) ) {
+      return loadTransformationFromPathOrUrl( repository, trans, parentVariableSpace );
     }
+    return loadTransformationFromRepository( repository, trans, parentVariableSpace );
   }
 
-  private Repository openRepository( String repositoryName, String user, String pass ) throws KettleException {
+  private TransMeta loadTransformationFromPathOrUrl( Repository repository, String trans, VariableSpace parentVariableSpace )
+    throws KettleException {
+    SlaveServerConfig serverConfig = getTransformationMap() != null ? getTransformationMap().getSlaveServerConfig() : null;
+    if ( serverConfig == null ) {
+      serverConfig = new SlaveServerConfig();
+    }
+    if ( !serverConfig.isExecuteUrlAllowed( trans ) ) {
+      throw new ExecutionNotAllowedException( "Execution is not allowed for URL protocol in transformation path: " + trans );
+    }
+
+    // Without a repository it's a filename --> file:///foo/bar/trans.ktr
+    //
+    // Use the repository bowl that we cleared above if present. 
+    Bowl bowl = repository != null ? repository.getBowl() : DefaultBowl.getInstance();
+    return new TransMeta( bowl, trans, parentVariableSpace );
+  }
+
+  private TransMeta loadTransformationFromRepository( Repository repository, String trans, VariableSpace parentVariableSpace )
+    throws KettleException {
+    String directoryPath = getDirectoryPath( trans );
+    String name = getRepositoryObjectName( trans );
+
+    RepositoryDirectoryInterface directory =
+      repository.loadRepositoryDirectoryTree().findDirectory( directoryPath );
+    if ( directory == null ) {
+      throw new KettleException( "Unable to find directory path '" + directoryPath + "' in the repository" );
+    }
+
+    ObjectId transformationID = repository.getTransformationID( name, directory );
+    if ( transformationID == null ) {
+      throw new KettleException( "Unable to find transformation '" + name + "' in directory :" + directory );
+    }
+    // TODO BACKLOG-44138 need to pass parent variablespace
+    return repository.loadTransformation( transformationID, null, parentVariableSpace );
+  }
+
+  private String getDirectoryPath( String path ) {
+    int lastSlash = path.lastIndexOf( RepositoryDirectory.DIRECTORY_SEPARATOR );
+    if ( lastSlash < 0 ) {
+      return "/";
+    }
+    return path.substring( 0, lastSlash );
+  }
+
+  private String getRepositoryObjectName( String path ) {
+    int lastSlash = path.lastIndexOf( RepositoryDirectory.DIRECTORY_SEPARATOR );
+    if ( lastSlash < 0 ) {
+      return path;
+    }
+    return path.substring( lastSlash + 1 );
+  }
+
+  @VisibleForTesting
+  Repository openRepository( String repositoryName, String user, String pass ) throws KettleException {
 
     if ( Utils.isEmpty( repositoryName ) ) {
-      return null;
+      return getRepositoryFromLocator();
     }
 
     RepositoriesMeta repositoriesMeta = new RepositoriesMeta();

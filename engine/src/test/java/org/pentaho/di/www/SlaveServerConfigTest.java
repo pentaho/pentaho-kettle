@@ -231,6 +231,15 @@ public class SlaveServerConfigTest {
   }
 
   @Test
+  public void testLooksLikeScheme_RecognizesSchemeStylePaths() {
+    assertTrue( SlaveServerConfig.looksLikeScheme( "file:///tmp/test.ktr" ) );
+    assertTrue( SlaveServerConfig.looksLikeScheme( "https://example.com/test.ktr" ) );
+    assertTrue( SlaveServerConfig.looksLikeScheme( "C:/tmp/test.ktr" ) );
+    assertFalse( SlaveServerConfig.looksLikeScheme( "relative/path/test.ktr" ) );
+    assertFalse( SlaveServerConfig.looksLikeScheme( "/foo/bar" ) );
+  }
+
+  @Test
   public void testKettleVfsGetScheme_HandlesPathAndProtocolVariants() {
     assertEquals( "http", KettleVFS.getScheme( "http://example.com/test.ktr" ) );
     assertEquals( "file", KettleVFS.getScheme( "file:/tmp/test.ktr" ) );

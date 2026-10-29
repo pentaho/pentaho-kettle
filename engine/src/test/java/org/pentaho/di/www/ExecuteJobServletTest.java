@@ -14,14 +14,19 @@
 
 package org.pentaho.di.www;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockedStatic;
 import org.owasp.encoder.Encode;
+import org.pentaho.di.core.KettleClientEnvironment;
+import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.empty.JobEntryEmpty;
@@ -42,6 +47,8 @@ import java.io.StringWriter;
 import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -52,8 +59,10 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.pentaho.di.core.util.Assert.assertTrue;
 
 public class ExecuteJobServletTest {
@@ -78,13 +87,20 @@ public class ExecuteJobServletTest {
   private static String LEVEL = LogLevel.DEBUG.getCode();
 
   @Before
-  public void setup() {
+  public void setup() throws KettleException {
+    KettleClientEnvironment.init();
+    KettleEnvironment.init();
     mockHttpServletRequest = mock( HttpServletRequest.class );
     spyHttpServletResponse = spy( HttpServletResponse.class );
     jobMap = new JobMap();
     spyExecuteJobServlet = spy( new ExecuteJobServlet( jobMap ) );
 
     repository = mock( Repository.class );
+  }
+
+  @After
+  public void tearDown() {
+    KettleEnvironment.reset();
   }
 
   @Test
@@ -119,6 +135,202 @@ public class ExecuteJobServletTest {
       assertTrue( out.toString().contains( WebResult.STRING_OK ) );
       assertTrue( out.toString().contains( "Job started" ) );
       verify( spyExecuteJobServlet ).clearBowlCache( same( repository ) );
+    }
+  }
+
+  @Test
+  public void testOpenRepositoryUsesRepositoryLocatorWhenNameEmpty() throws Exception {
+    Repository activeRepository = mock( Repository.class );
+    doReturn( activeRepository ).when( spyExecuteJobServlet ).getRepositoryFromLocator();
+
+    Repository resolvedRepository = spyExecuteJobServlet.openRepository( "", AUTHORIZED_USER, PASSWORD );
+    assertSame( activeRepository, resolvedRepository );
+  }
+
+  @Test
+  public void loadJobFromFileUrlUsesFilesystemWhenRepositoryIsPresent() throws Exception {
+    java.lang.reflect.Method method = ExecuteJobServlet.class.getDeclaredMethod(
+      "loadJob", Repository.class, String.class, VariableSpace.class );
+    method.setAccessible( true );
+
+    Repository jobRepository = mock( Repository.class );
+    when( jobRepository.getBowl() ).thenReturn( DefaultBowl.getInstance() );
+    when( jobRepository.getName() ).thenReturn( "repo" );
+
+    SlaveServerConfig serverConfig = new SlaveServerConfig();
+    serverConfig.setAllowedExecuteFileSchemes( Collections.singletonList( "file" ) );
+    JobMap localJobMap = new JobMap();
+    localJobMap.setSlaveServerConfig( serverConfig );
+    spyExecuteJobServlet.jobMap = localJobMap;
+
+    java.io.File tempFile = new java.io.File( "src/test/resources/org/pentaho/di/job/one-step-job.kjb" );
+
+    JobMeta jobMeta = (JobMeta) method.invoke( spyExecuteJobServlet, jobRepository, tempFile.toURI().toString(), new Variables() );
+
+    assertNotNull( jobMeta );
+    verify( jobRepository, never() ).loadRepositoryDirectoryTree();
+    verify( jobRepository, never() ).getJobId( anyString(), any( RepositoryDirectoryInterface.class ) );
+  }
+
+  @Test
+  public void loadJobFromRawPathUsesRepositoryWhenRepositoryIsPresent() throws Exception {
+    java.lang.reflect.Method method = ExecuteJobServlet.class.getDeclaredMethod(
+      "loadJob", Repository.class, String.class, VariableSpace.class );
+    method.setAccessible( true );
+
+    Repository rawPathRepository = mock( Repository.class );
+    RepositoryDirectoryInterface directoryTree = mock( RepositoryDirectoryInterface.class );
+    ObjectId jobId = mock( ObjectId.class );
+    JobMeta expectedMeta = mock( JobMeta.class );
+
+    when( rawPathRepository.loadRepositoryDirectoryTree() ).thenReturn( directoryTree );
+    when( directoryTree.findDirectory( "/foo" ) ).thenReturn( directoryTree );
+    when( rawPathRepository.getJobId( "bar", directoryTree ) ).thenReturn( jobId );
+    when( rawPathRepository.loadJob( same( jobId ), nullable( String.class ), any( VariableSpace.class ) ) ).thenReturn( expectedMeta );
+
+    JobMeta actualMeta = (JobMeta) method.invoke( spyExecuteJobServlet, rawPathRepository, "/foo/bar", new Variables() );
+
+    assertSame( expectedMeta, actualMeta );
+    verify( rawPathRepository ).loadRepositoryDirectoryTree();
+    verify( rawPathRepository ).getJobId( "bar", directoryTree );
+  }
+
+  @Test
+  public void loadJobFromRawPathUsesFilesystemWhenRepositoryIsAbsent() throws Exception {
+    java.lang.reflect.Method method = ExecuteJobServlet.class.getDeclaredMethod(
+      "loadJob", Repository.class, String.class, VariableSpace.class );
+    method.setAccessible( true );
+
+    SlaveServerConfig serverConfig = new SlaveServerConfig();
+    serverConfig.setAllowedExecuteFileSchemes( Collections.singletonList( "file" ) );
+    JobMap localJobMap = new JobMap();
+    localJobMap.setSlaveServerConfig( serverConfig );
+    spyExecuteJobServlet.jobMap = localJobMap;
+
+    java.io.File tempFile = new java.io.File( "src/test/resources/org/pentaho/di/job/one-step-job.kjb" );
+
+    JobMeta jobMeta = (JobMeta) method.invoke( spyExecuteJobServlet, null, tempFile.getAbsolutePath(), new Variables() );
+
+    assertNotNull( jobMeta );
+  }
+
+  @Test
+  public void openRepositoryThrowsWhenNamedRepositoryIsMissing() throws Exception {
+    java.lang.reflect.Method method = ExecuteJobServlet.class.getDeclaredMethod(
+      "openRepository", String.class, String.class, String.class );
+    method.setAccessible( true );
+
+    try {
+      method.invoke( spyExecuteJobServlet, "missing-repository", AUTHORIZED_USER, PASSWORD );
+      assertTrue( false );
+    } catch ( java.lang.reflect.InvocationTargetException e ) {
+      assertTrue( e.getCause() instanceof KettleException );
+      assertTrue( e.getCause().getMessage().contains( "Unable to find repository" ) );
+    }
+  }
+
+  @Test
+  public void loadJobFromRepositorySuccess() throws Exception {
+    Repository mockRepository = mock( Repository.class );
+    RepositoryDirectoryInterface directoryTree = mock( RepositoryDirectoryInterface.class );
+    ObjectId jobId = mock( ObjectId.class );
+    JobMeta expectedMeta = mock( JobMeta.class );
+
+    when( mockRepository.loadRepositoryDirectoryTree() ).thenReturn( directoryTree );
+    when( directoryTree.findDirectory( "folder" ) ).thenReturn( directoryTree );
+    when( mockRepository.getJobId( "sample-job", directoryTree ) ).thenReturn( jobId );
+    when( mockRepository.loadJob( jobId, null, null ) ).thenReturn( expectedMeta );
+
+    java.lang.reflect.Method method = ExecuteJobServlet.class.getDeclaredMethod(
+      "loadJobFromRepository", Repository.class, String.class, VariableSpace.class );
+    method.setAccessible( true );
+
+    JobMeta actualMeta = (JobMeta) method.invoke( spyExecuteJobServlet, mockRepository, "folder/sample-job", null );
+    assertSame( expectedMeta, actualMeta );
+  }
+
+  @Test
+  public void loadJobFromFilePathAllowed() throws Exception {
+    java.lang.reflect.Method method = ExecuteJobServlet.class.getDeclaredMethod(
+      "loadJob", Repository.class, String.class, VariableSpace.class );
+    method.setAccessible( true );
+
+    SlaveServerConfig serverConfig = new SlaveServerConfig();
+    serverConfig.setAllowedExecuteFileSchemes( Collections.singletonList( "file" ) );
+    JobMap localJobMap = new JobMap();
+    localJobMap.setSlaveServerConfig( serverConfig );
+    spyExecuteJobServlet.jobMap = localJobMap;
+
+    java.io.File tempFile = java.io.File.createTempFile( "allowed-job", ".kjb" );
+    java.nio.file.Files.writeString(
+      tempFile.toPath(),
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+        + "<job>\n"
+        + "  <name>allowed-job</name>\n"
+        + "  <directory>/</directory>\n"
+        + "</job>\n" );
+
+    JobMeta jobMeta = (JobMeta) method.invoke( spyExecuteJobServlet, null, tempFile.toURI().toString(), new Variables() );
+    assertNotNull( jobMeta );
+  }
+
+  @Test
+  public void loadJobFromUrlRejected() throws Exception {
+    java.lang.reflect.Method method = ExecuteJobServlet.class.getDeclaredMethod(
+      "loadJob", Repository.class, String.class, VariableSpace.class );
+    method.setAccessible( true );
+
+    try {
+      method.invoke( spyExecuteJobServlet, null, "http://example.com/test.kjb", new Variables() );
+    } catch ( java.lang.reflect.InvocationTargetException e ) {
+      assertTrue( e.getCause() instanceof org.pentaho.di.www.exception.ExecutionNotAllowedException );
+      return;
+    }
+    assertTrue( false );
+  }
+
+  @Test
+  public void loadJobFromRepositoryThrowsWhenDirectoryMissing() throws Exception {
+    Repository mockRepository = mock( Repository.class );
+    RepositoryDirectoryInterface directoryTree = mock( RepositoryDirectoryInterface.class );
+    when( mockRepository.loadRepositoryDirectoryTree() ).thenReturn( directoryTree );
+    when( directoryTree.findDirectory( "/missing" ) ).thenReturn( null );
+
+    java.lang.reflect.Method method = ExecuteJobServlet.class.getDeclaredMethod(
+      "loadJobFromRepository", Repository.class, String.class, VariableSpace.class );
+    method.setAccessible( true );
+
+    try {
+      method.invoke( spyExecuteJobServlet, mockRepository, "/missing/test.kjb", new Variables() );
+    } catch ( java.lang.reflect.InvocationTargetException e ) {
+      assertTrue( e.getCause() instanceof KettleException );
+      assertTrue( e.getCause().getMessage().contains( "Unable to find directory path" ) );
+      return;
+    }
+    assertTrue( false );
+  }
+
+  @Test
+  public void testExecuteJobServletReturnsBadRequestWhenExecutionNotAllowed() throws Exception {
+    try ( MockedStatic<Encr> encrMockedStatic = mockStatic( Encr.class ) ) {
+      encrMockedStatic.when( () -> Encr.decryptPasswordOptionallyEncrypted( eq( PASSWORD ) ) ).thenReturn( PASSWORD );
+      doReturn( ExecuteJobServlet.CONTEXT_PATH ).when( mockHttpServletRequest ).getContextPath();
+      doReturn( null ).when( mockHttpServletRequest ).getParameter( "rep" );
+      doReturn( AUTHORIZED_USER ).when( mockHttpServletRequest ).getParameter( "user" );
+      doReturn( PASSWORD ).when( mockHttpServletRequest ).getParameter( "pass" );
+      doReturn( "https://example.com/job.kjb" ).when( mockHttpServletRequest ).getParameter( "job" );
+      doReturn( LEVEL ).when( mockHttpServletRequest ).getParameter( "level" );
+      doReturn( Collections.emptyEnumeration() ).when( mockHttpServletRequest ).getParameterNames();
+      Repository activeRepository = mock( Repository.class );
+      doReturn( activeRepository ).when( spyExecuteJobServlet ).getRepositoryFromLocator();
+      doReturn( activeRepository ).when( spyExecuteJobServlet ).openRepository( "", AUTHORIZED_USER, PASSWORD );
+
+      StringWriter out = mockWriter();
+      spyExecuteJobServlet.doGet( mockHttpServletRequest, spyHttpServletResponse );
+
+      verify( activeRepository, never() ).loadRepositoryDirectoryTree();
+      assertTrue( out.toString().contains( "Execution is not allowed" ) );
+      verify( spyHttpServletResponse ).setStatus( HttpServletResponse.SC_BAD_REQUEST );
     }
   }
 
