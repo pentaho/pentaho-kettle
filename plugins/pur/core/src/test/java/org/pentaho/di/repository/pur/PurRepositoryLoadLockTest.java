@@ -155,6 +155,9 @@ public class PurRepositoryLoadLockTest {
     repository.init( mock( PurRepositoryMeta.class ) );
     repository.setTest( unifiedRepository );
     doReturn( mock( RepositoryDirectoryInterface.class ) ).when( repository ).findDirectory( anyString() );
+    // 10.2 reads shared objects while building each meta; keep this test focused on lock handling
+    doReturn( null ).when( repository ).readTransSharedObjects( any() );
+    doReturn( null ).when( repository ).readJobMetaSharedObjects( any() );
 
     RepositoryFile file = mock( RepositoryFile.class );
     when( file.getId() ).thenReturn( "file-id" );
