@@ -20,10 +20,12 @@
             <outputDirectory>.</outputDirectory>
             <includes>
                 <include>pentaho:pentaho-s3-vfs:jar</include>
+                <!-- legacy S3FileOutput step-->
                 <include>pentaho:pentaho-s3-file-output:jar</include>
             </includes>
             <useProjectArtifact>false</useProjectArtifact>
         </dependencySet>
+           <!-- AWS SDK v2 and its Netty transport dependencies. -->
         <dependencySet>
             <outputDirectory>/lib</outputDirectory>
             <unpack>false</unpack>
@@ -32,9 +34,23 @@
             <outputFileNameMapping>${artifact.artifactId}-${artifact.baseVersion}.${artifact.extension}
             </outputFileNameMapping>
             <includes>
-                <include>com.amazonaws:aws-java-sdk-core</include>
-                <include>com.amazonaws:aws-java-sdk-s3</include>
-                <include>com.amazonaws:aws-java-sdk-iam</include>
+                <include>software.amazon.awssdk:*</include>
+                <include>io.netty:*</include>
+                <include>software.amazon.eventstream:eventstream</include>
+                <!-- We are relying on the following from kettle
+                <include>org.reactivestreams:reactive-streams</include>
+                <include>org.apache.httpcomponents:httpclient</include>
+                <include>org.apache.httpcomponents:httpcore</include>
+                <include>org.apache.httpcomponents.client5:httpclient5</include>
+                <include>org.apache.httpcomponents.core5:*</include>
+                <include>commons-codec:commons-codec</include>
+                <include>commons-logging:commons-logging</include>
+                <include>org.slf4j:slf4j-api</include>
+                <include>com.google.guava:guava</include>
+                <include>commons-io:commons-io</include>
+                <include>org.apache.commons:commons-lang3</include>
+                <include>org.apache.commons:commons-vfs2</include>
+                -->
             </includes>
         </dependencySet>
     </dependencySets>

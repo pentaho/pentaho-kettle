@@ -10,14 +10,12 @@
  * Change Date: 2030-06-15
  ******************************************************************************/
 
-
-
 package org.pentaho.s3.vfs;
 
 import org.apache.commons.vfs2.FileType;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 /**

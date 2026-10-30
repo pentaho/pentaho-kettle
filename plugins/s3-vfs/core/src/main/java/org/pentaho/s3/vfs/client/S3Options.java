@@ -9,27 +9,25 @@
  *
  * Change Date: 2030-06-15
  ******************************************************************************/
-package org.pentaho.s3common;
+
+package org.pentaho.s3.vfs.client;
 
 import org.pentaho.amazon.s3.S3Details;
 import org.pentaho.amazon.s3.S3Util;
 import org.pentaho.di.core.encryption.Encr;
+import org.pentaho.s3.vfs.S3FileSystemConfigBuilder;
 
 import java.util.Map;
 import java.util.Optional;
 
-import com.amazonaws.regions.Regions;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class S3Options {
 
-  private static final Logger log = LoggerFactory.getLogger( S3Options.class );
-
+  private final BaseS3Options base;
+  // not final as it can be overridden by legacy url creds
   private Optional<AuthKeys> authKeys;
   private final Optional<CredentialsFile> credFileAuth;
-  private final BaseS3Options base;
   private final Optional<TrustStore> trustStoreFile;
   private final Optional<KeyStore> keyStoreFile;
 
@@ -45,7 +43,7 @@ public class S3Options {
     this.keyStoreFile = keyStoreFile;
   }
 
-  public static S3Options from( S3CommonFileSystemConfigBuilder opts ) {
+  public static S3Options from( S3FileSystemConfigBuilder opts ) {
     return new S3Options(
       AuthKeys.from( opts ),
       CredentialsFile.from( opts ),
@@ -100,10 +98,10 @@ public class S3Options {
       return maybeAuth( accessKey, secretKey, sessionToken );
     }
 
-    static Optional<AuthKeys> from( S3CommonFileSystemConfigBuilder s3CommonFileSystemConfigBuilder ) {
-      String accessKey = s3CommonFileSystemConfigBuilder.getAccessKey();
-      String secretKey = s3CommonFileSystemConfigBuilder.getSecretKey();
-      String sessionToken = s3CommonFileSystemConfigBuilder.getSessionToken();
+    static Optional<AuthKeys> from( S3FileSystemConfigBuilder configBuilder ) {
+      String accessKey = configBuilder.getAccessKey();
+      String secretKey = configBuilder.getSecretKey();
+      String sessionToken = configBuilder.getSessionToken();
       return maybeAuth( accessKey, secretKey, sessionToken );
     }
 
@@ -118,7 +116,7 @@ public class S3Options {
 
   public record CredentialsFile( String credentialsFile, String profileName ) {
 
-    static Optional<CredentialsFile> from( S3CommonFileSystemConfigBuilder cfg ) {
+    static Optional<CredentialsFile> from( S3FileSystemConfigBuilder cfg ) {
       var credentialsFilePath = cfg.getCredentialsFile();
       var profileName = cfg.getProfileName();
       return StringUtils.isEmpty( credentialsFilePath ) ? Optional.empty() : Optional.of( new CredentialsFile(
@@ -134,13 +132,12 @@ public class S3Options {
 
   }
 
-  public record BaseS3Options( String endpoint, String region, String signatureVersion, boolean pathStyleAccess ) {
+  public record BaseS3Options( String endpoint, Optional<String> region, boolean pathStyleAccess ) {
 
-    static BaseS3Options from( S3CommonFileSystemConfigBuilder opts ) {
+    static BaseS3Options from( S3FileSystemConfigBuilder opts ) {
       return new BaseS3Options(
         opts.getEndpoint(),
         getRegion( opts.getRegion() ),
-        opts.getSignatureVersion(),
         getPathStyleAccess( opts.getPathStyleAccess() ) );
     }
 
@@ -148,16 +145,14 @@ public class S3Options {
       return new BaseS3Options(
         props.get( S3Details.PROP_ENDPOINT ),
         getRegion( props.get( S3Details.PROP_REGION ) ),
-        props.get( S3Details.PROP_SIGNATURE_VERSION ),
         getPathStyleAccess( props.get( S3Details.PROP_PATHSTYLE_ACCESS ) ) );
     }
 
-    private static String getRegion( String val ) {
+    private static Optional<String> getRegion( String val ) {
       if ( StringUtils.isBlank( val ) ) {
-        log.debug( "No region set, using default {}", Regions.DEFAULT_REGION.getName() );
-        return Regions.DEFAULT_REGION.getName();
+        return Optional.empty();
       }
-      return val;
+      return Optional.of( val );
     }
 
     private static boolean getPathStyleAccess( String val ) {
@@ -168,7 +163,7 @@ public class S3Options {
 
   public record TrustStore( String filePath, String pass, boolean trustAll ) {
 
-    static Optional<TrustStore> from( S3CommonFileSystemConfigBuilder cfg ) {
+    static Optional<TrustStore> from( S3FileSystemConfigBuilder cfg ) {
       var filePath = cfg.getTrustStoreFilePath();
       var pass = cfg.getTrustStorePassword();
       var trustAll = Boolean.parseBoolean( cfg.getTrustAll() );
@@ -194,7 +189,7 @@ public class S3Options {
 
   public record KeyStore( String filePath, String password ) {
 
-    static Optional<KeyStore> from( S3CommonFileSystemConfigBuilder cfg ) {
+    static Optional<KeyStore> from( S3FileSystemConfigBuilder cfg ) {
       var filePath = cfg.getKeyStoreFilePath();
       var password = cfg.getKeyStorePassword();
       return maybeKeyStore( filePath, password );

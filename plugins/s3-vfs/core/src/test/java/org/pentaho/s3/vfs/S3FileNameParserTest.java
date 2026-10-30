@@ -10,17 +10,16 @@
  * Change Date: 2030-06-15
  ******************************************************************************/
 
-
 package org.pentaho.s3.vfs;
 
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.provider.FileNameParser;
 import org.apache.commons.vfs2.provider.VfsComponentContext;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 
 
@@ -31,7 +30,7 @@ public class S3FileNameParserTest {
 
   FileNameParser parser;
 
-  @Before
+  @BeforeEach
   public void setUp() throws Exception {
     parser = S3FileNameParser.getInstance();
   }
@@ -57,5 +56,14 @@ public class S3FileNameParserTest {
     uri = "s3://ThiSiSA+PossibleAcce/ssK3y:PossiblES3cre+K3y@s3/bucket/file";
     withBaseFile = parser.parseUri( context, fileName, uri );
     assertEquals( "ThiSiSA+PossibleAcce/ssK3y:PossiblES3cre+K3y@s3", ( (S3FileName)withBaseFile ).getBucketId() );
+  }
+
+  @Test
+  public void testParseUriRoundTrip() throws Exception {
+    String origUri = "s3://fooBucket/rcf-emr-staging";
+    S3FileName fileName = (S3FileName) parser.parseUri( null, null, origUri );
+
+    assertEquals( "fooBucket", fileName.getBucketId() );
+    assertEquals( origUri, fileName.getURI() );
   }
 }

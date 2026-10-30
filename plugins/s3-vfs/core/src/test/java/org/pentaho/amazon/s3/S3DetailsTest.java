@@ -10,11 +10,9 @@
  * Change Date: 2030-06-15
  ******************************************************************************/
 
-
-
 package org.pentaho.amazon.s3;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
