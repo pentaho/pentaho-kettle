@@ -211,6 +211,9 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
   private Map<RepositoryObjectType, List<? extends SharedObjectInterface>> sharedObjectsByType = null;
 
+  // Guarded by sharedObjectsLock; bumped whenever a load in flight could become stale.
+  private long sharedObjectsGeneration;
+
   private boolean connected = false;
 
   private String connectMessage = null;
@@ -1346,6 +1349,10 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     return databaseMetaTransformer;
   }
 
+  void setDatabaseMetaTransformerForTesting( DatabaseDelegate databaseDelegate ) {
+    this.databaseMetaTransformer = databaseDelegate;
+  }
+
   public ClusterDelegate getClusterTransformer() {
     return clusterTransformer;
   }
@@ -1359,6 +1366,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     sharedObjectsLock.writeLock().lock();
     try {
       sharedObjectsByType = null;
+      sharedObjectsGeneration++;
     } finally {
       sharedObjectsLock.writeLock().unlock();
     }
@@ -1393,49 +1401,47 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     // Since type is not preserved in the RepositoryFile we fetch files by type so we don't rely on parsing the name to
     // determine type afterward
     // Map must be ordered or we can't match up files with data and version summary
-    LinkedHashMap<RepositoryObjectType, List<RepositoryFile>> filesByType = getFilesByType( allFiles, types );
+    LinkedHashMap<RepositoryObjectType, List<RepositoryFile>> filesByType;
+    List<NodeRepositoryFileData> data;
+    List<VersionSummary> versions;
     readWriteLock.readLock().lock();
     try {
-      List<NodeRepositoryFileData> data;
-      List<VersionSummary> versions;
+      filesByType = getFilesByType( allFiles, types );
       data = pur.getDataForReadInBatch( allFiles, NodeRepositoryFileData.class );
       versions = pur.getVersionSummaryInBatch( allFiles );
-
-      Iterator<NodeRepositoryFileData> dataIter = data.iterator();
-      Iterator<VersionSummary> versionsIter = versions.iterator();
-
-      // Assemble into completely loaded SharedObjectInterfaces by type
-      for ( Entry<RepositoryObjectType, List<RepositoryFile>> entry : filesByType.entrySet() ) {
-        SharedObjectAssembler<?> assembler = sharedObjectAssemblerMap.get( entry.getKey() );
-        if ( assembler == null ) {
-          throw new UnsupportedOperationException(
-            String.format( "Cannot assemble shared object of type [%s]", entry.getKey() ) ); //$NON-NLS-1$
-        }
-        // For all files of this type, assemble them from the pieces of data pulled from the repository
-        Iterator<RepositoryFile> filesIter = entry.getValue().iterator();
-        List<SharedObjectInterface> sharedObjects = new ArrayList<SharedObjectInterface>( entry.getValue().size() );
-        // Exceptions are thrown during lookup if data or versions aren't found so all the lists should be the same size
-        // (no need to check for next on all iterators)
-        while ( filesIter.hasNext() ) {
-          RepositoryFile file = filesIter.next();
-          NodeRepositoryFileData repoData = dataIter.next();
-          VersionSummary version = versionsIter.next();
-
-          // TODO: inexistent db types can cause exceptions assembling; prevent total failure
-          try {
-            sharedObjects.add( assembler.assemble( file, repoData, version ) );
-          } catch ( Exception ex ) {
-            // TODO i18n
-            getLog().logError( "Unable to load shared objects", ex );
-          }
-        }
-        sharedObjectsByType.put( entry.getKey(), sharedObjects );
-      }
-    } catch ( Exception ex ) {
-      // TODO i18n
-      throw new KettleException( "Unable to load shared objects", ex ); //$NON-NLS-1$
     } finally {
       readWriteLock.readLock().unlock();
+    }
+
+    Iterator<NodeRepositoryFileData> dataIter = data.iterator();
+    Iterator<VersionSummary> versionsIter = versions.iterator();
+
+    // Assemble into completely loaded SharedObjectInterfaces by type
+    for ( Entry<RepositoryObjectType, List<RepositoryFile>> entry : filesByType.entrySet() ) {
+      SharedObjectAssembler<?> assembler = sharedObjectAssemblerMap.get( entry.getKey() );
+      if ( assembler == null ) {
+        throw new UnsupportedOperationException(
+          String.format( "Cannot assemble shared object of type [%s]", entry.getKey() ) ); //$NON-NLS-1$
+      }
+      // For all files of this type, assemble them from the pieces of data pulled from the repository
+      Iterator<RepositoryFile> filesIter = entry.getValue().iterator();
+      List<SharedObjectInterface> sharedObjects = new ArrayList<>( entry.getValue().size() );
+      // Exceptions are thrown during lookup if data or versions aren't found so all the lists should be the same size
+      // (no need to check for next on all iterators)
+      while ( filesIter.hasNext() ) {
+        RepositoryFile file = filesIter.next();
+        NodeRepositoryFileData repoData = dataIter.next();
+        VersionSummary version = versionsIter.next();
+
+        // TODO: inexistent db types can cause exceptions assembling; prevent total failure
+        try {
+          sharedObjects.add( assembler.assemble( file, repoData, version ) );
+        } catch ( Exception ex ) {
+          // TODO i18n
+          getLog().logError( "Unable to load shared objects", ex );
+        }
+      }
+      sharedObjectsByType.put( entry.getKey(), sharedObjects );
     }
   }
 
@@ -1472,15 +1478,21 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
   @Override
   public List<DatabaseMeta> readDatabases() throws KettleException {
-    readWriteLock.readLock().lock();
     try {
       boolean hasOsgiFolder = new File( SYSTEM_FOLDER ).exists();
-      List<RepositoryFile> children = getAllFilesOfType( null, RepositoryObjectType.DATABASE, false );
-      List<DatabaseMeta> dbMetas = new ArrayList<>();
+      List<RepositoryFile> children;
+      List<NodeRepositoryFileData> data;
+      readWriteLock.readLock().lock();
+      try {
+        children = getAllFilesOfType( null, RepositoryObjectType.DATABASE, false );
+        //[PDI-18487] - Amount of POST calls from PDI client connected to Repository
+        //Grab data from all objects at once to lower calls to server
+        data = pur.getDataForReadInBatch( children, NodeRepositoryFileData.class );
+      } finally {
+        readWriteLock.readLock().unlock();
+      }
 
-      //[PDI-18487] - Amount of POST calls from PDI client connected to Repository
-      //Grab data from all objects at once to lower calls to server
-      List<NodeRepositoryFileData> data = pur.getDataForReadInBatch( children, NodeRepositoryFileData.class );
+      List<DatabaseMeta> dbMetas = new ArrayList<>();
       Iterator<NodeRepositoryFileData> dataIter = data.iterator();
 
       for ( RepositoryFile file : children ) {
@@ -1498,8 +1510,6 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       return dbMetas;
     } catch ( Exception e ) {
       throw new KettleException( "Unable to read all databases", e );
-    } finally {
-      readWriteLock.readLock().unlock();
     }
   }
 
@@ -1865,24 +1875,26 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
   @Override
   public ClusterSchema loadClusterSchema( ObjectId idClusterSchema, List<SlaveServer> slaveServers, String versionId )
     throws KettleException {
-    readWriteLock.readLock().lock();
     try {
-      // We dont need to use slaveServer variable as the dataNoteToElement method finds the server from the repository
-      NodeRepositoryFileData
-        data =
-        pur.getDataAtVersionForRead( idClusterSchema.getId(), versionId, NodeRepositoryFileData.class );
-      RepositoryFile file = null;
-      if ( versionId != null ) {
-        file = pur.getFileAtVersion( idClusterSchema.getId(), versionId );
-      } else {
-        file = pur.getFileById( idClusterSchema.getId() );
+      NodeRepositoryFileData data;
+      RepositoryFile file;
+      VersionSummary version;
+      readWriteLock.readLock().lock();
+      try {
+        // We dont need to use slaveServer variable as the dataNoteToElement method finds the server from the repository
+        data = pur.getDataAtVersionForRead( idClusterSchema.getId(), versionId, NodeRepositoryFileData.class );
+        if ( versionId != null ) {
+          file = pur.getFileAtVersion( idClusterSchema.getId(), versionId );
+        } else {
+          file = pur.getFileById( idClusterSchema.getId() );
+        }
+        version = pur.getVersionSummary( idClusterSchema.getId(), versionId );
+      } finally {
+        readWriteLock.readLock().unlock();
       }
-
-      return clusterTransformer.assemble( file, data, pur.getVersionSummary( idClusterSchema.getId(), versionId ) );
+      return clusterTransformer.assemble( file, data, version );
     } catch ( Exception e ) {
       throw new KettleException( "Unable to load cluster schema with id [" + idClusterSchema + "]", e );
-    } finally {
-      readWriteLock.readLock().unlock();
     }
   }
 
@@ -1908,69 +1920,100 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
   @Override
   public PartitionSchema loadPartitionSchema( ObjectId partitionSchemaId, String versionId ) throws KettleException {
-    readWriteLock.readLock().lock();
     try {
-      NodeRepositoryFileData data =
-        pur.getDataAtVersionForRead( partitionSchemaId.getId(), versionId, NodeRepositoryFileData.class );
-      RepositoryFile file = null;
-      if ( versionId != null ) {
-        file = pur.getFileAtVersion( partitionSchemaId.getId(), versionId );
-      } else {
-        file = pur.getFileById( partitionSchemaId.getId() );
+      NodeRepositoryFileData data;
+      RepositoryFile file;
+      VersionSummary version;
+      readWriteLock.readLock().lock();
+      try {
+        data = pur.getDataAtVersionForRead( partitionSchemaId.getId(), versionId, NodeRepositoryFileData.class );
+        if ( versionId != null ) {
+          file = pur.getFileAtVersion( partitionSchemaId.getId(), versionId );
+        } else {
+          file = pur.getFileById( partitionSchemaId.getId() );
+        }
+        version = pur.getVersionSummary( partitionSchemaId.getId(), versionId );
+      } finally {
+        readWriteLock.readLock().unlock();
       }
-
-      return partitionSchemaTransformer.assemble( file, data, pur.getVersionSummary( partitionSchemaId.getId(),
-        versionId ) );
+      return partitionSchemaTransformer.assemble( file, data, version );
     } catch ( Exception e ) {
       throw new KettleException( "Unable to load partition schema with id [" + partitionSchemaId + "]", e );
-    } finally {
-      readWriteLock.readLock().unlock();
     }
   }
 
   @Override
   public SlaveServer loadSlaveServer( ObjectId idSlaveServer, String versionId ) throws KettleException {
-    readWriteLock.readLock().lock();
     try {
-      NodeRepositoryFileData
-        data =
-        pur.getDataAtVersionForRead( idSlaveServer.getId(), versionId, NodeRepositoryFileData.class );
-      RepositoryFile file = null;
-      if ( versionId != null ) {
-        file = pur.getFileAtVersion( idSlaveServer.getId(), versionId );
-      } else {
-        file = pur.getFileById( idSlaveServer.getId() );
+      NodeRepositoryFileData data;
+      RepositoryFile file;
+      VersionSummary version;
+      readWriteLock.readLock().lock();
+      try {
+        data = pur.getDataAtVersionForRead( idSlaveServer.getId(), versionId, NodeRepositoryFileData.class );
+        if ( versionId != null ) {
+          file = pur.getFileAtVersion( idSlaveServer.getId(), versionId );
+        } else {
+          file = pur.getFileById( idSlaveServer.getId() );
+        }
+        version = pur.getVersionSummary( idSlaveServer.getId(), versionId );
+      } finally {
+        readWriteLock.readLock().unlock();
       }
-
-      return slaveTransformer.assemble( file, data, pur.getVersionSummary( idSlaveServer.getId(), versionId ) );
+      return slaveTransformer.assemble( file, data, version );
     } catch ( Exception e ) {
       throw new KettleException( "Unable to load slave server with id [" + idSlaveServer + "]", e );
-    } finally {
-      readWriteLock.readLock().unlock();
     }
   }
 
   protected Map<RepositoryObjectType, List<? extends SharedObjectInterface>> loadAndCacheSharedObjects(
     final boolean deepCopy ) throws KettleException {
-    if ( sharedObjectsByType == null ) {
-      readWriteLock.readLock().lock();
+    Map<RepositoryObjectType, List<? extends SharedObjectInterface>> result = null;
+    while ( result == null ) {
+      long loadGeneration = -1;
       sharedObjectsLock.writeLock().lock();
       try {
-        sharedObjectsByType =
-          new EnumMap<RepositoryObjectType, List<? extends SharedObjectInterface>>( RepositoryObjectType.class );
-        // Slave Servers are referenced by Cluster Schemas so they must be loaded first
-        readSharedObjects( sharedObjectsByType, RepositoryObjectType.DATABASE, RepositoryObjectType.PARTITION_SCHEMA,
-          RepositoryObjectType.SLAVE_SERVER, RepositoryObjectType.CLUSTER_SCHEMA );
-      } catch ( Exception e ) {
-        sharedObjectsByType = null;
-        // TODO i18n
-        throw new KettleException( "Unable to read shared objects from repository", e ); //$NON-NLS-1$
+        if ( sharedObjectsByType != null ) {
+          result = deepCopy ? deepCopy( sharedObjectsByType ) : sharedObjectsByType;
+        } else {
+          loadGeneration = sharedObjectsGeneration;
+        }
       } finally {
         sharedObjectsLock.writeLock().unlock();
-        readWriteLock.readLock().unlock();
+      }
+      if ( result == null ) {
+        publishSharedObjects( loadGeneration, readAllSharedObjects() );
       }
     }
-    return deepCopy ? deepCopy( sharedObjectsByType ) : sharedObjectsByType;
+    return result;
+  }
+
+  // Reads without the cache lock: holding it while waiting for the repository lock deadlocks against saves.
+  private Map<RepositoryObjectType, List<? extends SharedObjectInterface>> readAllSharedObjects()
+    throws KettleException {
+    Map<RepositoryObjectType, List<? extends SharedObjectInterface>> loaded =
+      new EnumMap<RepositoryObjectType, List<? extends SharedObjectInterface>>( RepositoryObjectType.class );
+    try {
+      // Slave Servers are referenced by Cluster Schemas so they must be loaded first
+      readSharedObjects( loaded, RepositoryObjectType.DATABASE, RepositoryObjectType.PARTITION_SCHEMA,
+        RepositoryObjectType.SLAVE_SERVER, RepositoryObjectType.CLUSTER_SCHEMA );
+    } catch ( Exception e ) {
+      // TODO i18n
+      throw new KettleException( "Unable to read shared objects from repository", e ); //$NON-NLS-1$
+    }
+    return loaded;
+  }
+
+  private void publishSharedObjects( final long loadGeneration,
+    final Map<RepositoryObjectType, List<? extends SharedObjectInterface>> loaded ) {
+    sharedObjectsLock.writeLock().lock();
+    try {
+      if ( sharedObjectsByType == null && sharedObjectsGeneration == loadGeneration ) {
+        sharedObjectsByType = loaded;
+      }
+    } finally {
+      sharedObjectsLock.writeLock().unlock();
+    }
   }
 
   protected Map<RepositoryObjectType, List<? extends SharedObjectInterface>> loadAndCacheSharedObjects()
@@ -2403,25 +2446,25 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
   @Override
   public DatabaseMeta loadDatabaseMeta( final ObjectId databaseId, final String versionId )
     throws KettleException {
-    readWriteLock.readLock().lock();
     try {
-
-      NodeRepositoryFileData
-        data =
-        pur.getDataAtVersionForRead( databaseId.getId(), versionId, NodeRepositoryFileData.class );
-      RepositoryFile file = null;
-
-      if ( versionId != null ) {
-        file = pur.getFileAtVersion( databaseId.getId(), versionId );
-      } else {
-        file = pur.getFileById( databaseId.getId() );
+      NodeRepositoryFileData data;
+      RepositoryFile file;
+      VersionSummary version;
+      readWriteLock.readLock().lock();
+      try {
+        data = pur.getDataAtVersionForRead( databaseId.getId(), versionId, NodeRepositoryFileData.class );
+        if ( versionId != null ) {
+          file = pur.getFileAtVersion( databaseId.getId(), versionId );
+        } else {
+          file = pur.getFileById( databaseId.getId() );
+        }
+        version = pur.getVersionSummary( databaseId.getId(), versionId );
+      } finally {
+        readWriteLock.readLock().unlock();
       }
-
-      return databaseMetaTransformer.assemble( file, data, pur.getVersionSummary( databaseId.getId(), versionId ) );
+      return databaseMetaTransformer.assemble( file, data, version );
     } catch ( Exception e ) {
       throw new KettleException( "Unable to load database with id [" + databaseId + "]", e );
-    } finally {
-      readWriteLock.readLock().unlock();
     }
   }
 
@@ -2830,15 +2873,19 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
       throw new IllegalArgumentException( element.getName() + " has a null id" );
     }
 
-    loadAndCacheSharedObjects( false );
-
-    boolean remove = element == null;
-    ObjectId idToFind = element != null ? element.getObjectId() : id;
-    RepositoryObjectType typeToUpdate = element != null ? element.getRepositoryElementType() : type;
-    RepositoryElementInterface elementToUpdate = null;
-    List<? extends SharedObjectInterface> origSharedObjects = null;
     sharedObjectsLock.writeLock().lock();
     try {
+      if ( sharedObjectsByType == null ) {
+        // The next load reads this change from the repository; discard any load already in flight.
+        sharedObjectsGeneration++;
+        return;
+      }
+
+      boolean remove = element == null;
+      ObjectId idToFind = element != null ? element.getObjectId() : id;
+      RepositoryObjectType typeToUpdate = element != null ? element.getRepositoryElementType() : type;
+      RepositoryElementInterface elementToUpdate = null;
+      List<? extends SharedObjectInterface> origSharedObjects = null;
       switch ( typeToUpdate ) {
         case DATABASE:
           origSharedObjects = sharedObjectsByType.get( RepositoryObjectType.DATABASE );
@@ -3185,8 +3232,9 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
   @Override
   public JobMeta loadJob( ObjectId idJob, String versionLabel ) throws KettleException {
     try {
-      RepositoryFile file = null;
-      EEJobMeta jobMeta = null;
+      RepositoryFile file;
+      ObjectRevision revision;
+      DataNode dataNode;
 
       readWriteLock.readLock().lock();
       try {
@@ -3195,29 +3243,26 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         } else {
           file = pur.getFileById( idJob.getId() );
         }
-
-        jobMeta = new EEJobMeta();
-        jobMeta.setName( file.getTitle() );
-        jobMeta.setFilename( file.getPath() );
-        jobMeta.setDescription( file.getDescription() );
-        jobMeta.setObjectId( new StringObjectId( file.getId().toString() ) );
-        jobMeta.setObjectRevision( getObjectRevision( new StringObjectId( file.getId().toString() ), versionLabel ) );
-        jobMeta.setRepository( this );
-        jobMeta.setRepositoryDirectory( findDirectory( getParentPath( file.getPath() ) ) );
-
-        jobMeta.setMetaStore( MetaStoreConst.getDefaultMetastore() ); // inject metastore
-
-        readJobMetaSharedObjects( jobMeta );
-        // Additional obfuscation through obscurity
-        jobMeta.setRepositoryLock( unifiedRepositoryLockService.getLock( file ) );
-
-        jobDelegate.dataNodeToElement( pur.getDataAtVersionForRead( idJob.getId(), versionLabel,
-          NodeRepositoryFileData.class ).getNode(), jobMeta );
+        revision = getObjectRevision( new StringObjectId( file.getId().toString() ), versionLabel );
+        dataNode = pur.getDataAtVersionForRead( idJob.getId(), versionLabel, NodeRepositoryFileData.class ).getNode();
 
       } finally {
         readWriteLock.readLock().unlock();
       }
 
+      EEJobMeta jobMeta = new EEJobMeta();
+      jobMeta.setName( file.getTitle() );
+      jobMeta.setFilename( file.getPath() );
+      jobMeta.setDescription( file.getDescription() );
+      jobMeta.setObjectId( new StringObjectId( file.getId().toString() ) );
+      jobMeta.setObjectRevision( revision );
+      jobMeta.setRepository( this );
+      jobMeta.setRepositoryDirectory( findDirectory( getParentPath( file.getPath() ) ) );
+      jobMeta.setMetaStore( MetaStoreConst.getDefaultMetastore() );
+      jobMeta.setRepositoryLock( unifiedRepositoryLockService.getLock( file ) );
+
+      readJobMetaSharedObjects( jobMeta );
+      jobDelegate.dataNodeToElement( dataNode, jobMeta );
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.JobMetaLoaded.id, jobMeta );
 
       jobMeta.clearChanged();
@@ -3230,8 +3275,9 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
   @Override
   public TransMeta loadTransformation( ObjectId idTransformation, String versionLabel ) throws KettleException {
     try {
-      RepositoryFile file = null;
-      EETransMeta transMeta = null;
+      RepositoryFile file;
+      ObjectRevision revision;
+      DataNode dataNode;
 
       readWriteLock.readLock().lock();
       try {
@@ -3240,26 +3286,26 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         } else {
           file = pur.getFileById( idTransformation.getId() );
         }
-        transMeta = new EETransMeta();
-        transMeta.setName( file.getTitle() );
-        transMeta.setFilename( file.getPath() );
-        transMeta.setDescription( file.getDescription() );
-        transMeta.setObjectId( new StringObjectId( file.getId().toString() ) );
-        transMeta.setObjectRevision( getObjectRevision( new StringObjectId( file.getId().toString() ), versionLabel ) );
-        transMeta.setRepository( this );
-        transMeta.setRepositoryDirectory( findDirectory( getParentPath( file.getPath() ) ) );
-        transMeta.setRepositoryLock( unifiedRepositoryLockService.getLock( file ) );
-        transMeta.setMetaStore( MetaStoreConst.getDefaultMetastore() ); // inject metastore
-
-        readTransSharedObjects( transMeta );
-
-        transDelegate.dataNodeToElement(
-          pur.getDataAtVersionForRead( idTransformation.getId(), versionLabel, NodeRepositoryFileData.class ).getNode(),
-          transMeta );
+        revision = getObjectRevision( new StringObjectId( file.getId().toString() ), versionLabel );
+        dataNode = pur.getDataAtVersionForRead( idTransformation.getId(), versionLabel,
+          NodeRepositoryFileData.class ).getNode();
       } finally {
         readWriteLock.readLock().unlock();
       }
 
+      EETransMeta transMeta = new EETransMeta();
+      transMeta.setName( file.getTitle() );
+      transMeta.setFilename( file.getPath() );
+      transMeta.setDescription( file.getDescription() );
+      transMeta.setObjectId( new StringObjectId( file.getId().toString() ) );
+      transMeta.setObjectRevision( revision );
+      transMeta.setRepository( this );
+      transMeta.setRepositoryDirectory( findDirectory( getParentPath( file.getPath() ) ) );
+      transMeta.setRepositoryLock( unifiedRepositoryLockService.getLock( file ) );
+      transMeta.setMetaStore( MetaStoreConst.getDefaultMetastore() );
+
+      readTransSharedObjects( transMeta );
+      transDelegate.dataNodeToElement( dataNode, transMeta );
       ExtensionPointHandler.callExtensionPoint( log, KettleExtensionPoint.TransformationMetaLoaded.id, transMeta );
 
       transMeta.clearChanged();
