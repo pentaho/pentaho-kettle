@@ -34,6 +34,7 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.PluginTypeInterface;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.plugins.StepDialogFragmentType;
+import org.pentaho.di.core.ssh.mina.SshSecurityProviders;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.IUser;
@@ -119,6 +120,11 @@ public class KettleEnvironment {
       System.setProperties( ConcurrentMapProperties.convertProperties( System.getProperties() ) );
 
       try {
+        // Make sure SSH uses the signed Bouncy Castle provider even if a JDBC driver (e.g. Snowflake) registered an
+        // unsigned one under the same name.
+        //
+        SshSecurityProviders.ensureSignedBouncyCastleProvider();
+
         // This creates .kettle and kettle.properties...
         //
         if ( !KettleClientEnvironment.isInitialized() ) {
