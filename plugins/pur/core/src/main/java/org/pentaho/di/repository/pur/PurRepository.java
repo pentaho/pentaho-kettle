@@ -1349,6 +1349,10 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     return databaseMetaTransformer;
   }
 
+  void setDatabaseMetaTransformerForTesting( DatabaseDelegate databaseDelegate ) {
+    this.databaseMetaTransformer = databaseDelegate;
+  }
+
   public ClusterDelegate getClusterTransformer() {
     return clusterTransformer;
   }
