@@ -27,6 +27,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.parameters.UnknownParamException;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
@@ -53,6 +54,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryMeta;
+import org.pentaho.di.www.exception.ExecutionNotAllowedException;
 
 public class ExecuteJobServlet extends BaseHttpServlet implements CartePluginInterface {
 
@@ -208,9 +210,9 @@ public class ExecuteJobServlet extends BaseHttpServlet implements CartePluginInt
       return;
     } catch ( KettleException ke ) {
       // Authentication Error.
-      if (  ke.getCause() instanceof ExecutionException ) {
+      if ( ke.getCause() instanceof ExecutionException ) {
         ExecutionException ee = (ExecutionException) ke.getCause();
-        if (  ee.getCause() instanceof KettleAuthenticationException ) {
+        if ( ee.getCause() instanceof KettleAuthenticationException ) {
           response.setStatus( HttpServletResponse.SC_UNAUTHORIZED );
           String message = BaseMessages.getString( PKG, "ExecuteJobServlet.Error.Authentication", getContextPath() );
           out.println( new WebResult( WebResult.STRING_ERROR, message ) );
@@ -235,6 +237,10 @@ public class ExecuteJobServlet extends BaseHttpServlet implements CartePluginInt
     JobMeta jobMeta;
     try {
       jobMeta = loadJob( repository, jobOption, getPopulatedVariableSpaceFromRequest( request , new Variables() ) );
+    } catch ( ExecutionNotAllowedException e ) {
+      response.setStatus( HttpServletResponse.SC_BAD_REQUEST );
+      out.println( new WebResult( WebResult.STRING_ERROR, e.getMessage() ) );
+      return;
     } catch ( KettleException ke ) {
       // Job not found in repository.
       response.setStatus( HttpServletResponse.SC_NOT_FOUND );
@@ -292,7 +298,7 @@ public class ExecuteJobServlet extends BaseHttpServlet implements CartePluginInt
     getJobMap().addJob( jobMeta.getName(), carteObjectId, job, jobConfiguration );
     job.setContainerObjectId( carteObjectId );
 
-    if ( repository != null ) {
+    if ( repository != null && !Utils.isEmpty( repOption ) ) {
       // The repository connection is open: make sure we disconnect from the repository once we
       // are done with this job.
       //
@@ -326,59 +332,72 @@ public class ExecuteJobServlet extends BaseHttpServlet implements CartePluginInt
   }
 
   private JobMeta loadJob( Repository repository, String job, VariableSpace parentVariableSpace ) throws KettleException {
-
-    if ( repository == null ) {
-      SlaveServerConfig serverConfig = getJobMap() != null ? getJobMap().getSlaveServerConfig() : null;
-      if ( serverConfig == null ) {
-        serverConfig = new SlaveServerConfig();
-      }
-      if ( !serverConfig.isExecuteUrlAllowed( job ) ) {
-        throw new KettleException( "Execution is not allowed for URL protocol in job path: " + job );
-      }
-
-      // Without a repository it's a filename --> file:///foo/bar/job.kjb
-      //
-      // Repository doesn't need bowl-specific VFS. Use DefaultBowl.
-      JobMeta jobMeta = new JobMeta( DefaultBowl.getInstance(), parentVariableSpace, job, repository, null );
-      return jobMeta;
-
-    } else {
-
-      // With a repository we need to load it from /foo/bar/Job
-      // We need to extract the folder name from the path in front of the name...
-      //
-      String directoryPath;
-      String name;
-      int lastSlash = job.lastIndexOf( RepositoryDirectory.DIRECTORY_SEPARATOR );
-      if ( lastSlash < 0 ) {
-        directoryPath = "/";
-        name = job;
-      } else {
-        directoryPath = job.substring( 0, lastSlash );
-        name = job.substring( lastSlash + 1 );
-      }
-      RepositoryDirectoryInterface directory =
-        repository.loadRepositoryDirectoryTree().findDirectory( directoryPath );
-      if ( directory == null ) {
-        String message = BaseMessages.getString( PKG, "ExecuteJobServlet.Error.DirectoryPathNotFoundInRepository", directoryPath );
-        throw new KettleException( message );
-      }
-
-      ObjectId jobID = repository.getJobId( name, directory );
-      if ( jobID == null ) {
-        String message = BaseMessages.getString( PKG, "ExecuteJobServlet.Error.JobNotFoundInDirectory", name, directoryPath );
-        throw new KettleException( message );
-      }
-      JobMeta jobMeta = repository.loadJob( jobID, null, parentVariableSpace );
-      return jobMeta;
+    // Scheme-based paths (file:/..., zip:/..., pvfs://...) are treated as filesystem/VFS sources.
+    // Local Windows paths like C:/... are not repository paths and should not be resolved through repository lookups.
+    if ( repository == null || SlaveServerConfig.looksLikeScheme( job ) ) {
+      return loadJobFromPathOrUrl( repository, job, parentVariableSpace );
     }
+    return loadJobFromRepository( repository, job, parentVariableSpace );
+  }
+
+  private JobMeta loadJobFromPathOrUrl( Repository repository, String job, VariableSpace parentVariableSpace )
+    throws KettleException {
+    SlaveServerConfig serverConfig = getJobMap() != null ? getJobMap().getSlaveServerConfig() : null;
+    if ( serverConfig == null ) {
+      serverConfig = new SlaveServerConfig();
+    }
+    if ( !serverConfig.isExecuteUrlAllowed( job ) ) {
+      throw new ExecutionNotAllowedException( "Execution is not allowed for URL protocol in job path: " + job );
+    }
+
+    // Without a repository it's a filename --> file:///foo/bar/job.kjb
+    //
+    // use the repository bowl that we cleared above if present. 
+    Bowl bowl = repository != null ? repository.getBowl() : DefaultBowl.getInstance();
+    return new JobMeta( bowl, parentVariableSpace, job, repository, null );
+  }
+
+  private JobMeta loadJobFromRepository( Repository repository, String job, VariableSpace parentVariableSpace )
+    throws KettleException {
+    String directoryPath = getDirectoryPath( job );
+    String name = getRepositoryObjectName( job );
+
+    RepositoryDirectoryInterface directory =
+      repository.loadRepositoryDirectoryTree().findDirectory( directoryPath );
+    if ( directory == null ) {
+      String message = BaseMessages.getString( PKG, "ExecuteJobServlet.Error.DirectoryPathNotFoundInRepository", directoryPath );
+      throw new KettleException( message );
+    }
+
+    ObjectId jobID = repository.getJobId( name, directory );
+    if ( jobID == null ) {
+      String message = BaseMessages.getString( PKG, "ExecuteJobServlet.Error.JobNotFoundInDirectory", name, directoryPath );
+      throw new KettleException( message );
+    }
+    return repository.loadJob( jobID, null, parentVariableSpace );
+  }
+
+  private String getDirectoryPath( String job ) {
+    int lastSlash = job.lastIndexOf( RepositoryDirectory.DIRECTORY_SEPARATOR );
+    if ( lastSlash < 0 ) {
+      return "/";
+    }
+    return job.substring( 0, lastSlash );
+  }
+
+  private String getRepositoryObjectName( String job ) {
+    int lastSlash = job.lastIndexOf( RepositoryDirectory.DIRECTORY_SEPARATOR );
+    if ( lastSlash < 0 ) {
+      return job;
+    }
+    return job.substring( lastSlash + 1 );
   }
 
   @VisibleForTesting
   Repository openRepository( String repositoryName, String user, String pass ) throws KettleException {
 
     if ( Utils.isEmpty( repositoryName ) ) {
-      return null;
+      return getRepositoryFromLocator();
     }
 
     RepositoriesMeta repositoriesMeta = new RepositoriesMeta();

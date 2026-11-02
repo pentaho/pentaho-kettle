@@ -504,12 +504,20 @@ public class SlaveServerConfig {
     return new ArrayList<>( allowedExecuteFileSchemes );
   }
 
+  public boolean isAllowedExecuteFileSchemesConfigured() {
+    return allowedExecuteFileSchemesConfigured;
+  }
+
+  public void setAllowedExecuteFileSchemesConfigured( boolean allowedExecuteFileSchemesConfigured ) {
+    this.allowedExecuteFileSchemesConfigured = allowedExecuteFileSchemesConfigured;
+  }
+
   public void setAllowedExecuteFileSchemes( List<String> allowedExecuteFileSchemes ) {
     this.allowedExecuteFileSchemes = normalizeAllowedExecuteFileSchemes( allowedExecuteFileSchemes );
     this.allowedExecuteFileSchemesConfigured = true;
   }
 
-  private List<String> normalizeAllowedExecuteFileSchemes( List<String> protocols ) {
+  private static List<String> normalizeAllowedExecuteFileSchemes( List<String> protocols ) {
     List<String> normalizedProtocols = new ArrayList<>();
     if ( protocols == null ) {
       return normalizedProtocols;
@@ -533,8 +541,10 @@ public class SlaveServerConfig {
     }
 
     String trimmedFilename = filename.trim();
+    // Windows paths like C:/... are local filesystem paths, not repository paths. Treat them as file:// loads
+    // so they are not resolved through repository lookup logic.
     if ( isWindowsLocalPath( trimmedFilename ) || !looksLikeScheme( trimmedFilename ) ) {
-      return isSchemeAllowed( "file" );
+      return isSchemeAllowed( "file", allowedExecuteFileSchemes );
     }
 
     String scheme = KettleVFS.getScheme( trimmedFilename );
@@ -542,26 +552,28 @@ public class SlaveServerConfig {
       return false;
     }
 
-    return isSchemeAllowed( scheme );
+    return isSchemeAllowed( scheme, allowedExecuteFileSchemes );
   }
 
-  private boolean isSchemeAllowed( String scheme ) {
+  private static boolean isSchemeAllowed( String scheme, List<String> allowedSchemes ) {
     if ( scheme == null ) {
       return false;
     }
 
     String normalizedScheme = scheme.trim().toLowerCase( Locale.ROOT );
-    return allowedExecuteFileSchemes.stream()
+    return allowedSchemes.stream()
       .map( allowedScheme -> allowedScheme == null ? null : allowedScheme.trim().toLowerCase( Locale.ROOT ) )
       .filter( allowedScheme -> allowedScheme != null && !allowedScheme.isEmpty() )
       .anyMatch( allowedScheme -> allowedScheme.equals( normalizedScheme ) );
   }
 
-  private boolean isWindowsLocalPath( String filename ) {
+  private static boolean isWindowsLocalPath( String filename ) {
     return filename != null && filename.matches( "^[A-Za-z]:.*" );
   }
 
-  private boolean looksLikeScheme( String filename ) {
+  // A path with a scheme such as file:/..., zip:/..., or pvfs://... should be treated as a URL/VFS source.
+  // Windows local paths like C:/... are not repository paths and must not be mistaken for repository lookups.
+  protected static boolean looksLikeScheme( String filename ) {
     return filename != null && filename.matches( "^[A-Za-z][A-Za-z0-9+.-]*:.*" );
   }
 
