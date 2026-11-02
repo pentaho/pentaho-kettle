@@ -93,6 +93,28 @@ public class UserDefinedJavaClassMetaTest {
   }
 
   @Test
+  public void cookTransformClassUsesPluginClassLoaderWhenContextLoaderIsMissing() throws Exception {
+    String transformSource = "public boolean processRow( StepMetaInterface smi, StepDataInterface sdi ) throws KettleException {\n"
+      + "    return true;\n"
+      + "}\n\n";
+
+    UserDefinedJavaClassMeta userDefinedJavaClassMeta = new UserDefinedJavaClassMeta();
+    UserDefinedJavaClassDef transformDef = new UserDefinedJavaClassDef(
+      UserDefinedJavaClassDef.ClassType.TRANSFORM_CLASS, "Process", transformSource );
+
+    ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
+    try {
+      Thread.currentThread().setContextClassLoader( new ClassLoader( null ) {
+      } );
+
+      Class<?> cookedClass = userDefinedJavaClassMeta.cookClass( transformDef, null );
+      Assert.assertEquals( TransformClassBase.class.getName(), cookedClass.getSuperclass().getName() );
+    } finally {
+      Thread.currentThread().setContextClassLoader( originalClassLoader );
+    }
+  }
+
+  @Test
   public void infoStepDefinitionTracksSourceStep() {
     UserDefinedJavaClassMeta userDefinedJavaClassMeta = new UserDefinedJavaClassMeta();
     StepMeta inputStep = new StepMeta( "input2", new org.pentaho.di.trans.steps.datagrid.DataGridMeta() );

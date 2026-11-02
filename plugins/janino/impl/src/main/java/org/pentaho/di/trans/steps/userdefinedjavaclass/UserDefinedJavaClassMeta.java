@@ -166,11 +166,14 @@ public class UserDefinedJavaClassMeta extends BaseStepMeta implements StepMetaIn
     }
 
     ClassBodyEvaluator cbe = new ClassBodyEvaluator();
-    if ( clsloader == null ) {
-      cbe.setParentClassLoader( Thread.currentThread().getContextClassLoader() );
-    } else {
-      cbe.setParentClassLoader( clsloader );
+    ClassLoader parentClassLoader = clsloader;
+    if ( parentClassLoader == null ) {
+      parentClassLoader = TransformClassBase.class.getClassLoader();
+      if ( parentClassLoader == null ) {
+        parentClassLoader = Thread.currentThread().getContextClassLoader();
+      }
     }
+    cbe.setParentClassLoader( parentClassLoader );
 
     cbe.setClassName( def.getClassName() );
 
