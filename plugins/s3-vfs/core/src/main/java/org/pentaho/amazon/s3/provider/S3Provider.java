@@ -179,14 +179,10 @@ public class S3Provider extends BaseVFSConnectionProvider<S3Details> {
       if ( !isDefaultCandidate( space, removeDefault ) ) {
         continue;
       }
-      removeDefault.setAccessKey( Encr.decryptPasswordOptionallyEncrypted(
-        getVar( removeDefault.getAccessKey(), space ) ) );
-      removeDefault.setSecretKey( Encr.decryptPasswordOptionallyEncrypted(
-        getVar( removeDefault.getSecretKey(), space ) ) );
-      removeDefault.setSessionToken(
-        Encr.decryptPasswordOptionallyEncrypted( getVar( removeDefault.getSessionToken(), space ) ) );
-      removeDefault.setCredentialsFile(
-        Encr.decryptPasswordOptionallyEncrypted( getVar( removeDefault.getCredentialsFile(), space ) ) );
+      removeDefault.setAccessKey( Encr.decryptPasswordOptionallyEncrypted( removeDefault.getAccessKey() ) );
+      removeDefault.setSecretKey( Encr.decryptPasswordOptionallyEncrypted( removeDefault.getSecretKey() ) );
+      removeDefault.setSessionToken( Encr.decryptPasswordOptionallyEncrypted( removeDefault.getSessionToken() ) );
+      removeDefault.setCredentialsFile( Encr.decryptPasswordOptionallyEncrypted( removeDefault.getCredentialsFile() ) );
       removeDefault.setDefaultS3Config( "false" );
       removeDefault.setDefaultS3ConfigVariable( null );
       connectionManager.save( removeDefault );
