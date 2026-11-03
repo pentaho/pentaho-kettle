@@ -191,6 +191,26 @@ public class ConnectionManagerTest {
   }
 
   @Test
+  public void testGettersReturnCopies() {
+    addOne();
+
+    TestConnectionWithBucketsDetails byName =
+      (TestConnectionWithBucketsDetails) connectionManager.getConnectionDetails( CONNECTION_NAME );
+    TestConnectionWithBucketsDetails byKeyAndName = (TestConnectionWithBucketsDetails) connectionManager
+      .getConnectionDetails( TestConnectionWithBucketsProvider.SCHEME, CONNECTION_NAME );
+    TestConnectionWithBucketsDetails byScheme = (TestConnectionWithBucketsDetails) connectionManager
+      .getConnectionDetailsByScheme( TestConnectionWithBucketsProvider.SCHEME ).get( 0 );
+
+    assertNotSame( byName, connectionManager.getConnectionDetails( CONNECTION_NAME ) );
+    byName.setPassword( "changed" );
+    byKeyAndName.setPassword( "changed" );
+    byScheme.setPassword( "changed" );
+
+    assertEquals( PASSWORD,
+      ( (TestConnectionWithBucketsDetails) connectionManager.getConnectionDetails( CONNECTION_NAME ) ).getPassword() );
+  }
+
+  @Test
   public void testSaveCallsAfterSaveWithACopyOfTheSavedConnection() {
     TestConnectionWithBucketsProvider provider = spy( new TestConnectionWithBucketsProvider() );
     connectionManager.addConnectionProvider( TestConnectionWithBucketsProvider.SCHEME, provider );
