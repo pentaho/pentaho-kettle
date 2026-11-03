@@ -13,6 +13,8 @@
 
 package org.pentaho.di.core.encryption;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.BeforeClass;
@@ -180,5 +182,26 @@ public class EncrTest {
     encryption = Encr.encryptPasswordIfNotUsingVariables( "${%%$$$$" );
     decryption = Encr.decryptPasswordOptionallyEncrypted( encryption );
     assertTrue( "${%%$$$$".equals( decryption ) );
+  }
+
+  @Test
+  public void testEncryptPasswordIfNotUsingVariablesDoesNotEncryptTwice() {
+    String encryption = Encr.encryptPasswordIfNotUsingVariables( "String" );
+
+    assertEquals( encryption, Encr.encryptPasswordIfNotUsingVariables( encryption ) );
+    assertEquals( "String",
+      Encr.decryptPasswordOptionallyEncrypted( Encr.encryptPasswordIfNotUsingVariables( encryption ) ) );
+    assertEquals( "Encrypted -2be98afc86aa7f2e4cb799d64cc9ba1dd",
+      Encr.encryptPasswordIfNotUsingVariables( "Encrypted -2be98afc86aa7f2e4cb799d64cc9ba1dd" ) );
+  }
+
+  @Test
+  public void testEncryptPasswordIfNotUsingVariablesStartingWithPrefixThatIsNotEncrypted() {
+    for ( String password : new String[] { "Encrypted ", "Encrypted String", "Encrypted 2be98 afc" } ) {
+      String encryption = Encr.encryptPasswordIfNotUsingVariables( password );
+
+      assertNotEquals( password, encryption );
+      assertEquals( password, Encr.decryptPasswordOptionallyEncrypted( encryption ) );
+    }
   }
 }

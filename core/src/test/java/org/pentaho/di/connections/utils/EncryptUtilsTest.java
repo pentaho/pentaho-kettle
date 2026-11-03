@@ -61,4 +61,18 @@ public class EncryptUtilsTest {
       testConnectionDetails.getClass().getDeclaredField( "password3" ), PASSWORD2 );
     Assert.assertEquals( testConnectionDetails.getPassword3(), PASSWORD2 );
   }
+
+  @Test
+  public void testEncryptFieldsDoesNotEncryptTwice() {
+    TestConnectionWithBucketsDetailsChild testConnectionDetails = new TestConnectionWithBucketsDetailsChild();
+    testConnectionDetails.setPassword( PASSWORD );
+    EncryptUtils.encryptFields( testConnectionDetails );
+    String encrypted = testConnectionDetails.getPassword();
+
+    EncryptUtils.encryptFields( testConnectionDetails );
+    Assert.assertEquals( encrypted, testConnectionDetails.getPassword() );
+
+    EncryptUtils.decryptFields( testConnectionDetails );
+    Assert.assertEquals( PASSWORD, testConnectionDetails.getPassword() );
+  }
 }
