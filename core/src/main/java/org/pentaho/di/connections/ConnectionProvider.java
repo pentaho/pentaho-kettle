@@ -58,6 +58,16 @@ public interface ConnectionProvider<T extends ConnectionDetails> {
 
   T prepare( T connectionDetails ) throws KettleException;
 
+  /**
+   * Called by {@link ConnectionManager#save(ConnectionDetails)} after a connection has been successfully saved to the
+   * default meta store. Unlike {@link #prepare(ConnectionDetails)}, which also runs when testing or using a connection,
+   * this is only called when the connection is actually saved.
+   *
+   * @param connectionManager The connection manager that saved the connection.
+   * @param connectionDetails A copy of the saved connection details, as reloaded from the meta store.
+   */
+  default void afterSave( ConnectionManager connectionManager, T connectionDetails ) {
+  }
 
   /**
    * If it should be loaded from the metastore by ConnectionManager ({@code true}) or if the provider
