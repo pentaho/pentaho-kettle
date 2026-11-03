@@ -138,7 +138,6 @@ public class S3Provider extends BaseVFSConnectionProvider<S3Details> {
   }
 
   @Override public boolean test( S3Details s3Details ) throws KettleException {
-    VariableSpace space = getSpace( s3Details );
     s3Details = prepare( s3Details );
     AmazonS3 amazonS3 = getS3Client( s3Details );
     ClassLoader cl = Thread.currentThread().getContextClassLoader();
@@ -147,29 +146,6 @@ public class S3Provider extends BaseVFSConnectionProvider<S3Details> {
       // TCCL may have been set to a bundle classloader.
       Thread.currentThread().setContextClassLoader( getClass().getClassLoader() );
       Objects.requireNonNull( amazonS3 ).listBuckets( new ListBucketsPaginatedRequest().withMaxBuckets( 1 ) );
-
-      List<? extends ConnectionDetails> connections =
-        connectionManagerSupplier.get().getConnectionDetailsByScheme( S3FileProvider.SCHEME );
-
-      if ( getBooleanValueOfVariable( space, s3Details.getDefaultS3ConfigVariable(),
-        s3Details.getDefaultS3Config() ) ) {
-        for ( ConnectionDetails details : connections ) {
-          if ( !s3Details.getName().equalsIgnoreCase( details.getName() ) ) {
-            S3Details removeDefault = (S3Details) details;
-            removeDefault.setAccessKey( Encr.decryptPasswordOptionallyEncrypted(
-              getVar( removeDefault.getAccessKey(), space ) ) );
-            removeDefault.setSecretKey( Encr.decryptPasswordOptionallyEncrypted(
-              getVar( removeDefault.getSecretKey(), space ) ) );
-            removeDefault.setSessionToken(
-              Encr.decryptPasswordOptionallyEncrypted( getVar( removeDefault.getSessionToken(), space ) ) );
-            removeDefault.setCredentialsFile(
-              Encr.decryptPasswordOptionallyEncrypted( getVar( removeDefault.getCredentialsFile(), space ) ) );
-            removeDefault.setDefaultS3Config( "false" );
-            removeDefault.setDefaultS3ConfigVariable( null );
-            connectionManagerSupplier.get().save( removeDefault );
-          }
-        }
-      }
       return true;
     } catch ( AmazonS3Exception e ) {
       // expected exception if credentials are invalid.  Log just the message.
@@ -182,6 +158,49 @@ public class S3Provider extends BaseVFSConnectionProvider<S3Details> {
     } finally {
       Thread.currentThread().setContextClassLoader( cl );
     }
+  }
+
+  /**
+   * When the saved connection is the default S3 connection, removes the default flag from the other S3 connections.
+   * This is done on save, not on test, so testing or cancelling a connection dialog leaves the other connections as
+   * they are.
+   */
+  @Override
+  public void afterSave( ConnectionManager connectionManager, S3Details s3Details ) {
+    VariableSpace space = getSpace( s3Details );
+
+    if ( !getBooleanValueOfVariable( space, s3Details.getDefaultS3ConfigVariable(), s3Details.getDefaultS3Config() ) ) {
+      return;
+    }
+
+    for ( ConnectionDetails details : connectionManager.getConnectionDetailsByScheme( getKey() ) ) {
+      if ( s3Details.getName().equalsIgnoreCase( details.getName() ) ) {
+        continue;
+      }
+
+      S3Details removeDefault = (S3Details) details;
+
+      if ( !isDefaultCandidate( space, removeDefault ) ) {
+        continue;
+      }
+
+      removeDefault.setAccessKey( Encr.decryptPasswordOptionallyEncrypted(
+        getVar( removeDefault.getAccessKey(), space ) ) );
+      removeDefault.setSecretKey( Encr.decryptPasswordOptionallyEncrypted(
+        getVar( removeDefault.getSecretKey(), space ) ) );
+      removeDefault.setSessionToken(
+        Encr.decryptPasswordOptionallyEncrypted( getVar( removeDefault.getSessionToken(), space ) ) );
+      removeDefault.setCredentialsFile(
+        Encr.decryptPasswordOptionallyEncrypted( getVar( removeDefault.getCredentialsFile(), space ) ) );
+      removeDefault.setDefaultS3Config( "false" );
+      removeDefault.setDefaultS3ConfigVariable( null );
+      connectionManager.save( removeDefault );
+    }
+  }
+
+  private static boolean isDefaultCandidate( VariableSpace space, S3Details s3Details ) {
+    return StringUtils.isNotEmpty( s3Details.getDefaultS3ConfigVariable() )
+      || getBooleanValueOfVariable( space, null, s3Details.getDefaultS3Config() );
   }
 
   @Override public S3Details prepare( S3Details s3Details ) throws KettleException {
