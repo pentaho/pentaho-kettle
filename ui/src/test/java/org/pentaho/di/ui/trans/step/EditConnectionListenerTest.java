@@ -128,7 +128,7 @@ public class EditConnectionListenerTest {
     databaseMeta.setObjectId( objectId );
     dialog.transMeta.addDatabase( databaseMeta );
 
-    String editedConnectionName = TEST_NAME.toLowerCase(); // starts as upper case. 
+    String editedConnectionName = TEST_NAME.toLowerCase(); // starts as upper case.
     when( managementDbMgr.get( TEST_NAME ) ).thenReturn( databaseMeta );
     when( dialog.showDbDialogUnlessCancelledOrValid( anyDbMeta(), anyDbMeta(), anyDbMgr() ) ).thenAnswer( invocation -> {
       DatabaseMeta clonedMeta = (DatabaseMeta) invocation.getArguments()[ 0 ];
