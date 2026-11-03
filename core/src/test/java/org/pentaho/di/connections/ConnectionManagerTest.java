@@ -18,6 +18,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.pentaho.di.connections.common.bucket.TestConnectionWithBucketsDetails;
 import org.pentaho.di.connections.common.bucket.TestConnectionWithBucketsProvider;
 import org.pentaho.di.connections.vfs.VFSConnectionDetails;
@@ -32,6 +33,7 @@ import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.metastore.api.IMetaStore;
+import org.pentaho.metastore.api.exceptions.MetaStoreException;
 import org.pentaho.metastore.persist.MetaStoreFactory;
 import org.pentaho.metastore.stores.memory.MemoryMetaStore;
 
@@ -40,9 +42,16 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.same;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -179,6 +188,59 @@ public class ConnectionManagerTest {
   @Test
   public void testSaveConnectionError() {
     assertFalse( connectionManager.save( new BadConnectionDetails() ) );
+  }
+
+  @Test
+  public void testSaveCallsAfterSaveWithACopyOfTheSavedConnection() {
+    TestConnectionWithBucketsProvider provider = spy( new TestConnectionWithBucketsProvider() );
+    connectionManager.addConnectionProvider( TestConnectionWithBucketsProvider.SCHEME, provider );
+    TestConnectionWithBucketsDetails details = createDetails();
+
+    assertTrue( connectionManager.save( details ) );
+
+    ArgumentCaptor<TestConnectionWithBucketsDetails> captor =
+      ArgumentCaptor.forClass( TestConnectionWithBucketsDetails.class );
+    verify( provider, times( 1 ) ).afterSave( same( connectionManager ), captor.capture() );
+    TestConnectionWithBucketsDetails saved = captor.getValue();
+    assertNotSame( details, saved );
+    assertEquals( CONNECTION_NAME, saved.getName() );
+    assertEquals( PASSWORD, saved.getPassword() );
+
+    saved.setPassword( "changed" );
+    assertEquals( PASSWORD, ( (TestConnectionWithBucketsDetails) connectionManager
+      .getConnectionDetails( TestConnectionWithBucketsProvider.SCHEME, CONNECTION_NAME ) ).getPassword() );
+  }
+
+  @Test
+  public void testSaveDoesNotCallAfterSaveWhenTheSaveFails() throws Exception {
+    MemoryMetaStore failingMetaStore = spy( new MemoryMetaStore() );
+    doThrow( new MetaStoreException( "save failed" ) )
+      .when( failingMetaStore ).createElement( anyString(), any(), any() );
+    connectionManager = new ConnectionManager( () -> failingMetaStore, bowl, vfsConnectionManagerHelper );
+    TestConnectionWithBucketsProvider provider = spy( new TestConnectionWithBucketsProvider() );
+    connectionManager.addConnectionProvider( TestConnectionWithBucketsProvider.SCHEME, provider );
+
+    assertFalse( connectionManager.save( createDetails() ) );
+
+    verify( provider, never() ).afterSave( any(), any() );
+  }
+
+  @Test
+  public void testAfterSaveErrorDoesNotFailTheSave() {
+    TestConnectionWithBucketsProvider provider = spy( new TestConnectionWithBucketsProvider() );
+    doThrow( new RuntimeException( "afterSave failed" ) ).when( provider ).afterSave( any(), any() );
+    connectionManager.addConnectionProvider( TestConnectionWithBucketsProvider.SCHEME, provider );
+
+    assertTrue( connectionManager.save( createDetails() ) );
+
+    assertNotNull( connectionManager.getConnectionDetails( TestConnectionWithBucketsProvider.SCHEME, CONNECTION_NAME ) );
+  }
+
+  private static TestConnectionWithBucketsDetails createDetails() {
+    TestConnectionWithBucketsDetails details = new TestConnectionWithBucketsDetails();
+    details.setName( CONNECTION_NAME );
+    details.setPassword( PASSWORD );
+    return details;
   }
 
   @Test

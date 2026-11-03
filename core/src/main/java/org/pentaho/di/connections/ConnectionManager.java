@@ -351,8 +351,27 @@ public class ConnectionManager {
       if ( !names.contains( connectionDetails.getName() ) ) {
         names.add( connectionDetails.getName() );
       }
+      afterSave( connectionProvider, connectionDetails, reloaded );
     }
     return success;
+  }
+
+  @SuppressWarnings( "unchecked" )
+  private <T extends ConnectionDetails> void afterSave( ConnectionProvider<T> connectionProvider, T saved,
+                                                        ConnectionDetails reloaded ) {
+    if ( reloaded == null ) {
+      return;
+    }
+    try {
+      ConnectionDetails copy = clone( reloaded );
+      if ( copy.getSpace() == null ) {
+        copy.setSpace( saved.getSpace() );
+      }
+      connectionProvider.afterSave( this, (T) copy );
+    } catch ( Exception e ) {
+      // The connection is already saved; don't fail the save.
+      logger.error( "Error in afterSave {}", saved.getName(), e );
+    }
   }
 
   /**
@@ -607,6 +626,26 @@ public class ConnectionManager {
       return loadElement( getMetaStoreFactory( metaStore, clazz ), name );
     }
     return null;
+  }
+
+  /**
+   * Makes defensive copies so modifications by callers don't affect the internal state before "save" is called.
+   *
+   *
+   * @param source ConnectionDetails to clone
+   *
+   * @return ConnectionDetails cloned object.
+   */
+  private static ConnectionDetails clone( ConnectionDetails source ) {
+    if ( source == null ) {
+      return null;
+    }
+    try {
+      return source.cloneDetails();
+    } catch ( MetaStoreException ex ) {
+      // should really not happen.
+      throw new RuntimeException( ex );
+    }
   }
 
   /**
