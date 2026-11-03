@@ -120,6 +120,23 @@ public class S3ProviderTest {
   }
 
   @Test
+  public void testAfterSaveKeepsVariablesOfOtherConnections() {
+    S3Details details = createDetails( SAVED, "true" );
+    details.getSpace().setVariable( "ACCESS_KEY", ACCESS_KEY );
+    details.getSpace().setVariable( "EMPTY", "" );
+    S3Details other = createDetails( OTHER, "true" );
+    other.setAccessKey( "${ACCESS_KEY}" );
+    other.setSecretKey( "${EMPTY}" );
+    doReturn( Arrays.asList( other ) ).when( connectionManager ).getConnectionDetailsByScheme( S3FileProvider.SCHEME );
+
+    s3Provider.afterSave( connectionManager, details );
+
+    S3Details saved = captureSingleSave();
+    assertEquals( "${ACCESS_KEY}", saved.getAccessKey() );
+    assertEquals( "${EMPTY}", saved.getSecretKey() );
+  }
+
+  @Test
   public void testAfterSaveSkipsConnectionsThatAreNotDefault() {
     doReturn( Arrays.asList( createDetails( OTHER, "false" ) ) )
       .when( connectionManager ).getConnectionDetailsByScheme( S3FileProvider.SCHEME );
