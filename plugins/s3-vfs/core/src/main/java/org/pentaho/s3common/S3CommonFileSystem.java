@@ -158,9 +158,9 @@ public abstract class S3CommonFileSystem extends AbstractFileSystem {
       String pathStyleAccess = null;
 
       if ( s3CommonFileSystemConfigBuilder.getName() == null && defaultS3Connection.isPresent() ) {
-        accessKey = Encr.decryptPassword( currentConnectionProperties.get( "accessKey" ) );
-        secretKey = Encr.decryptPassword( currentConnectionProperties.get( "secretKey" ) );
-        sessionToken = Encr.decryptPassword( currentConnectionProperties.get( "sessionToken" ) );
+        accessKey = Encr.decryptPasswordOptionallyEncrypted( currentConnectionProperties.get( "accessKey" ) );
+        secretKey = Encr.decryptPasswordOptionallyEncrypted( currentConnectionProperties.get( "secretKey" ) );
+        sessionToken = Encr.decryptPasswordOptionallyEncrypted( currentConnectionProperties.get( "sessionToken" ) );
         region = currentConnectionProperties.get( "region" );
         credentialsFilePath = currentConnectionProperties.get( "credentialsFilePath" );
         profileName = currentConnectionProperties.get( "profileName" );

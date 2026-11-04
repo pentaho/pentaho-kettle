@@ -13,24 +13,47 @@
 
 package org.pentaho.s3common;
 
+import org.apache.commons.vfs2.FileSystemManager;
+import org.apache.commons.vfs2.FilesCache;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.MockedConstruction;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
+import org.pentaho.amazon.s3.S3Details;
+import org.pentaho.di.connections.ConnectionManager;
+import org.pentaho.di.core.KettleClientEnvironment;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.util.StorageUnitConverter;
 import org.pentaho.s3common.DummyS3CommonObjects.DummyS3FileObject;
 import org.pentaho.s3common.DummyS3CommonObjects.DummyS3FileSystem;
 
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.auth.BasicSessionCredentials;
 import com.amazonaws.services.s3.transfer.TransferManager;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.pentaho.s3common.DummyS3CommonObjects.getDummyInstance;
 
 public class S3CommonFileSystemTest {
+
+  @BeforeClass
+  public static void initKettle() throws Exception {
+    KettleClientEnvironment.init();
+  }
 
   @Test
   public void getPartSize() {
@@ -105,4 +128,91 @@ public class S3CommonFileSystemTest {
     assertNotNull( tm );
   }
 
+  @Test
+  public void testGetS3Client_DefaultConnectionWithPlainKeys_UsesKeysAsIs() {
+    // ConnectionManager already decrypts @Encrypted fields on load, so the default connection holds plain keys
+    assertDefaultConnectionCredentials( "AKIAPLAINACCESSKEY", "plain/Secret+Key",
+      "AKIAPLAINACCESSKEY", "plain/Secret+Key" );
+  }
+
+  @Test
+  public void testGetS3Client_DefaultConnectionWithEncryptedKeys_DecryptsKeys() {
+    assertDefaultConnectionCredentials(
+      Encr.PASSWORD_ENCRYPTED_PREFIX + Encr.encryptPassword( "AKIAENCRYPTEDKEY" ),
+      Encr.PASSWORD_ENCRYPTED_PREFIX + Encr.encryptPassword( "encrypted/Secret+Key" ),
+      "AKIAENCRYPTEDKEY", "encrypted/Secret+Key" );
+  }
+
+  @Test
+  public void testGetS3Client_DefaultConnectionWithPlainSessionToken_UsesSessionCredentials() {
+    assertDefaultConnectionSessionCredentials( "AKIAPLAINACCESSKEY", "plain/Secret+Key", "plain/Session+Token",
+      "AKIAPLAINACCESSKEY", "plain/Secret+Key", "plain/Session+Token" );
+  }
+
+  @Test
+  public void testGetS3Client_DefaultConnectionWithEncryptedSessionToken_DecryptsSessionToken() {
+    assertDefaultConnectionSessionCredentials(
+      Encr.PASSWORD_ENCRYPTED_PREFIX + Encr.encryptPassword( "AKIAENCRYPTEDKEY" ),
+      Encr.PASSWORD_ENCRYPTED_PREFIX + Encr.encryptPassword( "encrypted/Secret+Key" ),
+      Encr.PASSWORD_ENCRYPTED_PREFIX + Encr.encryptPassword( "encrypted/Session+Token" ),
+      "AKIAENCRYPTEDKEY", "encrypted/Secret+Key", "encrypted/Session+Token" );
+  }
+
+  private void assertDefaultConnectionCredentials( String storedAccessKey, String storedSecretKey,
+                                                   String expectedAccessKey, String expectedSecretKey ) {
+    List<List<?>> basicArgs = new ArrayList<>();
+    List<List<?>> sessionArgs = new ArrayList<>();
+    getClientWithDefaultConnection( storedAccessKey, storedSecretKey, null, basicArgs, sessionArgs );
+
+    assertEquals( 0, sessionArgs.size() );
+    assertEquals( 1, basicArgs.size() );
+    assertEquals( Arrays.asList( expectedAccessKey, expectedSecretKey ), basicArgs.get( 0 ) );
+  }
+
+  private void assertDefaultConnectionSessionCredentials( String storedAccessKey, String storedSecretKey,
+                                                          String storedSessionToken, String expectedAccessKey,
+                                                          String expectedSecretKey, String expectedSessionToken ) {
+    List<List<?>> basicArgs = new ArrayList<>();
+    List<List<?>> sessionArgs = new ArrayList<>();
+    getClientWithDefaultConnection( storedAccessKey, storedSecretKey, storedSessionToken, basicArgs, sessionArgs );
+
+    assertEquals( 0, basicArgs.size() );
+    assertEquals( 1, sessionArgs.size() );
+    assertEquals( Arrays.asList( expectedAccessKey, expectedSecretKey, expectedSessionToken ),
+      sessionArgs.get( 0 ) );
+  }
+
+  private void getClientWithDefaultConnection( String storedAccessKey, String storedSecretKey,
+                                               String storedSessionToken, List<List<?>> basicArgs,
+                                               List<List<?>> sessionArgs ) {
+    S3Details defaultConnection = new S3Details();
+    defaultConnection.setName( "defaultS3" );
+    defaultConnection.setAccessKey( storedAccessKey );
+    defaultConnection.setSecretKey( storedSecretKey );
+    defaultConnection.setSessionToken( storedSessionToken );
+    defaultConnection.setDefaultS3Config( "true" );
+
+    ConnectionManager connectionManager = mock( ConnectionManager.class );
+    doReturn( Collections.singletonList( defaultConnection ) )
+      .when( connectionManager ).getConnectionDetailsByScheme( "s3" );
+
+    FileSystemManager fileSystemManager = mock( FileSystemManager.class );
+    when( fileSystemManager.getFilesCache() ).thenReturn( mock( FilesCache.class ) );
+
+    // No pvfs connection name in the options, i.e. a raw s3:// URL that falls back to the default connection
+    DummyS3FileSystem fs = Mockito.spy( getDummyInstance() );
+    doReturn( fileSystemManager ).when( fs ).getFileSystemManager();
+    doReturn( false ).when( fs ).isRegionSet();
+
+    try ( MockedStatic<ConnectionManager> connectionManagerStatic = mockStatic( ConnectionManager.class );
+          MockedConstruction<BasicAWSCredentials> ignoredBasic = mockConstruction( BasicAWSCredentials.class,
+            ( mock, context ) -> basicArgs.add( new ArrayList<>( context.arguments() ) ) );
+          MockedConstruction<BasicSessionCredentials> ignoredSession = mockConstruction(
+            BasicSessionCredentials.class,
+            ( mock, context ) -> sessionArgs.add( new ArrayList<>( context.arguments() ) ) ) ) {
+      connectionManagerStatic.when( ConnectionManager::getInstance ).thenReturn( connectionManager );
+
+      assertNotNull( fs.getS3Client() );
+    }
+  }
 }
