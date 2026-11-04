@@ -38,11 +38,11 @@ import org.pentaho.di.trans.steps.textfileoutput.TextFileOutputMeta;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
-@Step( id = "S3FileOutputPlugin", image = "S3O.svg", name = "S3FileOutput.Name",
+@Step( id = "S3FileOutputPlugin", image = "ui/images/deprecated.svg", name = "S3FileOutput.Name",
     description = "S3FileOutput.Description",
     documentationUrl = "pdi-transformation-steps-reference-overview/s3-file-output-cp",
-    categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Output",
-    i18nPackageName = "org.pentaho.amazon.s3.fileoutput" )
+    categoryDescription = "i18n:org.pentaho.di.trans.step:BaseStep.Category.Deprecated",
+    i18nPackageName = "org.pentaho.amazon.s3.fileoutput", suggestion = "S3FileOutput.Deprecation.Suggestion" )
 @InjectionSupported( localizationPrefix = "S3FileOutput.Injection.", groups = { "OUTPUT_FIELDS" } )
 public class S3FileOutputMeta extends TextFileOutputMeta {
 
