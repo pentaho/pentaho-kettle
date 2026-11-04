@@ -414,8 +414,31 @@ public class ConnectionManager implements CachingManager {
         names.add( connectionDetails.getName() );
       }
       notifySubscribers();
+      afterSave( connectionProvider, connectionDetails, reloaded );
     }
     return success;
+  }
+
+  @SuppressWarnings( "unchecked" )
+  private <T extends ConnectionDetails> void afterSave( ConnectionProvider<T> connectionProvider,
+                                                        T saved,
+                                                        ConnectionDetails reloaded ) {
+    if ( reloaded == null ) {
+      return;
+    }
+
+    try {
+      ConnectionDetails copy = clone( reloaded );
+
+      if ( copy.getSpace() == null ) {
+        copy.setSpace( saved.getSpace() );
+      }
+
+      connectionProvider.afterSave( this, (T) copy );
+    } catch ( Exception e ) {
+      // The connection is already saved; don't fail the save.
+      logger.error( "Error in afterSave {}", saved.getName(), e );
+    }
   }
 
   /**
