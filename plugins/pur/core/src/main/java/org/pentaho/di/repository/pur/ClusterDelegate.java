@@ -143,7 +143,7 @@ public class ClusterDelegate extends AbstractDelegate implements ITransformer, S
 
   // During a batch load, resolve dependencies from that load rather than re-entering the unpublished cache.
   ClusterSchema assemble( RepositoryFile file, NodeRepositoryFileData data, VersionSummary version,
-    List<SlaveServer> loadedSlaveServers ) throws KettleException {
+    List<SlaveServer> loadedSlaveServers ) {
     ClusterSchema clusterSchema = new ClusterSchema();
     dataNodeToElement( data.getNode(), clusterSchema, loadedSlaveServers );
     clusterSchema.setName( file.getTitle() );
