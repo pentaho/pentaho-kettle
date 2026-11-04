@@ -45,9 +45,10 @@ public class S3ClientManager {
   private S3AsyncClient asyncClient;
   private boolean clientCameFromEnv;
 
-  // keys if using env credentials, used to check if changed for caching purposes
+  // credential system properties last seen, used to check if changed for caching purposes
   private String awsAccessKeyCache;
   private String awsSecretKeyCache;
+  private String awsSessionTokenCache;
 
   /** config if using default s3 connection */
   private Map<String, String> currentConnectionProperties = new HashMap<>();
@@ -100,7 +101,8 @@ public class S3ClientManager {
       boolean replacing = client != null;
       awsAccessKeyCache = System.getProperty( S3Util.ACCESS_KEY_SYSTEM_PROPERTY );
       awsSecretKeyCache = System.getProperty( S3Util.SECRET_KEY_SYSTEM_PROPERTY );
-      setClient( clientFactory.createFromEnv( awsAccessKeyCache, awsSecretKeyCache ), true );
+      awsSessionTokenCache = System.getProperty( S3Util.SESSION_TOKEN_SYSTEM_PROPERTY );
+      setClient( clientFactory.createFromEnv(), true );
       if ( replacing ) {
         onInvalidate.run();
       }
@@ -122,7 +124,7 @@ public class S3ClientManager {
     try {
       if ( asyncClient == null ) {
         asyncClient = clientCameFromEnv
-          ? clientFactory.createAsyncFromEnv( awsAccessKeyCache, awsSecretKeyCache )
+          ? clientFactory.createAsyncFromEnv()
           : clientFactory.createAsync( withUriKeys( getOptions() ) );
       }
       return asyncClient;
@@ -213,7 +215,8 @@ public class S3ClientManager {
 
   private boolean haveEnvCredentialsChanged() {
     return S3Util.hasChanged( awsAccessKeyCache, System.getProperty( S3Util.ACCESS_KEY_SYSTEM_PROPERTY ) )
-      || S3Util.hasChanged( awsSecretKeyCache, System.getProperty( S3Util.SECRET_KEY_SYSTEM_PROPERTY ) );
+      || S3Util.hasChanged( awsSecretKeyCache, System.getProperty( S3Util.SECRET_KEY_SYSTEM_PROPERTY ) )
+      || S3Util.hasChanged( awsSessionTokenCache, System.getProperty( S3Util.SESSION_TOKEN_SYSTEM_PROPERTY ) );
   }
 
 }

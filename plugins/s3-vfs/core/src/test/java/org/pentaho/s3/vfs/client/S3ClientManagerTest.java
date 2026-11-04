@@ -43,6 +43,7 @@ class S3ClientManagerTest {
 
   private String savedAccessKey;
   private String savedSecretKey;
+  private String savedSessionToken;
 
   /** Connection properties are read through Encr, which needs an encoder. */
   @BeforeAll
@@ -60,12 +61,14 @@ class S3ClientManagerTest {
 
     savedAccessKey = System.clearProperty( S3Util.ACCESS_KEY_SYSTEM_PROPERTY );
     savedSecretKey = System.clearProperty( S3Util.SECRET_KEY_SYSTEM_PROPERTY );
+    savedSessionToken = System.clearProperty( S3Util.SESSION_TOKEN_SYSTEM_PROPERTY );
   }
 
   @AfterEach
   void tearDown() {
     restoreProperty( S3Util.ACCESS_KEY_SYSTEM_PROPERTY, savedAccessKey );
     restoreProperty( S3Util.SECRET_KEY_SYSTEM_PROPERTY, savedSecretKey );
+    restoreProperty( S3Util.SESSION_TOKEN_SYSTEM_PROPERTY, savedSessionToken );
   }
 
   @Test
@@ -109,8 +112,6 @@ class S3ClientManagerTest {
 
     assertEquals( 1, factory.configCalls );
     assertEquals( 1, factory.envCalls );
-    assertEquals( "env-ak", factory.lastEnvAccessKey );
-    assertEquals( "env-sk", factory.lastEnvSecretKey );
   }
 
   /**
@@ -155,6 +156,22 @@ class S3ClientManagerTest {
 
     S3Client first = manager.getClient();
     System.setProperty( S3Util.ACCESS_KEY_SYSTEM_PROPERTY, "other-ak" );
+    S3Client second = manager.getClient();
+
+    assertNotSame( first, second );
+    assertEquals( 2, factory.envCalls );
+  }
+
+  /** Temporary credentials are refreshed by replacing the token, sometimes with the same keys. */
+  @Test
+  void changedSessionTokenRebuildsTheClient() throws Exception {
+    System.setProperty( S3Util.ACCESS_KEY_SYSTEM_PROPERTY, "env-ak" );
+    System.setProperty( S3Util.SECRET_KEY_SYSTEM_PROPERTY, "env-sk" );
+    System.setProperty( S3Util.SESSION_TOKEN_SYSTEM_PROPERTY, "token" );
+    S3ClientManager manager = newManager();
+
+    S3Client first = manager.getClient();
+    System.setProperty( S3Util.SESSION_TOKEN_SYSTEM_PROPERTY, "refreshed-token" );
     S3Client second = manager.getClient();
 
     assertNotSame( first, second );
@@ -247,8 +264,6 @@ class S3ClientManagerTest {
     private int configCalls;
     private int envCalls;
     private S3Options lastOptions;
-    private String lastEnvAccessKey;
-    private String lastEnvSecretKey;
 
     RecordingFactory() {
       super( new Behavior(), DefaultBowl.getInstance() );
@@ -262,10 +277,8 @@ class S3ClientManagerTest {
     }
 
     @Override
-    public S3Client createFromEnv( String accessKey, String secretKey ) {
+    public S3Client createFromEnv() {
       envCalls++;
-      lastEnvAccessKey = accessKey;
-      lastEnvSecretKey = secretKey;
       return mock( S3Client.class );
     }
   }

@@ -169,30 +169,23 @@ public class S3ClientFactory {
   }
 
   /**
-   * Builds a client from the environment, using the supplied keys when both are present.
-   * <p>
-   * The default provider chain reads {@code aws.secretAccessKey}, where v1 read {@code aws.secretKey}.
-   * Supplying the legacy pair explicitly keeps those system properties working.
+   * Builds a client from the environment, leaving credentials to the SDK's default provider chain,
+   * which reads the access key, secret key and session token system properties first.
    */
-  public S3Client createFromEnv( String accessKey, String secretKey ) {
-    return configureFromEnv( S3Client.builder(), accessKey, secretKey ).build();
+  public S3Client createFromEnv() {
+    return configureFromEnv( S3Client.builder() ).build();
   }
 
-  /** The asynchronous counterpart of {@link #createFromEnv(String, String)}. */
-  public S3AsyncClient createAsyncFromEnv( String accessKey, String secretKey ) {
-    return configureFromEnv( asyncBuilder(), accessKey, secretKey ).build();
+  /** The asynchronous counterpart of {@link #createFromEnv()}. */
+  public S3AsyncClient createAsyncFromEnv() {
+    return configureFromEnv( asyncBuilder() ).build();
   }
 
-  private <B extends S3BaseClientBuilder<B, ?>> B configureFromEnv( B clientBuilder, String accessKey,
-                                                                    String secretKey ) {
+  private <B extends S3BaseClientBuilder<B, ?>> B configureFromEnv( B clientBuilder ) {
     logger.info( "Creating client from environment" );
     clientBuilder.crossRegionAccessEnabled( true );
     if ( !isEnvRegionSet() ) {
       clientBuilder.region( behavior.defaultRegion() );
-    }
-    if ( StringUtils.isNoneEmpty( accessKey, secretKey ) ) {
-      clientBuilder.credentialsProvider( StaticCredentialsProvider.create(
-        AwsBasicCredentials.create( accessKey, secretKey ) ) );
     }
     return clientBuilder;
   }

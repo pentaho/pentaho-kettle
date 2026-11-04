@@ -140,6 +140,53 @@ public class S3ReadWriteIT {
 
   @Test
   @ResourceLock( Resources.SYSTEM_PROPERTIES )
+  void sendsSystemPropertySessionTokenWithoutConnectionKeys() throws Exception {
+    String savedAccess = System.getProperty( "aws.accessKeyId" );
+    String savedSecret = System.getProperty( "aws.secretAccessKey" );
+    String savedToken = System.getProperty( "aws.sessionToken" );
+    String savedEndpoint = System.getProperty( "aws.endpointUrlS3" );
+    String savedIgnoreEndpoints = System.getProperty( "aws.ignoreConfiguredEndpointUrls" );
+    List<String> tokens = new CopyOnWriteArrayList<>();
+
+    try ( var proxy = new S3FaultProxy( S3_MOCK.getServiceEndpoint(), exchange -> {
+      tokens.add( Optional.ofNullable( exchange.getRequestHeaders().getFirst( "X-Amz-Security-Token" ) ).orElse( "" ) );
+      return Optional.empty();
+    } ) ) {
+      var credentialsEnvironment = new KettleS3Environment( proxy.endpoint() );
+      var details = credentialsEnvironment.details( "system-property-session-token" );
+      details.setAccessKey( null );
+      details.setSecretKey( null );
+      var options = new S3Provider().getOpts( details );
+      System.setProperty( "aws.accessKeyId", "property-access-key" );
+      System.setProperty( "aws.secretAccessKey", "property-secret-key" );
+      System.setProperty( "aws.sessionToken", "property-session-token" );
+      System.setProperty( "aws.endpointUrlS3", proxy.endpoint() );
+      System.setProperty( "aws.ignoreConfiguredEndpointUrls", "false" );
+
+      String uri = "s3://" + KettleS3Environment.BUCKET + "/system-property-session-token.txt";
+      byte[] content = "session token".getBytes( StandardCharsets.UTF_8 );
+      try ( FileObject file = credentialsEnvironment.vfs().getFileObject( uri, new Variables(), options ) ) {
+        try ( var out = file.getContent().getOutputStream() ) {
+          out.write( content );
+        }
+        try ( var in = file.getContent().getInputStream() ) {
+          assertArrayEquals( content, in.readAllBytes() );
+        }
+      }
+
+      assertFalse( tokens.isEmpty(), "Expected signed S3 requests" );
+      assertTrue( tokens.stream().allMatch( "property-session-token"::equals ), "Every request must carry the token" );
+    } finally {
+      restoreProperty( "aws.accessKeyId", savedAccess );
+      restoreProperty( "aws.secretAccessKey", savedSecret );
+      restoreProperty( "aws.sessionToken", savedToken );
+      restoreProperty( "aws.endpointUrlS3", savedEndpoint );
+      restoreProperty( "aws.ignoreConfiguredEndpointUrls", savedIgnoreEndpoints );
+    }
+  }
+
+  @Test
+  @ResourceLock( Resources.SYSTEM_PROPERTIES )
   void listsBucketsWithSystemPropertyCredentials() throws Exception {
     String savedAccess = System.getProperty( "aws.accessKeyId" );
     String savedSecret = System.getProperty( "aws.secretAccessKey" );

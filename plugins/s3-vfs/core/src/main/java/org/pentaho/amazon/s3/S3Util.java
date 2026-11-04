@@ -23,6 +23,9 @@ public final class S3Util {
   /** System property name for the AWS secret key */
   public static final String SECRET_KEY_SYSTEM_PROPERTY = "aws.secretAccessKey";
 
+  /** System property name for the AWS session token */
+  public static final String SESSION_TOKEN_SYSTEM_PROPERTY = "aws.sessionToken";
+
   /** Only available signature version as of aws sdk v2 */
   public static final String SIG_VERSION = "AWSS3V4SignerType";
 
