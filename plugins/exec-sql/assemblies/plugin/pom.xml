@@ -27,6 +27,16 @@
       <artifactId>exec-sql-plugins-ui</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>exec-sql-row-plugins-impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>exec-sql-row-plugins-ui</artifactId>
+      <version>${project.version}</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -43,7 +53,7 @@
             <configuration>
               <outputDirectory>${project.build.directory}/assembly/lib</outputDirectory>
               <includeScope>compile</includeScope>
-              <excludeArtifactIds>exec-sql-plugins-impl,exec-sql-plugins-ui</excludeArtifactIds>
+              <excludeArtifactIds>exec-sql-plugins-impl,exec-sql-plugins-ui,exec-sql-row-plugins-impl,exec-sql-row-plugins-ui</excludeArtifactIds>
             </configuration>
           </execution>
         </executions>

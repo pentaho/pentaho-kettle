@@ -4,13 +4,18 @@
   <formats>
     <format>zip</format>
   </formats>
-  <baseDirectory>shell-job-entry-plugins</baseDirectory>
+  <baseDirectory>exec-process</baseDirectory>
 
   <files>
     <file>
       <source>${project.basedir}/src/main/resources/version.xml</source>
       <outputDirectory>.</outputDirectory>
       <filtered>true</filtered>
+    </file>
+    <file>
+      <source>${project.parent.parent.parent.basedir}/.kettle-ignore</source>
+      <outputDirectory>.</outputDirectory>
+      <filtered>false</filtered>
     </file>
   </files>
 
