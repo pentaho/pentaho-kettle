@@ -67,6 +67,107 @@ public class PurRepositoryLoadLockTest {
 
   private static final int SHARED_OBJECT_TYPES = 4;
 
+  /**
+   * Regression for PDESIGNER-2844: cluster assembly must not restart a cold shared-object load.
+   */
+  @Test
+  @SuppressWarnings( "unchecked" )
+  public void coldCacheClusterResolvesSlaveFromCurrentLoad() throws Exception {
+    PurRepository repository = newRepository();
+    IUnifiedRepository unifiedRepository = mock( IUnifiedRepository.class );
+    repository.setTest( unifiedRepository );
+    SlaveServer slave = new SlaveServer();
+    slave.setName( "slave" );
+    slave.setObjectId( new StringObjectId( "slave-id" ) );
+    ClusterSchema cluster = new ClusterSchema();
+    cluster.getSlaveServers().add( slave );
+    ClusterDelegate clusterDelegate = new ClusterDelegate( repository );
+    RepositoryFile slaveFile = new RepositoryFile.Builder( "slave-id", "slave" ).build();
+    RepositoryFile clusterFile = new RepositoryFile.Builder( "cluster-id", "cluster" ).build();
+    doAnswer( invocation -> {
+      RepositoryObjectType type = invocation.getArgument( 1 );
+      if ( type == RepositoryObjectType.SLAVE_SERVER ) {
+        return Collections.singletonList( slaveFile );
+      }
+      if ( type == RepositoryObjectType.CLUSTER_SCHEMA ) {
+        return Collections.singletonList( clusterFile );
+      }
+      return Collections.emptyList();
+    } ).when( repository ).getAllFilesOfType( any(), any( RepositoryObjectType.class ), anyBoolean() );
+
+    NodeRepositoryFileData clusterData = new NodeRepositoryFileData( clusterDelegate.elementToDataNode( cluster ) );
+    when( unifiedRepository.getDataForReadInBatch( anyList(), eq( NodeRepositoryFileData.class ) ) )
+      .thenReturn( java.util.Arrays.asList( mock( NodeRepositoryFileData.class ), clusterData ) );
+    VersionSummary version = mock( VersionSummary.class );
+    when( unifiedRepository.getVersionSummaryInBatch( anyList() ) )
+      .thenReturn( java.util.Arrays.asList( version, version ) );
+    doReturn( mock( org.pentaho.di.repository.ObjectRevision.class ) ).when( repository )
+      .createObjectRevision( version );
+
+    SharedObjectAssembler<?> slaveAssembler = mock( SharedObjectAssembler.class );
+    doReturn( slave ).when( slaveAssembler ).assemble( any(), any(), any() );
+    Field assemblerMapField = PurRepository.class.getDeclaredField( "sharedObjectAssemblerMap" );
+    assemblerMapField.setAccessible( true );
+    java.util.Map<RepositoryObjectType, SharedObjectAssembler<?>> assemblers =
+      (java.util.Map<RepositoryObjectType, SharedObjectAssembler<?>>) assemblerMapField.get( repository );
+    assemblers.put( RepositoryObjectType.SLAVE_SERVER, slaveAssembler );
+    assemblers.put( RepositoryObjectType.CLUSTER_SCHEMA, clusterDelegate );
+
+    java.util.Map<RepositoryObjectType, List<? extends SharedObjectInterface>> loaded =
+      repository.loadAndCacheSharedObjects( false );
+    ClusterSchema loadedCluster = (ClusterSchema) loaded.get( RepositoryObjectType.CLUSTER_SCHEMA ).get( 0 );
+    assertEquals( Collections.singletonList( slave ), loadedCluster.getSlaveServers() );
+    verify( repository, never() ).getSlaveServers();
+    verify( repository, times( SHARED_OBJECT_TYPES ) )
+      .getAllFilesOfType( any(), any( RepositoryObjectType.class ), anyBoolean() );
+    repository.loadAndCacheSharedObjects( true );
+    verify( repository, times( SHARED_OBJECT_TYPES ) )
+      .getAllFilesOfType( any(), any( RepositoryObjectType.class ), anyBoolean() );
+  }
+
+  /**
+   * PDESIGNER-2844: standalone cluster deserialization must retain repository-based slave lookup.
+   */
+  @Test
+  public void standaloneClusterResolvesSlaveFromRepository() throws Exception {
+    PurRepository repository = newRepository();
+    SlaveServer slave = new SlaveServer();
+    slave.setName( "slave" );
+    slave.setObjectId( new StringObjectId( "slave-id" ) );
+    ClusterSchema cluster = new ClusterSchema();
+    cluster.getSlaveServers().add( slave );
+    doReturn( Collections.singletonList( slave ) ).when( repository ).getSlaveServers();
+    ClusterDelegate delegate = new ClusterDelegate( repository );
+
+    ClusterSchema loaded = (ClusterSchema) delegate.dataNodeToElement( delegate.elementToDataNode( cluster ) );
+
+    assertEquals( Collections.singletonList( slave ), loaded.getSlaveServers() );
+    verify( repository ).getSlaveServers();
+  }
+
+  /**
+   * PDESIGNER-2844: a missing slave in the batch snapshot must not trigger a recursive cache load.
+   */
+  @Test
+  public void clusterWithMissingSlaveDoesNotReloadRepository() throws Exception {
+    PurRepository repository = newRepository();
+    SlaveServer slave = new SlaveServer();
+    slave.setObjectId( new StringObjectId( "missing-slave-id" ) );
+    ClusterSchema cluster = new ClusterSchema();
+    cluster.getSlaveServers().add( slave );
+    ClusterDelegate delegate = new ClusterDelegate( repository );
+    VersionSummary version = mock( VersionSummary.class );
+    doReturn( mock( org.pentaho.di.repository.ObjectRevision.class ) ).when( repository )
+      .createObjectRevision( version );
+
+    ClusterSchema loaded = delegate.assemble(
+      new RepositoryFile.Builder( "cluster-id", "cluster" ).build(),
+      new NodeRepositoryFileData( delegate.elementToDataNode( cluster ) ), version, Collections.emptyList() );
+
+    assertEquals( Collections.singletonList( null ), loaded.getSlaveServers() );
+    verify( repository, never() ).getSlaveServers();
+  }
+
   @Test
   public void repositoryLoadsReleaseReadLockBeforeDeserialization() throws Exception {
     PurRepository repository = spy( new PurRepository() );
