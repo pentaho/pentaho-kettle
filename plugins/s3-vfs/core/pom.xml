@@ -58,11 +58,11 @@
     <!-- Versions for integration tests only -->
     <s3mock.version>5.2.0</s3mock.version>
     <!-- S3Mock 5.2.0 pins Spring Boot 4.1.1, which pins Spring Framework, Jackson 3
-        (whose annotations are still 2.21), and Logback 1.5.38 -->
+        (whose annotations are still 2.21), and Logback 1.5.38, raised here to 1.6.6 for its CVE fixes -->
     <s3mock-spring-boot.version>4.1.1</s3mock-spring-boot.version>
     <s3mock-spring.version>7.0.9</s3mock-spring.version>
     <s3mock-jackson-annotations.version>2.21</s3mock-jackson-annotations.version>
-    <s3mock-logback.version>1.5.38</s3mock-logback.version>
+    <s3mock-logback.version>1.6.6</s3mock-logback.version>
 
     <maven-failsafe-plugin.version>3.5.4</maven-failsafe-plugin.version>
   </properties>
