@@ -26,6 +26,8 @@ public class S3SdkOutputStream extends OutputStream {
 
   private boolean closed = false;
   private boolean started = false;
+  /** The upload could not start, so nothing may start another: not further writes, not closing. */
+  private boolean failedToStart = false;
   private CompletableFuture<PutObjectResponse> uploadFuture;
   private CancellableOutputStream sdkOutputStream;
 
@@ -70,6 +72,10 @@ public class S3SdkOutputStream extends OutputStream {
       return;
     }
     closed = true;
+    if ( failedToStart ) {
+      // already reported by the write that hit it; an empty object would replace the target
+      return;
+    }
 
     try {
       if ( !started ) {
@@ -91,6 +97,9 @@ public class S3SdkOutputStream extends OutputStream {
     if ( closed ) {
       throw new IOException( "Output stream is closed" );
     }
+    if ( failedToStart ) {
+      throw new IOException( "S3 upload failed to start" );
+    }
     if ( !started ) {
       startUpload();
     }
@@ -106,7 +115,11 @@ public class S3SdkOutputStream extends OutputStream {
       sdkOutputStream = requestBody.outputStream();
       started = true;
     } catch ( Exception e ) {
-      started = false;
+      failedToStart = true;
+      // the request may already be out, waiting for a body that will never come
+      if ( uploadFuture != null ) {
+        uploadFuture.cancel( true );
+      }
       throw new IOException( "Failed to start S3 upload", e );
     }
   }
