@@ -67,6 +67,11 @@ public class ClusterDelegate extends AbstractDelegate implements ITransformer, S
   }
 
   public void dataNodeToElement( DataNode rootNode, RepositoryElementInterface element ) throws KettleException {
+    dataNodeToElement( rootNode, element, null );
+  }
+
+  private void dataNodeToElement( DataNode rootNode, RepositoryElementInterface element,
+                                 List<SlaveServer> slaveServers ) throws KettleException {
     ClusterSchema clusterSchema = (ClusterSchema) element;
     // The metadata...
     clusterSchema.setBasePort( getString( rootNode, PROP_BASE_PORT ) );
@@ -80,7 +85,8 @@ public class ClusterDelegate extends AbstractDelegate implements ITransformer, S
     for ( int i = 0; i < nrSlaves; i++ ) {
       if ( attrNode.hasProperty( String.valueOf( i ) ) ) {
         DataNodeRef slaveNodeRef = attrNode.getProperty( String.valueOf( i ) ).getRef();
-        clusterSchema.getSlaveServers().add( findSlaveServer( new StringObjectId( slaveNodeRef.toString() ) ) );
+        clusterSchema.getSlaveServers().add(
+          findSlaveServer( new StringObjectId( slaveNodeRef.toString() ), slaveServers ) );
       }
     }
   }
@@ -110,10 +116,9 @@ public class ClusterDelegate extends AbstractDelegate implements ITransformer, S
     return rootNode;
   }
 
-  private SlaveServer findSlaveServer( ObjectId slaveServerId ) {
-    List<SlaveServer> slaveServers;
+  private SlaveServer findSlaveServer( ObjectId slaveServerId, List<SlaveServer> loadedSlaveServers ) {
     try {
-      slaveServers = repo.getSlaveServers();
+      List<SlaveServer> slaveServers = loadedSlaveServers == null ? repo.getSlaveServers() : loadedSlaveServers;
       for ( SlaveServer slaveServer : slaveServers ) {
         if ( slaveServer.getObjectId().equals( slaveServerId ) ) {
           return slaveServer;
@@ -133,6 +138,18 @@ public class ClusterDelegate extends AbstractDelegate implements ITransformer, S
   public ClusterSchema assemble( RepositoryFile file, NodeRepositoryFileData data, VersionSummary version )
     throws KettleException {
     ClusterSchema clusterSchema = (ClusterSchema) dataNodeToElement( data.getNode() );
+    return completeClusterSchema( clusterSchema, file, version );
+  }
+
+  // During a shared-object load, resolve references from that load rather than re-entering the cache loader.
+  ClusterSchema assemble( RepositoryFile file, NodeRepositoryFileData data, VersionSummary version,
+                          List<SlaveServer> slaveServers ) throws KettleException {
+    ClusterSchema clusterSchema = new ClusterSchema();
+    dataNodeToElement( data.getNode(), clusterSchema, slaveServers );
+    return completeClusterSchema( clusterSchema, file, version );
+  }
+
+  private ClusterSchema completeClusterSchema( ClusterSchema clusterSchema, RepositoryFile file, VersionSummary version ) {
     clusterSchema.setName( file.getTitle() );
     clusterSchema.setObjectId( new StringObjectId( file.getId().toString() ) );
     clusterSchema.setObjectRevision( repo.createObjectRevision( version ) );

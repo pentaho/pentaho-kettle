@@ -1432,7 +1432,20 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
 
         // TODO: inexistent db types can cause exceptions assembling; prevent total failure
         try {
-          sharedObjects.add( assembler.assemble( file, repoData, version ) );
+          if ( assembler instanceof ClusterDelegate
+            && sharedObjectsByType.containsKey( RepositoryObjectType.SLAVE_SERVER ) ) {
+            List<SlaveServer> slaveServers = new ArrayList<>();
+            for ( SharedObjectInterface<?> slave : sharedObjectsByType.get( RepositoryObjectType.SLAVE_SERVER ) ) {
+              // Match getSlaveServers()'s defensive copies without reading the cache being initialized.
+              SlaveServer copy = (SlaveServer) ( (SlaveServer) slave ).clone();
+              copy.setObjectId( ( (SlaveServer) slave ).getObjectId() );
+              copy.clearChanged();
+              slaveServers.add( copy );
+            }
+            sharedObjects.add( ( (ClusterDelegate) assembler ).assemble( file, repoData, version, slaveServers ) );
+          } else {
+            sharedObjects.add( assembler.assemble( file, repoData, version ) );
+          }
         } catch ( Exception ex ) {
           // TODO i18n
           getLog().logError( "Unable to load shared objects", ex );
