@@ -14,6 +14,7 @@ package org.pentaho.di.core.ssh.mina;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeTrue;
 
@@ -39,11 +40,15 @@ import org.pentaho.di.core.ssh.exceptions.SshConnectionException;
  * BISERVER-15807: the SSH step must not read the ~/.ssh/config file of the OS user.
  * A line such as "Host \*" is valid for OpenSSH, but Apache MINA SSHD rejects it
  * with "Invalid host pattern char in \*" before the socket opens.
- * MINA SSHD reads user.home one time for each JVM. Run this class in its own JVM:
- * mvn -pl engine -Dtest=MinaSshConnectionHostConfigTest -DfailIfNoTests=false
- * -Dmaven-surefire-plugin.reuseForks=false test
+ * MINA SSHD reads user.home one time for each JVM. The surefire execution
+ * "ssh-host-config-test" in engine/pom.xml runs this class in its own JVM and sets
+ * the system property {@value #ISOLATED_PROPERTY}. If that property is set and the
+ * temporary home is not in use, the tests fail. In a shared JVM (for example an IDE run
+ * after other SSH tests) the tests skip.
  */
 public class MinaSshConnectionHostConfigTest {
+
+  static final String ISOLATED_PROPERTY = "ssh.hostconfig.isolated";
 
   @ClassRule
   public static TemporaryFolder tempHome = new TemporaryFolder();
@@ -87,12 +92,23 @@ public class MinaSshConnectionHostConfigTest {
       .connectTimeoutMillis( 10000 );
   }
 
+  /** Makes sure that MINA SSHD reads the malformed config file of this test. */
+  private static void requireTempHomeInUse() throws Exception {
+    Path defaultConfig = HostConfigEntry.getDefaultHostConfigFile();
+    boolean tempHomeInUse = defaultConfig.startsWith( tempHome.getRoot().toPath().toRealPath() )
+      || defaultConfig.startsWith( tempHome.getRoot().toPath() );
+    String message = "MINA SSHD read user.home before this test. Run the class in its own JVM. Config file: "
+      + defaultConfig;
+    if ( Boolean.getBoolean( ISOLATED_PROPERTY ) ) {
+      assertTrue( message, tempHomeInUse );
+    } else {
+      assumeTrue( message, tempHomeInUse );
+    }
+  }
+
   @Test
   public void hostConfigWithBadPatternDoesNotBreakConnect() throws Exception {
-    Path defaultConfig = HostConfigEntry.getDefaultHostConfigFile();
-    assumeTrue( "user.home was read before this test. Run the class in its own JVM.",
-      defaultConfig.startsWith( tempHome.getRoot().toPath().toRealPath() )
-        || defaultConfig.startsWith( tempHome.getRoot().toPath() ) );
+    requireTempHomeInUse();
 
     MinaSshConnection connection = new MinaSshConnection( config() );
     try {
@@ -106,6 +122,8 @@ public class MinaSshConnectionHostConfigTest {
 
   @Test
   public void clientDoesNotUseOpenSshConfigFile() throws Exception {
+    requireTempHomeInUse();
+
     MinaSshConnection connection = new MinaSshConnection( config() );
     try {
       connection.connect();
