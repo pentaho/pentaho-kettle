@@ -1420,6 +1420,21 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         throw new UnsupportedOperationException(
           String.format( "Cannot assemble shared object of type [%s]", entry.getKey() ) ); //$NON-NLS-1$
       }
+      if ( entry.getKey() == RepositoryObjectType.CLUSTER_SCHEMA && assembler instanceof ClusterDelegate clusterAssembler
+        && sharedObjectsByType.containsKey( RepositoryObjectType.SLAVE_SERVER ) ) {
+        // Slave servers have already been assembled in this load, but the cache is not published yet.
+        // Looking them up through getSlaveServers() would recursively restart the entire cold-cache load.
+        List<SlaveServer> loadedSlaveServers = new ArrayList<>();
+        for ( SharedObjectInterface<?> slave : sharedObjectsByType.get( RepositoryObjectType.SLAVE_SERVER ) ) {
+          SlaveServer slaveServer = (SlaveServer) slave;
+          SlaveServer loadedSlaveServer = (SlaveServer) slaveServer.clone();
+          loadedSlaveServer.setObjectId( slaveServer.getObjectId() );
+          loadedSlaveServer.clearChanged();
+          loadedSlaveServers.add( loadedSlaveServer );
+        }
+        assembler = ( file, repoData, version ) ->
+          clusterAssembler.assemble( file, repoData, version, loadedSlaveServers );
+      }
       // For all files of this type, assemble them from the pieces of data pulled from the repository
       Iterator<RepositoryFile> filesIter = entry.getValue().iterator();
       List<SharedObjectInterface<?>> sharedObjects = new ArrayList<>( entry.getValue().size() );
@@ -2575,7 +2590,7 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
     }
   }
 
-  private TransMeta buildTransMeta( final Bowl bowl, final RepositoryFile file, 
+  private TransMeta buildTransMeta( final Bowl bowl, final RepositoryFile file,
                                     final RepositoryDirectoryInterface parentDir,
                                     final NodeRepositoryFileData data, final ObjectRevision revision,
                                     final VariableSpace parent )
