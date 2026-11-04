@@ -37,8 +37,6 @@ import software.amazon.awssdk.core.interceptor.Context.FailedExecution;
 import software.amazon.awssdk.core.interceptor.ExecutionAttributes;
 import software.amazon.awssdk.core.interceptor.ExecutionInterceptor;
 import software.amazon.awssdk.core.interceptor.SdkExecutionAttribute;
-import software.amazon.awssdk.http.SdkHttpClient;
-import software.amazon.awssdk.http.async.SdkAsyncHttpClient;
 import software.amazon.awssdk.http.nio.netty.NettyNioAsyncHttpClient;
 import software.amazon.awssdk.http.SdkHttpResponse;
 import software.amazon.awssdk.http.apache.ApacheHttpClient;
@@ -95,7 +93,7 @@ public class S3ClientFactory {
     S3ClientBuilder clientBuilder = configureForEndpoint( S3Client.builder(), options );
 
     if ( hasCustomTls( options ) ) {
-      createSslHttpClient( options ).ifPresent( clientBuilder::httpClient );
+      createSslHttpClientBuilder( options ).ifPresent( clientBuilder::httpClientBuilder );
     }
     return clientBuilder.build();
   }
@@ -104,7 +102,7 @@ public class S3ClientFactory {
     S3AsyncClientBuilder clientBuilder = configureForEndpoint( asyncBuilder(), options );
 
     if ( hasCustomTls( options ) ) {
-      createSslAsyncHttpClient( options ).ifPresent( clientBuilder::httpClient );
+      createSslAsyncHttpClientBuilder( options ).ifPresent( clientBuilder::httpClientBuilder );
     }
     return clientBuilder.build();
   }
@@ -242,8 +240,11 @@ public class S3ClientFactory {
       .build();
   }
 
-  /** Creates an SSL enabled client. */
-  public Optional<SdkHttpClient> createSslHttpClient( S3Options opts ) {
+  /**
+   * Configures an SSL enabled client. Handing the SDK a builder rather than a client lets it own the
+   * client, and so close it along with the S3 client.
+   */
+  public Optional<ApacheHttpClient.Builder> createSslHttpClientBuilder( S3Options opts ) {
     boolean trustAll = opts.trustStore().map( S3Options.TrustStore::trustAll ).orElse( false );
     String trustStoreFile = opts.trustStore().map( S3Options.TrustStore::filePath ).orElse( null );
     String trustStorePass = opts.trustStore().map( S3Options.TrustStore::pass ).orElse( null );
@@ -254,8 +255,7 @@ public class S3ClientFactory {
       if ( trustAll ) { // ignore other fields
         var sslContext = HttpClientManager.getSslContext( true, null, null );
         return Optional.of( ApacheHttpClient.builder()
-          .socketFactory( new SSLConnectionSocketFactory( sslContext ) )
-          .build() );
+          .socketFactory( new SSLConnectionSocketFactory( sslContext ) ) );
       }
 
       var vfs = KettleVFS.getInstance( bowl );
@@ -266,8 +266,7 @@ public class S3ClientFactory {
           trustAll, trustStoreIn, trustStorePass,
           keyStoreIn, keyStorePass, keyStorePass );
         return Optional.of( ApacheHttpClient.builder()
-          .socketFactory( new SSLConnectionSocketFactory( sslContext ) )
-          .build() );
+          .socketFactory( new SSLConnectionSocketFactory( sslContext ) ) );
       }
     } catch ( Exception e ) {
       logger.error( "Failed to create SSL configuration from trust store", e );
@@ -276,11 +275,12 @@ public class S3ClientFactory {
   }
 
   /**
-   * Creates an SSL enabled async client.
+   * Configures an SSL enabled async client, handed to the SDK as a builder for the same reason as
+   * {@link #createSslHttpClientBuilder(S3Options)}.
    * The asynchronous HTTP layer is configured with managers rather than with the {@link SSLContext}
    * the synchronous one takes, so the two cannot share a client or configuration.
    */
-  public Optional<SdkAsyncHttpClient> createSslAsyncHttpClient( S3Options opts ) {
+  public Optional<NettyNioAsyncHttpClient.Builder> createSslAsyncHttpClientBuilder( S3Options opts ) {
     boolean trustAll = opts.trustStore().map( S3Options.TrustStore::trustAll ).orElse( false );
     String trustStoreFile = opts.trustStore().map( S3Options.TrustStore::filePath ).orElse( null );
     String trustStorePass = opts.trustStore().map( S3Options.TrustStore::pass ).orElse( null );
@@ -292,7 +292,7 @@ public class S3ClientFactory {
 
       if ( trustAll ) {
         httpClientBuilder.tlsTrustManagersProvider( HttpClientManager::getTrustAllManagers );
-        return Optional.of( httpClientBuilder.build() );
+        return Optional.of( httpClientBuilder );
       }
 
       var vfs = KettleVFS.getInstance( bowl );
@@ -306,7 +306,7 @@ public class S3ClientFactory {
           var keyManagers = HttpClientManager.getKeyManagers( keyStoreIn, keyStorePass, keyStorePass );
           httpClientBuilder.tlsKeyManagersProvider( () -> keyManagers );
         }
-        return Optional.of( httpClientBuilder.build() );
+        return Optional.of( httpClientBuilder );
       }
     } catch ( Exception e ) {
       logger.error( "Failed to create SSL configuration from trust store", e );

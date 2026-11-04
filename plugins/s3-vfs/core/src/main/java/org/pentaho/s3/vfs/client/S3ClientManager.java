@@ -1,6 +1,8 @@
 package org.pentaho.s3.vfs.client;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -20,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.utils.SdkAutoCloseable;
 
 /**
  * Owns the {@link S3Client} and {@link S3AsyncClient} instances associated with a particular
@@ -44,6 +47,9 @@ public class S3ClientManager {
   /** Built on demand from whatever {@link #client} was last built from. */
   private S3AsyncClient asyncClient;
   private boolean clientCameFromEnv;
+
+  /** Replaced clients, left open for anything still using them until {@link #closeClients()}. */
+  private final List<SdkAutoCloseable> retiredClients = new ArrayList<>();
 
   // credential system properties last seen, used to check if changed for caching purposes
   private String awsAccessKeyCache;
@@ -75,7 +81,7 @@ public class S3ClientManager {
   }
 
   /**  */
-  public S3Client getClient() throws FileSystemException {
+  public synchronized S3Client getClient() throws FileSystemException {
     try {
       return resolveClient();
     } catch ( RuntimeException e ) {
@@ -116,7 +122,7 @@ public class S3ClientManager {
    * Resolving the synchronous client first keeps the two on the same credentials: every decision
    * about staleness is made there, and this one is rebuilt whenever that one is.
    */
-  public S3AsyncClient getAsyncClient() throws FileSystemException {
+  public synchronized S3AsyncClient getAsyncClient() throws FileSystemException {
     // we are borrowing all the checks from the standard client, which is used for most operations
     // so ensure it is created and using the same options as this one
     getClient();
@@ -133,11 +139,43 @@ public class S3ClientManager {
     }
   }
 
+  /**
+   * Closes every client built so far, replaced ones included.
+   * <p>
+   * VFS may go on using a file system after closing its communication link, so the next request
+   * simply builds new clients.
+   */
+  public synchronized void closeClients() {
+    retireClients();
+    retiredClients.forEach( S3ClientManager::closeQuietly );
+    retiredClients.clear();
+  }
+
   private void setClient( S3Client newClient, boolean fromEnv ) {
+    // also retires the asynchronous client, which is no longer built from the same credentials.
+    retireClients();
     client = newClient;
     clientCameFromEnv = fromEnv;
-    // also discard the asynchronous client, which is no longer built from the same credentials.
-    asyncClient = null;
+  }
+
+  /** Transfers may still be running on the current clients, so they are only closed later. */
+  private void retireClients() {
+    if ( client != null ) {
+      retiredClients.add( client );
+      client = null;
+    }
+    if ( asyncClient != null ) {
+      retiredClients.add( asyncClient );
+      asyncClient = null;
+    }
+  }
+
+  private static void closeQuietly( SdkAutoCloseable closeable ) {
+    try {
+      closeable.close();
+    } catch ( RuntimeException e ) {
+      logger.warn( "Could not close an S3 client", e );
+    }
   }
 
   /** Get options from the default connection or config builder, as appropriate. */
@@ -146,7 +184,13 @@ public class S3ClientManager {
       defaultConn -> {
         clearClientIfDefaultConnectionChanged( defaultConn );
         return S3Options.from( currentConnectionProperties );
-      } ).orElseGet( () -> S3Options.from( configBuilder ) );
+      } ).orElseGet( () -> {
+        if ( !currentConnectionProperties.isEmpty() ) {
+          currentConnectionProperties = new HashMap<>();
+          invalidate();
+        }
+        return S3Options.from( configBuilder );
+      } );
   }
 
   private S3Client createFromConfig( S3Options options ) {
@@ -166,8 +210,7 @@ public class S3ClientManager {
 
   /** Invalidate the clients and let the caller clear anything keyed on the old credentials. */
   private void invalidate() {
-    client = null;
-    asyncClient = null;
+    retireClients();
     onInvalidate.run();
   }
 

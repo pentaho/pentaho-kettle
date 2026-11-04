@@ -128,8 +128,8 @@ class S3ClientFactorySslTest {
       cfg.setTrustStorePassword( "not the password" );
     } );
 
-    assertFalse( factory.createSslHttpClient( options ).isPresent() );
-    assertFalse( factory.createSslAsyncHttpClient( options ).isPresent() );
+    assertFalse( factory.createSslHttpClientBuilder( options ).isPresent() );
+    assertFalse( factory.createSslAsyncHttpClientBuilder( options ).isPresent() );
   }
 
   @Test
@@ -139,8 +139,8 @@ class S3ClientFactorySslTest {
       cfg.setTrustStorePassword( TRUST_STORE_PASSWORD );
     } );
 
-    assertFalse( factory.createSslHttpClient( options ).isPresent() );
-    assertFalse( factory.createSslAsyncHttpClient( options ).isPresent() );
+    assertFalse( factory.createSslHttpClientBuilder( options ).isPresent() );
+    assertFalse( factory.createSslAsyncHttpClientBuilder( options ).isPresent() );
   }
 
   private S3Options withTrustStore() {
@@ -161,11 +161,11 @@ class S3ClientFactorySslTest {
   }
 
   private SdkHttpClient syncClient( S3Options options ) {
-    return register( factory.createSslHttpClient( options ).orElseThrow() );
+    return register( factory.createSslHttpClientBuilder( options ).orElseThrow().build() );
   }
 
   private SdkAsyncHttpClient asyncClient( S3Options options ) {
-    return register( factory.createSslAsyncHttpClient( options ).orElseThrow() );
+    return register( factory.createSslAsyncHttpClientBuilder( options ).orElseThrow().build() );
   }
 
   private <T extends SdkAutoCloseable> T register( T client ) {

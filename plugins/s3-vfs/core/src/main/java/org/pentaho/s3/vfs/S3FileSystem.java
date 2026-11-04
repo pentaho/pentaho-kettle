@@ -138,6 +138,12 @@ public class S3FileSystem extends AbstractFileSystem {
     return clientManager.getAsyncClient();
   }
 
+  /** Called when the file system is closed, and when VFS frees unused resources. */
+  @Override
+  protected void doCloseCommunicationLink() {
+    clientManager.closeClients();
+  }
+
   public long getPartSize() {
     return parsePartSize( s3KettleProperty.getPartSize() );
   }

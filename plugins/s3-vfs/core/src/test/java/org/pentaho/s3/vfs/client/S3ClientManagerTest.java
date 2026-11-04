@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +27,7 @@ import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.s3.vfs.S3FileSystemConfigBuilder;
 
+import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.S3Client;
 
 /**
@@ -178,6 +181,44 @@ class S3ClientManagerTest {
     assertEquals( 2, factory.envCalls );
   }
 
+  /** Replaced clients may still be serving transfers, so they stay open until the clients are closed. */
+  @Test
+  void replacedClientsAreClosedOnlyWithTheClients() throws Exception {
+    System.setProperty( S3Util.ACCESS_KEY_SYSTEM_PROPERTY, "env-ak" );
+    S3ClientManager manager = newManager();
+    S3Client first = manager.getClient();
+    S3AsyncClient firstAsync = manager.getAsyncClient();
+
+    System.setProperty( S3Util.ACCESS_KEY_SYSTEM_PROPERTY, "other-ak" );
+    S3Client second = manager.getClient();
+    S3AsyncClient secondAsync = manager.getAsyncClient();
+
+    verify( first, never() ).close();
+    verify( firstAsync, never() ).close();
+
+    manager.closeClients();
+
+    verify( first ).close();
+    verify( firstAsync ).close();
+    verify( second ).close();
+    verify( secondAsync ).close();
+  }
+
+  /** VFS may keep using a file system after closing its communication link. */
+  @Test
+  void closedClientsAreRebuiltOnTheNextRequest() throws Exception {
+    configBuilder.setAccessKey( "ak" );
+    configBuilder.setSecretKey( "sk" );
+    S3ClientManager manager = newManager();
+    S3Client first = manager.getClient();
+
+    manager.closeClients();
+    S3Client second = manager.getClient();
+
+    assertNotSame( first, second );
+    verify( second, never() ).close();
+  }
+
   @Test
   void unchangedDefaultConnectionKeepsTheClient() throws Exception {
     givenDefaultS3Connection( defaultConnectionProperties() );
@@ -280,6 +321,11 @@ class S3ClientManagerTest {
     public S3Client createFromEnv() {
       envCalls++;
       return mock( S3Client.class );
+    }
+
+    @Override
+    public S3AsyncClient createAsyncFromEnv() {
+      return mock( S3AsyncClient.class );
     }
   }
 
