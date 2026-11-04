@@ -1426,7 +1426,11 @@ public class PurRepository extends AbstractRepository implements Repository, Rec
         // Looking them up through getSlaveServers() would recursively restart the entire cold-cache load.
         List<SlaveServer> loadedSlaveServers = new ArrayList<>();
         for ( SharedObjectInterface<?> slave : sharedObjectsByType.get( RepositoryObjectType.SLAVE_SERVER ) ) {
-          loadedSlaveServers.add( (SlaveServer) slave );
+          SlaveServer slaveServer = (SlaveServer) slave;
+          SlaveServer loadedSlaveServer = (SlaveServer) slaveServer.clone();
+          loadedSlaveServer.setObjectId( slaveServer.getObjectId() );
+          loadedSlaveServer.clearChanged();
+          loadedSlaveServers.add( loadedSlaveServer );
         }
         assembler = ( file, repoData, version ) ->
           clusterAssembler.assemble( file, repoData, version, loadedSlaveServers );
