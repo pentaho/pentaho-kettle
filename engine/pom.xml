@@ -940,6 +940,38 @@
   <build>
     <plugins>
       <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-test</id>
+            <configuration>
+              <excludes>
+                <exclude>**/*$*</exclude>
+                <exclude>**/MinaSshConnectionHostConfigTest.java</exclude>
+              </excludes>
+            </configuration>
+          </execution>
+          <!-- BISERVER-15807: MINA SSHD reads user.home one time for each JVM. This test needs a new JVM. -->
+          <execution>
+            <id>ssh-host-config-test</id>
+            <phase>${test-unit-execute-phase}</phase>
+            <goals>
+              <goal>test</goal>
+            </goals>
+            <configuration>
+              <argLine>-Dfile.encoding=${project.build.sourceEncoding} @{jacocoSurefireArgLine} ${maven-surefire-plugin.argLine} ${maven-surefire-plugin.ci.argLine}</argLine>
+              <test>MinaSshConnectionHostConfigTest</test>
+              <forkCount>1</forkCount>
+              <reuseForks>false</reuseForks>
+              <testFailureIgnore>${maven-surefire-plugin.testFailureIgnore}</testFailureIgnore>
+              <systemPropertyVariables>
+                <ssh.hostconfig.isolated>true</ssh.hostconfig.isolated>
+              </systemPropertyVariables>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <artifactId>maven-jar-plugin</artifactId>
         <executions>
           <execution>
