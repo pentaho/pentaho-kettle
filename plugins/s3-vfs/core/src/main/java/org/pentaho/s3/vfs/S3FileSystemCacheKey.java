@@ -5,6 +5,7 @@ import org.apache.commons.vfs2.FileSystemOptions;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 /** Uses VFS option comparison, with actual S3 values as a tie-breaker for hash collisions. */
 final class S3FileSystemCacheKey implements Comparable<S3FileSystemCacheKey> {
@@ -32,6 +33,16 @@ final class S3FileSystemCacheKey implements Comparable<S3FileSystemCacheKey> {
       }
     }
     return comparison;
+  }
+
+  @Override
+  public boolean equals( Object other ) {
+    return this == other || other instanceof S3FileSystemCacheKey key && compareTo( key ) == 0;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash( root, options, s3Values( options ) );
   }
 
   private static List<String> s3Values( FileSystemOptions options ) {

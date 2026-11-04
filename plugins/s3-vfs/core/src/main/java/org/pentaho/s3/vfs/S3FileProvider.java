@@ -43,7 +43,7 @@ public class S3FileProvider extends AbstractOriginatingFileProvider {
   /**
    * Authentication types.
    */
-  public static final UserAuthenticationData.Type[] AUTHENTICATOR_TYPES =
+  protected static final UserAuthenticationData.Type[] AUTHENTICATOR_TYPES =
     new UserAuthenticationData.Type[] {
       UserAuthenticationData.USERNAME,
       UserAuthenticationData.PASSWORD
@@ -54,7 +54,6 @@ public class S3FileProvider extends AbstractOriginatingFileProvider {
    */
   protected static final Collection<Capability> capabilities =
     Collections.unmodifiableCollection( Arrays.asList(
-      new Capability[] {
         Capability.CREATE,
         Capability.DELETE,
         Capability.RENAME,
@@ -65,7 +64,7 @@ public class S3FileProvider extends AbstractOriginatingFileProvider {
         Capability.WRITE_CONTENT,
         Capability.GET_LAST_MODIFIED,
         Capability.RANDOM_ACCESS_READ
-      } ) );
+      ) );
 
   public S3FileProvider() {
     super();

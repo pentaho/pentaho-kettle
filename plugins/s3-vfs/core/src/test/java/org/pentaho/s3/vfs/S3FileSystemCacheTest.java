@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
-public class S3FileSystemCacheTest {
+class S3FileSystemCacheTest {
 
   @Test
   void collidingAccessKeysHaveSeparateFileSystems() throws Exception {

@@ -348,20 +348,26 @@ public class S3ClientFactory {
 
     @Override
     public void beforeExecution( BeforeExecution context, ExecutionAttributes executionAttributes ) {
-      log.debug( "Calling {}: {}", getOpName( executionAttributes ), getPath( context.request() ) );
+      if ( log.isDebugEnabled() ) {
+        log.debug( "Calling {}: {}", getOpName( executionAttributes ), getPath( context.request() ) );
+      }
     }
 
     @Override
     public void afterExecution( AfterExecution context, ExecutionAttributes executionAttributes ) {
-      log.trace( "Called {}", getOpName( executionAttributes ) );
+      if ( log.isTraceEnabled() ) {
+        log.trace( "Called {}", getOpName( executionAttributes ) );
+      }
     }
 
     @Override
     public void onExecutionFailure( FailedExecution context, ExecutionAttributes executionAttributes ) {
       // this will also throw an exception somewhere
-      log.debug( "Execution failed for {} ({})",
-        getOpName( executionAttributes ),
-        getStatus( context.httpResponse() ) );
+      if ( log.isDebugEnabled() ) {
+        log.debug( "Execution failed for {} ({})",
+          getOpName( executionAttributes ),
+          getStatus( context.httpResponse() ) );
+      }
     }
 
     private static String getOpName( ExecutionAttributes executionAttributes ) {

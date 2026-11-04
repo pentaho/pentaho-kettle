@@ -84,8 +84,10 @@ import java.util.Map;
 import java.util.Set;
 
 public class S3FileOutputDialog extends BaseStepDialog implements StepDialogInterface {
-  private static Class<?> BASE_PKG = TextFileOutputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
-  private static Class<?> PKG = S3FileOutputDialog.class;
+
+  private static final String S3A_URL_START = "s3a://";
+  private static final Class<?> BASE_PKG = TextFileOutputMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  private static final Class<?> PKG = S3FileOutputDialog.class;
 
   private CTabFolder wTabFolder;
   private FormData fdTabFolder;
@@ -308,7 +310,7 @@ public class S3FileOutputDialog extends BaseStepDialog implements StepDialogInte
     wbFilename.setLayoutData( fdbFilename );
 
     wFilename = new TextVar( transMeta, wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-    wFilename.setText( "s3a://" );
+    wFilename.setText( S3A_URL_START );
     props.setLook( wFilename );
     wFilename.addModifyListener( lsMod );
     fdFilename = new FormData();
@@ -1146,7 +1148,7 @@ public class S3FileOutputDialog extends BaseStepDialog implements StepDialogInte
               BaseMessages.getString( BASE_PKG, "System.FileType.AllFiles" ) };
 
           if ( StringUtils.isEmpty( wFilename.getText().trim() ) ) {
-            wFilename.setText( "s3a://" );
+            wFilename.setText( S3A_URL_START );
           }
           /* For legacy transformations containing AWS S3 access credentials, {@link Const#KETTLE_USE_AWS_DEFAULT_CREDENTIALS} can force Spoon to use
            * the Amazon Default Credentials Provider Chain instead of using the credentials embedded in the transformation metadata. */
@@ -1463,7 +1465,7 @@ public class S3FileOutputDialog extends BaseStepDialog implements StepDialogInte
     tfoi.setSecretKey( input.getSecretKey() );
 
     if ( StringUtils.isEmpty( wFilename.getText().trim() ) ) {
-      wFilename.setText( "s3a://" );
+      wFilename.setText( S3A_URL_START );
     }
 
     tfoi.setFileName( wFilename.getText() );
@@ -1624,7 +1626,7 @@ public class S3FileOutputDialog extends BaseStepDialog implements StepDialogInte
   protected VfsFileChooserDialog getFileChooserDialog() throws KettleFileException {
     if ( this.fileChooserDialog == null ) {
       String filename = wFilename.getText();
-      String defaultFileObject = "s3a://";
+      String defaultFileObject = S3A_URL_START;
 
       FileObject defaultInitialFile = KettleVFS.getInstance( transMeta.getBowl() )
         .getFileObject( defaultFileObject );

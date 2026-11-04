@@ -235,11 +235,11 @@ public class S3Provider extends BaseVFSConnectionProvider<S3Details> {
   }
 
   /** For callers with no bowl in hand, such as the connection provider methods. */
-  public S3Client getS3Client( S3Details s3Details ) throws KettleException {
+  public S3Client getS3Client( S3Details s3Details ) {
     return getS3Client( DefaultBowl.getInstance(), s3Details );
   }
 
-  public S3Client getS3Client( Bowl bowl, S3Details s3Details ) throws KettleException {
+  public S3Client getS3Client( Bowl bowl, S3Details s3Details ) {
     var opts = getOpts( s3Details );
     var cfgBuilder = new S3FileSystemConfigBuilder( opts );
 

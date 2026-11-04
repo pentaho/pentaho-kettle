@@ -31,6 +31,7 @@ public class AmazonSpoonPlugin implements LifecycleListener, GUIOption<Object> {
   }
 
   public void onExit( LifeEventHandler arg0 ) {
+    // I dutifully inform sonar that this is empty because no use was found for it
   }
 
   public String getLabelText() {

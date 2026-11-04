@@ -192,7 +192,7 @@ public class S3ClientManager {
    * <br>
    * A default S3 connection will replace connection references that bypass pvfs (eg. by writing {@code s3://} directly)
    */
-  public static Optional<? extends ConnectionDetails> getDefaultS3Connection(
+  private static Optional<? extends ConnectionDetails> getDefaultS3Connection(
     Supplier<ConnectionManager> connectionManagerSupplier, S3FileSystemConfigBuilder configBuilder ) {
     // Connections created via a details must always have a name
     if ( configBuilder.useDefaults() && configBuilder.getName() == null ) {

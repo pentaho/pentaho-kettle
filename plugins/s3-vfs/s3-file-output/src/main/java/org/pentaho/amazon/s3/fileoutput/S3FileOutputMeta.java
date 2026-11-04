@@ -48,8 +48,8 @@ public class S3FileOutputMeta extends TextFileOutputMeta {
 
   private static final String ACCESS_KEY_TAG = "access_key";
   private static final String SECRET_KEY_TAG = "secret_key";
-  private static final String FILE_TAG = "file";
-  private static final String NAME_TAG = "name";
+
+  private static final String S3_URL_START = "s3://";
 
 
   private String accessKey = null;
@@ -76,7 +76,7 @@ public class S3FileOutputMeta extends TextFileOutputMeta {
 
     // now set the default for the
     // filename to an empty string
-    setFileName( "s3://" );
+    setFileName( S3_URL_START );
   }
 
   @Override
@@ -139,7 +139,7 @@ public class S3FileOutputMeta extends TextFileOutputMeta {
     if ( System.getProperty( Const.KETTLE_COMPATIBILITY_ALLOW_S3_LEGACY_URI, "N" ).equals( "Y" ) ) {
       getLog().logDebug( "[KETTLE_COMPATIBILITY_ALLOW_S3_LEGACY_URI] flag is enable" );
       if ( fileName.startsWith( "s3://s3/" ) ) {
-        updateFilenameForRetroCompatibility( this.fileName.replace( "s3://s3/", "s3://" ) );
+        updateFilenameForRetroCompatibility( this.fileName.replace( "s3://s3/", S3_URL_START ) );
       } else if ( fileName.startsWith( "s3n://s3n/" ) ) {
         updateFilenameForRetroCompatibility( this.fileName.replace( "s3n://s3n/", "s3n://" ) );
       } else if ( fileName.startsWith( "s3a://s3a/" ) ) {
@@ -167,13 +167,13 @@ public class S3FileOutputMeta extends TextFileOutputMeta {
    */
   protected void processFilename( String filename ) throws Exception {
     if ( Utils.isEmpty( filename ) ) {
-      filename = "s3://";
+      filename = S3_URL_START;
     }
     setFileName( filename );
   }
 
   protected String decodeAccessKey( String key ) {
-    if ( Const.isEmpty( key ) ) {
+    if ( Utils.isEmpty( key ) ) {
       return key;
     }
     return key.replaceAll( "%2B", "\\+" ).replaceAll( "%2F", "/" );

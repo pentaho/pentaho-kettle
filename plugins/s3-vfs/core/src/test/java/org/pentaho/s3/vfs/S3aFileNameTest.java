@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /** S3A compatibility tests, kept separate from the canonical S3 cases. */
-public class S3aFileNameTest {
+class S3aFileNameTest {
   @Test
   void parsesAndPreservesTheAlias() throws Exception {
     String uri = "s3a://bucket/dir/file";

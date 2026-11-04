@@ -244,14 +244,12 @@ public class S3FileObject extends AbstractFileObject<S3FileSystem> {
   @Override
   public void doAttach() throws Exception {
     logger.trace( "Attach called on {}", getQualifiedName() );
-    // injectType( FileType.IMAGINARY );
 
     try {
       injectType( fileSystem.isLegacyS3UrisEnabled()
         ? fileSystem.getLegacyUriSupport().execute( bucketName, key, this::determineType )
         : determineType( bucketName, key ) );
     } catch ( S3Exception e ) {
-      logger.error( "Could not get information on " + getQualifiedName(), e ); // make sure this gets printed for the user
       throw new FileSystemException( "vfs.provider/get-type.error", getQualifiedName(), e );
     } finally {
       closeS3Object();

@@ -16,6 +16,7 @@ package org.pentaho.amazon.s3.fileoutput;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.vfs2.FileContent;
 import org.apache.commons.vfs2.FileObject;
 import org.apache.commons.vfs2.FileSystemException;
@@ -222,7 +223,7 @@ public JSONObject getEOLFormatsAction() {
         );
       }
     } else {
-      return S3Util.isEmpty( filter ) || StringUtils.containsIgnoreCase( file, filter );
+      return S3Util.isEmpty( filter ) || Strings.CI.contains( file, filter );
     }
   }
 
@@ -292,7 +293,7 @@ public JSONObject getEOLFormatsAction() {
     S3Details s3Details = createS3DetailsFromParams( transMeta, queryParams );
     s3Details.setSpace( new Variables() );
     s3Details = s3Provider.prepare( s3Details );
-    String cleanPath = StringUtils.removeEnd( path.replace( s3Prefix, "" ), S3FileName.DELIMITER );
+    String cleanPath = Strings.CS.removeEnd( path.replace( s3Prefix, "" ), S3FileName.DELIMITER );
     FileObject folder = s3Provider.getDirectFile( transMeta.getBowl(), s3Details, cleanPath );
     if ( folder == null ) {
       throw new IllegalStateException(

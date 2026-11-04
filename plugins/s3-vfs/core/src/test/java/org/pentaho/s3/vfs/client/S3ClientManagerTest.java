@@ -3,7 +3,6 @@ package org.pentaho.s3.vfs.client;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
@@ -34,7 +33,7 @@ import software.amazon.awssdk.services.s3.S3Client;
  * These pin the behaviour inherited from {@code S3FileSystem}, which is not necessarily the
  * behaviour worth keeping. Where a test documents something questionable it says so.
  */
-public class S3ClientManagerTest {
+class S3ClientManagerTest {
 
   private RecordingFactory factory;
   private FileSystemOptions fileSystemOptions;
@@ -47,12 +46,12 @@ public class S3ClientManagerTest {
 
   /** Connection properties are read through Encr, which needs an encoder. */
   @BeforeAll
-  public static void initKettle() throws KettleException {
+  static void initKettle() throws KettleException {
     KettleClientEnvironment.init();
   }
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     factory = new RecordingFactory();
     fileSystemOptions = new FileSystemOptions();
     configBuilder = new S3FileSystemConfigBuilder( fileSystemOptions );
@@ -64,13 +63,13 @@ public class S3ClientManagerTest {
   }
 
   @AfterEach
-  public void tearDown() {
+  void tearDown() {
     restoreProperty( S3Util.ACCESS_KEY_SYSTEM_PROPERTY, savedAccessKey );
     restoreProperty( S3Util.SECRET_KEY_SYSTEM_PROPERTY, savedSecretKey );
   }
 
   @Test
-  public void buildsClientFromConfigurationAndCachesIt() throws Exception {
+  void buildsClientFromConfigurationAndCachesIt() throws Exception {
     configBuilder.setAccessKey( "ak" );
     configBuilder.setSecretKey( "sk" );
     S3ClientManager manager = newManager();
@@ -85,7 +84,7 @@ public class S3ClientManagerTest {
   }
 
   @Test
-  public void configuredCredentialsReachTheFactory() throws Exception {
+  void configuredCredentialsReachTheFactory() throws Exception {
     configBuilder.setAccessKey( "ak" );
     configBuilder.setSecretKey( "sk" );
 
@@ -100,7 +99,7 @@ public class S3ClientManagerTest {
    * as a change and throws away the client that was just built from configuration.
    */
   @Test
-  public void systemPropertyCredentialsDiscardTheConfiguredClient() throws Exception {
+  void systemPropertyCredentialsDiscardTheConfiguredClient() throws Exception {
     System.setProperty( S3Util.ACCESS_KEY_SYSTEM_PROPERTY, "env-ak" );
     System.setProperty( S3Util.SECRET_KEY_SYSTEM_PROPERTY, "env-sk" );
     configBuilder.setAccessKey( "ak" );
@@ -122,7 +121,7 @@ public class S3ClientManagerTest {
    */
   @Test
   @Disabled( "preferEnvCredentials" )
-  public void systemPropertiesDoNotReplaceTheConfiguredEndpoint() throws Exception {
+  void systemPropertiesDoNotReplaceTheConfiguredEndpoint() throws Exception {
     configBuilder.setEndpoint( "https://my.favorite.endpoint" );
     configBuilder.setAccessKey( "connection-ak" );
     configBuilder.setSecretKey( "connection-sk" );
@@ -150,7 +149,7 @@ public class S3ClientManagerTest {
    * Would be broken by {@link Behavior#preferEnvCredentials()}
    */
   @Test
-  public void changedSystemPropertyRebuildsTheClient() throws Exception {
+  void changedSystemPropertyRebuildsTheClient() throws Exception {
     System.setProperty( S3Util.ACCESS_KEY_SYSTEM_PROPERTY, "env-ak" );
     S3ClientManager manager = newManager();
 
@@ -163,7 +162,7 @@ public class S3ClientManagerTest {
   }
 
   @Test
-  public void unchangedDefaultConnectionKeepsTheClient() throws Exception {
+  void unchangedDefaultConnectionKeepsTheClient() throws Exception {
     givenDefaultS3Connection( defaultConnectionProperties() );
     S3ClientManager manager = newManager();
 
@@ -176,7 +175,7 @@ public class S3ClientManagerTest {
 
   /** A named connection comes from pvfs, so the default S3 connection must not apply. */
   @Test
-  public void namedConnectionIgnoresTheDefaultConnection() throws Exception {
+  void namedConnectionIgnoresTheDefaultConnection() throws Exception {
     configBuilder.setName( "my-connection" );
     configBuilder.setAccessKey( "ak" );
     configBuilder.setSecretKey( "sk" );
@@ -189,7 +188,7 @@ public class S3ClientManagerTest {
   }
 
   @Test
-  public void keysInTheRootUriOverrideConfiguredCredentials() throws Exception {
+  void keysInTheRootUriOverrideConfiguredCredentials() throws Exception {
     configBuilder.setAccessKey( "ak" );
     configBuilder.setSecretKey( "sk" );
     S3ClientManager manager = newManager( "s3://uri-ak:uri-sk@s3.amazonaws.com/bucket" );
@@ -202,7 +201,7 @@ public class S3ClientManagerTest {
 
   // S3A compatibility: defaults remain connections of type s3.
   @Test
-  public void s3aUsesTheDefaultS3Connection() throws Exception {
+  void s3aUsesTheDefaultS3Connection() throws Exception {
     givenDefaultS3Connection( defaultConnectionProperties() );
 
     newManager( "s3a://bucket/" ).getClient();
@@ -223,7 +222,7 @@ public class S3ClientManagerTest {
   private void givenDefaultS3Connection( Map<String, String> properties ) {
     ConnectionDetails details = mock( ConnectionDetails.class );
     doReturn( properties ).when( details ).getProperties();
-    doReturn( List.of( details ) ).when( connectionManager ).getConnectionDetailsByScheme( eq( "s3" ) );
+    doReturn( List.of( details ) ).when( connectionManager ).getConnectionDetailsByScheme( "s3" );
   }
 
   private static Map<String, String> defaultConnectionProperties() {

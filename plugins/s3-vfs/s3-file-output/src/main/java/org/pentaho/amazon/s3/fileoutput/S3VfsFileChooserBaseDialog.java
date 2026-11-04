@@ -37,7 +37,7 @@ public abstract class S3VfsFileChooserBaseDialog extends CustomVfsUiPanel {
   protected FileObject initialFile;
   protected VfsFileChooserDialog vfsFileChooserDialog;
 
-  public S3VfsFileChooserBaseDialog( VfsFileChooserDialog vfsFileChooserDialog, FileObject rootFile,
+  protected S3VfsFileChooserBaseDialog( VfsFileChooserDialog vfsFileChooserDialog, FileObject rootFile,
                                   FileObject initialFile, String schema, String fileSystemDisplayText ) {
     super( schema, fileSystemDisplayText, vfsFileChooserDialog, SWT.NONE );
 
@@ -72,10 +72,12 @@ public abstract class S3VfsFileChooserBaseDialog extends CustomVfsUiPanel {
   }
 
   /** Credentials come from the system properties set by {@link S3FileOutputDialog}, which the driver reads. */
+  @Override
   public FileObject resolveFile( String fileUri ) throws FileSystemException {
     return resolveFile( fileUri, new FileSystemOptions() );
   }
 
+  @Override
   public FileObject resolveFile( String fileUri, FileSystemOptions opts ) throws FileSystemException {
     Spoon spoon = Spoon.getInstance();
     try {

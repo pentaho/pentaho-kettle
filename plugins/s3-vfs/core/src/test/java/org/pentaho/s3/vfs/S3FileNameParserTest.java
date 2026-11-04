@@ -26,17 +26,17 @@ import static org.mockito.Mockito.mock;
 /**
  * Unit tests for S3FileNameParser
  */
-public class S3FileNameParserTest {
+class S3FileNameParserTest {
 
   FileNameParser parser;
 
   @BeforeEach
-  public void setUp() throws Exception {
+  void setUp() throws Exception {
     parser = S3FileNameParser.getInstance();
   }
 
   @Test
-  public void testParseUri() throws Exception {
+  void testParseUri() throws Exception {
     VfsComponentContext context = mock( VfsComponentContext.class );
     FileName fileName = mock( FileName.class );
     String uri = "s3://bucket/file";
@@ -59,7 +59,7 @@ public class S3FileNameParserTest {
   }
 
   @Test
-  public void testParseUriRoundTrip() throws Exception {
+  void testParseUriRoundTrip() throws Exception {
     String origUri = "s3://fooBucket/rcf-emr-staging";
     S3FileName fileName = (S3FileName) parser.parseUri( null, null, origUri );
 

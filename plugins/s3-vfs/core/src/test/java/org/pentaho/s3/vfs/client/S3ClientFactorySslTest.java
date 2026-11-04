@@ -37,7 +37,7 @@ import software.amazon.awssdk.utils.SdkAutoCloseable;
  * {@link javax.net.ssl.SSLContext} and the asynchronous one with trust managers, so neither says
  * anything about the other.
  */
-public class S3ClientFactorySslTest {
+class S3ClientFactorySslTest {
 
   private static final String SERVER_STORE_PASSWORD = "pass";
   private static final String TRUST_STORE_PASSWORD = "lapasse";
@@ -51,40 +51,40 @@ public class S3ClientFactorySslTest {
 
   /** Connection properties are read through Encr, which needs an encoder. */
   @BeforeAll
-  public static void initKettle() throws KettleException {
+  static void initKettle() throws KettleException {
     KettleClientEnvironment.init();
   }
 
   @BeforeEach
-  public void startServer() throws Exception {
+  void startServer() throws Exception {
     server = new HttpsTestServer( HttpsTestServer.serverContext( getCertificatePath( "server/server_store.p12" ),
       SERVER_STORE_PASSWORD ), RESPONSE );
     serverUri = server.start();
   }
 
   @AfterEach
-  public void stopServer() {
+  void stopServer() {
     clients.forEach( SdkAutoCloseable::close );
     server.close();
   }
 
   @Test
-  public void reachesAServerHoldingACertificateTheTrustStoreVouchesFor() throws Exception {
+  void reachesAServerHoldingACertificateTheTrustStoreVouchesFor() throws Exception {
     assertEquals( RESPONSE, SdkHttpProbe.get( syncClient( withTrustStore() ), serverUri ) );
   }
 
   @Test
-  public void reachesAServerHoldingACertificateTheTrustStoreVouchesForAsynchronously() throws Exception {
+  void reachesAServerHoldingACertificateTheTrustStoreVouchesForAsynchronously() throws Exception {
     assertEquals( RESPONSE, SdkHttpProbe.get( asyncClient( withTrustStore() ), serverUri ) );
   }
 
   @Test
-  public void reachesAnyServerWhenAskedToTrustThemAll() throws Exception {
+  void reachesAnyServerWhenAskedToTrustThemAll() throws Exception {
     assertEquals( RESPONSE, SdkHttpProbe.get( syncClient( withTrustAll() ), serverUri ) );
   }
 
   @Test
-  public void reachesAnyServerWhenAskedToTrustThemAllAsynchronously() throws Exception {
+  void reachesAnyServerWhenAskedToTrustThemAllAsynchronously() throws Exception {
     assertEquals( RESPONSE, SdkHttpProbe.get( asyncClient( withTrustAll() ), serverUri ) );
   }
 
@@ -96,7 +96,7 @@ public class S3ClientFactorySslTest {
    * considered, and a path that does not resolve leaves the factory with no client to hand back.
    */
   @Test
-  public void ignoresAnUnusableTrustStoreWhenAskedToTrustThemAll() throws Exception {
+  void ignoresAnUnusableTrustStoreWhenAskedToTrustThemAll() throws Exception {
     S3Options options = options( cfg -> {
       cfg.setTrustStoreFilePath( "/no/such/store.jks" );
       cfg.setTrustStorePassword( "not the password" );
@@ -108,7 +108,7 @@ public class S3ClientFactorySslTest {
   }
 
   @Test
-  public void turnsDownTheServerWhenNothingSaysToTrustIt() {
+  void turnsDownTheServerWhenNothingSaysToTrustIt() {
     S3Options options = options( cfg -> {
       // nothing: the JVM's own trust store is all there is, and the certificate is not in it
     } );
@@ -122,7 +122,7 @@ public class S3ClientFactorySslTest {
    * nothing the factory builds none at all, leaving the caller on the SDK's defaults.
    */
   @Test
-  public void buildsNoClientWhenTheTrustStorePasswordIsWrong() {
+  void buildsNoClientWhenTheTrustStorePasswordIsWrong() {
     S3Options options = options( cfg -> {
       cfg.setTrustStoreFilePath( getCertificatePath( "truststore.jks" ).toString() );
       cfg.setTrustStorePassword( "not the password" );
@@ -133,7 +133,7 @@ public class S3ClientFactorySslTest {
   }
 
   @Test
-  public void buildsNoClientWhenTheTrustStoreIsNotThere() {
+  void buildsNoClientWhenTheTrustStoreIsNotThere() {
     S3Options options = options( cfg -> {
       cfg.setTrustStoreFilePath( "/no/such/store.jks" );
       cfg.setTrustStorePassword( TRUST_STORE_PASSWORD );

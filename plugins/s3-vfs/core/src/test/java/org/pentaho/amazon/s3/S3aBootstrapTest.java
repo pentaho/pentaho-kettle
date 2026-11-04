@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /** S3A compatibility bootstrap coverage using real VFS managers. */
-public class S3aBootstrapTest {
+class S3aBootstrapTest {
   @Test
   void registersBothSchemesAndKeepsTheirFileSystemsSeparate() throws Exception {
     try ( var manager = new DefaultFileSystemManager() ) {
