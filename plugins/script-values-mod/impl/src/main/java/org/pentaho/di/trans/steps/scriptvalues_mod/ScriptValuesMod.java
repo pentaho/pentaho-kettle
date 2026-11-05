@@ -43,7 +43,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.core.util.JavaScriptUtils;
 
 /**
  * Executes a JavaScript on the values in the input stream. Selected calculated values can then be put on the output
