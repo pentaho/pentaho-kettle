@@ -68,7 +68,7 @@ public class S3NFileSystemTest {
 
     fileSystem = new S3NFileSystem( fileName, options ) {
       @Override
-      protected boolean isRegionSet() {
+      protected boolean isEnvRegionSet() {
         return false;
       }
     };
