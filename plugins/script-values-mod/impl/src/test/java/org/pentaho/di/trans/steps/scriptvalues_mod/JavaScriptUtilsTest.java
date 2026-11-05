@@ -12,8 +12,13 @@
 
 
 
-package org.pentaho.di.core.util;
+package org.pentaho.di.trans.steps.scriptvalues_mod;
 
+import org.pentaho.di.compatibility.Value;
+import org.pentaho.di.core.row.ValueMetaInterface;
+
+import java.math.BigDecimal;
+import java.util.Date;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -22,19 +27,14 @@ import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.mozilla.javascript.Undefined;
-import org.pentaho.di.compatibility.Value;
-import org.pentaho.di.core.row.ValueMetaInterface;
-
-import java.math.BigDecimal;
-import java.util.Date;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.mockito.Mockito.mock;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * A set of tests for {@linkplain JavaScriptUtils} class.
