@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.sshd.client.channel.ClientChannelEvent;
 import org.apache.sshd.client.SshClient;
+import org.apache.sshd.client.config.hosts.HostConfigEntryResolver;
 import org.apache.sshd.client.future.AuthFuture;
 import org.apache.sshd.client.future.ConnectFuture;
 import org.apache.sshd.client.session.ClientSession;
@@ -116,6 +117,9 @@ public class MinaSshConnection implements SshConnection {
     SshSecurityProviders.ensureSignedBouncyCastleProvider();
 
     client = SshClient.setUpDefaultClient();
+
+    // PDI sets all connection options. Do not read the ~/.ssh/config file of the OS user.
+    client.setHostConfigEntryResolver( HostConfigEntryResolver.EMPTY );
 
     // Disable strict host key checking to avoid key exchange issues
     client.setServerKeyVerifier( ( clientSession, remoteAddress, serverKey ) -> true );
