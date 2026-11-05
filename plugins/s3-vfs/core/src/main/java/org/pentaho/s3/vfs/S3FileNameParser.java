@@ -10,8 +10,6 @@
  * Change Date: 2030-06-15
  ******************************************************************************/
 
-
-
 package org.pentaho.s3.vfs;
 
 import org.apache.commons.vfs2.FileName;
@@ -32,7 +30,6 @@ import org.pentaho.amazon.s3.S3Util;
 
 public class S3FileNameParser extends AbstractFileNameParser {
   private static final S3FileNameParser INSTANCE = new S3FileNameParser();
-  private static final String[] SCHEMES = new String[] { S3FileProvider.SCHEME };
 
   public S3FileNameParser() {
     super();
@@ -45,13 +42,14 @@ public class S3FileNameParser extends AbstractFileNameParser {
   public FileName parseUri( VfsComponentContext context, FileName base, String uri ) throws FileSystemException {
     StringBuilder buffer = new StringBuilder();
 
-    String scheme = UriParser.extractScheme( SCHEMES, uri, buffer );
+    // S3A compatibility: parse either registered spelling without rewriting the URI.
+    String scheme = UriParser.extractScheme( S3FileProvider.SCHEMES, uri, buffer );
+    if ( scheme == null ) {
+      throw new FileSystemException( "Unsupported S3 URI scheme" );
+    }
+
     UriParser.canonicalizePath( buffer, 0, buffer.length(), this );
-
-    // Normalize separators in the path
     UriParser.fixSeparators( buffer );
-
-    // Normalise the path
     FileType fileType = UriParser.normalisePath( buffer );
 
     //URI includes credentials

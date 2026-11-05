@@ -10,10 +10,10 @@
  * Change Date: 2030-06-15
  ******************************************************************************/
 
-
 package org.pentaho.amazon.s3;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -52,7 +52,7 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import com.amazonaws.regions.Regions;
+import software.amazon.awssdk.regions.Region;
 
 public class S3DetailComposite implements VFSDetailsComposite {
   private static final Class<?> PKG = S3DetailComposite.class;
@@ -450,6 +450,7 @@ public class S3DetailComposite implements VFSDetailsComposite {
     wCredentialsFilePath.setText( Const.NVL( details.getCredentialsFilePath(), "" ) );
     wEndpoint.setText( Const.NVL( details.getEndpoint(), "" ) );
     wSignatureVersion.setText( Const.NVL( details.getSignatureVersion(), "" ) );
+    setSigVersionEditability();
     wPathStyleAccess.setSelection( Boolean.parseBoolean( Const.NVL( details.getPathStyleAccess(), "false" ) ) );
     wPathStyleAccess.setVariableName( Const.NVL( details.getPathStyleAccessVariable(), "" ) );
 
@@ -465,7 +466,7 @@ public class S3DetailComposite implements VFSDetailsComposite {
   private void populateRegion() {
     switch ( getConnectionType() ) {
       case AMAZON -> {
-        int regionIndex = computeComboIndex( Const.NVL( details.getRegion(), Regions.DEFAULT_REGION.getName() ),
+        int regionIndex = computeComboIndex( Const.NVL( details.getRegion(), Region.US_EAST_1.id() ),
           regionChoices, -1 );
         if ( regionIndex != -1 ) {
           wRegion.select( regionIndex );
@@ -475,7 +476,7 @@ public class S3DetailComposite implements VFSDetailsComposite {
       }
       case MINIO -> {
         wMinioRegion.setText( Const.NVL( details.getRegion(), "" ) );
-        int regionIndex = computeComboIndex( Regions.DEFAULT_REGION.getName(), regionChoices, 0 );
+        int regionIndex = computeComboIndex( Region.US_EAST_1.id(), regionChoices, 0 );
         wRegion.select( regionIndex );
       }
     }
@@ -566,6 +567,22 @@ public class S3DetailComposite implements VFSDetailsComposite {
     return IntStream.range( 0, choices.length )
       .filter( i -> choices[ i ].equals( targetValue ) )
       .findFirst().orElse( notFoundReturnValue );
+  }
+
+  private void setSigVersionEditability() {
+    String sigVersion = StringUtils.trim( wSignatureVersion.getText() );
+    if ( isSigVersionValid( sigVersion ) ) {
+      // might as well ensure it is properly trimmed
+      wSignatureVersion.setText( sigVersion );
+      wSignatureVersion.setEnabled( false );
+    } else {
+      // allow fixing/erasing the value
+      wSignatureVersion.setEnabled( true );
+    }
+  }
+
+  private static boolean isSigVersionValid( String sigVersion ) {
+    return StringUtils.isEmpty( sigVersion ) || Strings.CS.equals( sigVersion, S3Util.SIG_VERSION );
   }
 
   public String validate() {

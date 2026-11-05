@@ -10,23 +10,21 @@
  * Change Date: 2030-06-15
  ******************************************************************************/
 
-
-
 package org.pentaho.amazon.s3;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class S3DetailsTest {
+class S3DetailsTest {
 
   private S3Details s3Details = new S3Details();
 
   @Test
-  public void getProperties() {
+  void getProperties() {
     s3Details.setName( "name" );
     s3Details.setRegion( "aws-west-1" );
     s3Details.setAccessKey( "ASIAXJ3TZZPFVO3NK6O" );
@@ -54,7 +52,7 @@ public class S3DetailsTest {
   }
 
   @Test
-  public void getPropertiesWithEndpoint() {
+  void getPropertiesWithEndpoint() {
     s3Details.setName( "name" );
     s3Details.setRegion( "aws-west-1" );
     s3Details.setAccessKey( "ASIAXJ3TZZPFVO3NK6O" );

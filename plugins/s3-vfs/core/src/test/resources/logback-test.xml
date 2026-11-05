@@ -1,0 +1,13 @@
+<configuration>
+  <!-- We have a lot of expected errors in tests, and there are irrelevant socket accept errors
+       when closing servers. nopex omits the exception/stacktrace so the clutter isn't overwhelming -->
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n%nopex</pattern>
+    </encoder>
+  </appender>
+
+  <root level="INFO">
+    <appender-ref ref="CONSOLE" />
+  </root>
+</configuration>
