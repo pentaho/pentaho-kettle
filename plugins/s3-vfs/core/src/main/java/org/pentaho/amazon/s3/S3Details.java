@@ -37,6 +37,27 @@ public class S3Details extends BaseVFSConnectionDetails {
   public static final String CONNECTION_TYPE_AWS = "0";
   public static final String CONNECTION_TYPE_MINIO = "1";
 
+  public static final String PROP_NAME = S3CommonFileSystemConfigBuilder.NAME;
+  public static final String PROP_DESCRIPTION = "description";
+  public static final String PROP_ACCESS_KEY = S3CommonFileSystemConfigBuilder.ACCESS_KEY;
+  public static final String PROP_SECRET_KEY = S3CommonFileSystemConfigBuilder.SECRET_KEY;
+  public static final String PROP_SESSION_TOKEN = S3CommonFileSystemConfigBuilder.SESSION_TOKEN;
+  public static final String PROP_CREDENTIALS_FILE_PATH = "credentialsFilePath";
+  public static final String PROP_CREDENTIALS_FILE = S3CommonFileSystemConfigBuilder.CREDENTIALS_FILE;
+  public static final String PROP_AUTH_TYPE = "authType";
+  public static final String PROP_REGION = S3CommonFileSystemConfigBuilder.REGION;
+  public static final String PROP_PROFILE_NAME = S3CommonFileSystemConfigBuilder.PROFILE_NAME;
+  public static final String PROP_ENDPOINT = S3CommonFileSystemConfigBuilder.ENDPOINT;
+  public static final String PROP_SIGNATURE_VERSION = "signatureVersion";
+  public static final String PROP_PATHSTYLE_ACCESS = S3CommonFileSystemConfigBuilder.PATHSTYLE_ACCESS;
+  public static final String PROP_DEFAULT_S3_CONFIG = S3CommonFileSystemConfigBuilder.DEFAULT_S3_CONFIG;
+  public static final String PROP_CONNECTION_TYPE = S3CommonFileSystemConfigBuilder.CONNECTION_TYPE;
+  public static final String PROP_TRUST_STORE_FILE_PATH = S3CommonFileSystemConfigBuilder.TRUST_STORE_FILE_PATH;
+  public static final String PROP_TRUST_STORE_PASSWORD = S3CommonFileSystemConfigBuilder.TRUST_STORE_PASSWORD;
+  public static final String PROP_TRUST_ALL = S3CommonFileSystemConfigBuilder.TRUST_ALL;
+  public static final String PROP_KEY_STORE_FILE_PATH = S3CommonFileSystemConfigBuilder.KEY_STORE_FILE_PATH;
+  public static final String PROP_KEY_STORE_PASSWORD = S3CommonFileSystemConfigBuilder.KEY_STORE_PASSWORD;
+
   @MetaStoreAttribute private String name;
 
   @MetaStoreAttribute private String description;
@@ -68,6 +89,13 @@ public class S3Details extends BaseVFSConnectionDetails {
   @MetaStoreAttribute private String defaultS3ConfigVariable;
 
   @MetaStoreAttribute private String connectionType;
+
+  @MetaStoreAttribute private String trustStoreFilePath;
+  @MetaStoreAttribute @Encrypted private String trustStorePassword;
+  @MetaStoreAttribute private String trustAll;
+
+  @MetaStoreAttribute private String keyStoreFilePath;
+  @MetaStoreAttribute @Encrypted private String keyStorePassword;
 
   @Override public String getName() {
     return name;
@@ -202,6 +230,46 @@ public class S3Details extends BaseVFSConnectionDetails {
     this.connectionType = connectionType;
   }
 
+  public String getTrustStoreFilePath() {
+    return trustStoreFilePath;
+  }
+
+  public void setTrustStoreFilePath( String trustStoreFilePath ) {
+    this.trustStoreFilePath = trustStoreFilePath;
+  }
+
+  public String getTrustStorePassword() {
+    return trustStorePassword;
+  }
+
+  public void setTrustStorePassword( String trustStorePassword ) {
+    this.trustStorePassword = trustStorePassword;
+  }
+
+  public String getTrustAll() {
+    return trustAll;
+  }
+
+  public void setTrustAll( String trustAll ) {
+    this.trustAll = trustAll;
+  }
+
+  public String getKeyStoreFilePath() {
+    return keyStoreFilePath;
+  }
+
+  public void setKeyStoreFilePath( String keyStoreFilePath ) {
+    this.keyStoreFilePath = keyStoreFilePath;
+  }
+
+  public String getKeyStorePassword() {
+    return keyStorePassword;
+  }
+
+  public void setKeyStorePassword( String keyStorePassword ) {
+    this.keyStorePassword = keyStorePassword;
+  }
+
   public String getPathStyleAccessVariable() {
     return pathStyleAccessVariable;
   }
@@ -219,21 +287,26 @@ public class S3Details extends BaseVFSConnectionDetails {
   }
 
   @Override protected void fillProperties( Map<String, String> props ) {
-    props.put( "name", getName() );
-    props.put( "description", getDescription() );
-    props.put( "accessKey", getAccessKey() );
-    props.put( "secretKey", getSecretKey() );
-    props.put( "sessionToken", getSessionToken() );
-    props.put( "credentialsFilePath", getCredentialsFilePath() );
-    props.put( "credentialsFile", getCredentialsFile() );
-    props.put( "authType", getAuthType() );
-    props.put( "region", getRegion() );
-    props.put( "profileName", getProfileName() );
-    props.put( "endpoint", getEndpoint() );
-    props.put( "signatureVersion", getSignatureVersion() );
-    props.put( S3CommonFileSystemConfigBuilder.PATHSTYLE_ACCESS, getPathStyleAccess() );
-    props.put( "defaultS3Config", getDefaultS3Config() );
-    props.put( "connectionType", getConnectionType() );
+    props.put( PROP_NAME, getName() );
+    props.put( PROP_DESCRIPTION, getDescription() );
+    props.put( PROP_ACCESS_KEY, getAccessKey() );
+    props.put( PROP_SECRET_KEY, getSecretKey() );
+    props.put( PROP_SESSION_TOKEN, getSessionToken() );
+    props.put( PROP_CREDENTIALS_FILE_PATH, getCredentialsFilePath() );
+    props.put( PROP_CREDENTIALS_FILE, getCredentialsFile() );
+    props.put( PROP_AUTH_TYPE, getAuthType() );
+    props.put( PROP_REGION, getRegion() );
+    props.put( PROP_PROFILE_NAME, getProfileName() );
+    props.put( PROP_ENDPOINT, getEndpoint() );
+    props.put( PROP_SIGNATURE_VERSION, getSignatureVersion() );
+    props.put( PROP_PATHSTYLE_ACCESS, getPathStyleAccess() );
+    props.put( PROP_DEFAULT_S3_CONFIG, getDefaultS3Config() );
+    props.put( PROP_CONNECTION_TYPE, getConnectionType() );
+    props.put( PROP_TRUST_STORE_FILE_PATH, getTrustStoreFilePath() );
+    props.put( PROP_TRUST_STORE_PASSWORD, getTrustStorePassword() );
+    props.put( PROP_TRUST_ALL, getTrustAll() );
+    props.put( PROP_KEY_STORE_FILE_PATH, getKeyStoreFilePath() );
+    props.put( PROP_KEY_STORE_PASSWORD, getKeyStorePassword() );
     super.fillProperties( props );
   }
 
