@@ -39,7 +39,6 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.*;
-import org.pentaho.di.trans.steps.sql.ExecSQL;
 import org.pentaho.metastore.api.IMetaStore;
 import org.w3c.dom.Node;
 
@@ -282,7 +281,7 @@ public class ExecSQLRowMeta extends BaseDatabaseStepMeta implements StepMetaInte
   public void getFields( Bowl bowl, RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep,
     VariableSpace space, Repository repository, IMetaStore metaStore ) throws KettleStepException {
     RowMetaAndData add =
-      ExecSQL.getResultRow( new Result(), getUpdateField(), getInsertField(), getDeleteField(), getReadField() );
+      ExecSQLRow.getResultRow( new Result(), getUpdateField(), getInsertField(), getDeleteField(), getReadField() );
 
     r.mergeRowMeta( add.getRowMeta() );
   }
