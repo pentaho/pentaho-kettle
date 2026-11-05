@@ -19,8 +19,8 @@ import org.apache.commons.vfs2.impl.DefaultFileSystemManager;
 import org.apache.commons.vfs2.provider.FileNameParser;
 import org.junit.Before;
 import org.junit.Test;
-import org.pentaho.di.connections.ConnectionDetails;
 import org.pentaho.di.connections.ConnectionManager;
+import org.pentaho.di.connections.common.basic.TestBaseVFSConnectionDetails;
 import org.pentaho.di.connections.common.basic.TestBasicConnectionDetails;
 import org.pentaho.di.connections.common.basic.TestBasicConnectionProvider;
 import org.pentaho.di.connections.common.basic.TestBasicFileProvider;
@@ -102,7 +102,7 @@ public class ConnectionFileProviderTest {
 
     // Connection Instances
 
-    ConnectionDetails details;
+    TestBaseVFSConnectionDetails details;
 
     details = new TestConnectionWithBucketsDetails();
     details.setName( "Connection With Buckets" );
@@ -110,6 +110,7 @@ public class ConnectionFileProviderTest {
 
     details = new TestConnectionWithBucketsDetails();
     details.setName( "Connection Variable Substitution With Buckets" );
+    details.setRootPath( "${my_var_root_path}" );
     connectionManager.save( details );
 
     details = new TestConnectionWithDomainDetails();
@@ -118,6 +119,7 @@ public class ConnectionFileProviderTest {
 
     details = new TestConnectionWithDomainDetails();
     details.setName( "Connection Variable Substitution With Domain" );
+    details.setRootPath( "${my_var_root_path}" );
     connectionManager.save( details );
 
     details = new TestConnectionWithDomainAndBucketsDetails();
@@ -126,6 +128,7 @@ public class ConnectionFileProviderTest {
 
     details = new TestConnectionWithDomainAndBucketsDetails();
     details.setName( "Connection Variable Substitution With Domain And Buckets" );
+    details.setRootPath( "${my_var_root_path}" );
     connectionManager.save( details );
 
     details = new TestBasicConnectionDetails();
@@ -134,6 +137,7 @@ public class ConnectionFileProviderTest {
 
     details = new TestBasicConnectionDetails();
     details.setName( "Basic Connection Variable Substitution" );
+    details.setRootPath( "${my_var_root_path}" );
     connectionManager.save( details );
   }
 
