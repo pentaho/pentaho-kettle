@@ -11,9 +11,9 @@
  ******************************************************************************/
 
 
-package org.pentaho.di.core.util;
 
-import org.mozilla.javascript.Context;
+package org.pentaho.di.trans.steps.scriptvalues_mod;
+
 import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -22,12 +22,14 @@ import org.pentaho.di.core.xml.XMLHandler;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import org.mozilla.javascript.Context;
 
 /**
- * This class contains common code from {@linkplain org.pentaho.di.trans.steps.script.Script} and {@linkplain
- * org.pentaho.di.trans.steps .scriptvalues_mod.ScriptValuesMod} classes
- *
- * @author Andrey Khayrutdinov
+ * Converts values returned by Rhino into Kettle values.
+ * <p>
+ * This plugin ships its own Rhino jar, so the JavaScript objects it produces are instances of Rhino classes loaded by
+ * the plugin classloader. This class must live in the plugin (not in kettle-engine) so that it links against the same
+ * Rhino classes; code loaded by the parent classloader cannot correctly convert the plugin's JavaScript objects.
  */
 public class JavaScriptUtils {
   private static final String JS_UNDEFINED = "org.mozilla.javascript.Undefined";

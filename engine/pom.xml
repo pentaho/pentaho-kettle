@@ -150,10 +150,6 @@
       <artifactId>encoder</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.mozilla</groupId>
-      <artifactId>rhino</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.antlr</groupId>
       <artifactId>antlr-complete</artifactId>
       <version>${antlr-complete.version}</version>
