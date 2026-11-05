@@ -42,8 +42,8 @@
       <artifactId>pentaho-metaverse-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.eclipse</groupId>
-      <artifactId>jface</artifactId>
+      <groupId>org.eclipse.platform</groupId>
+      <artifactId>org.eclipse.jface</artifactId>
     </dependency>
     <dependency>
       <groupId>net.sf.saxon</groupId>
