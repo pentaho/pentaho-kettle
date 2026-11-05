@@ -82,7 +82,6 @@
     <eval-job-entry-plugin.version>${project.version}</eval-job-entry-plugin.version>
     <script-values-mod-plugin.version>${project.version}</script-values-mod-plugin.version>
     <janino-plugin.version>${project.version}</janino-plugin.version>
-    <user-defined-java-expression-plugin.version>${project.version}</user-defined-java-expression-plugin.version>
     <pentaho-metaverse.version>11.1.0.0-SNAPSHOT</pentaho-metaverse.version>
     <pdi-xml-plugin.version>11.1.0.0-SNAPSHOT</pdi-xml-plugin.version>
     <pdi-json-plugin.version>11.1.0.0-SNAPSHOT</pdi-json-plugin.version>
@@ -177,18 +176,6 @@
       <groupId>org.pentaho.di.plugins</groupId>
       <artifactId>janino-plugins</artifactId>
       <version>${janino-plugin.version}</version>
-      <type>zip</type>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.pentaho.di.plugins</groupId>
-      <artifactId>user-defined-java-expression-plugins</artifactId>
-      <version>${user-defined-java-expression-plugin.version}</version>
       <type>zip</type>
       <exclusions>
         <exclusion>
