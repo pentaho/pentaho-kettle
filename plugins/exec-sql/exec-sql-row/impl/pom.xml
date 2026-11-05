@@ -24,11 +24,6 @@
       <artifactId>kettle-engine</artifactId>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>org.pentaho.di.plugins</groupId>
-      <artifactId>exec-sql-plugins-impl</artifactId>
-      <version>${pdi.version}</version>
-    </dependency>
 
     <dependency>
       <groupId>org.mockito</groupId>
