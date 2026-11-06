@@ -7,8 +7,17 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.pentaho.s3.vfs.support.KettleS3Environment;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -59,6 +68,32 @@ public class S3FolderIT {
     assertEquals( 4, resolve( "delete-all" ).deleteAll() );
     assertFalse( resolve( "delete-all" ).exists() );
     assertFalse( resolve( "delete-all/nested/b.txt" ).exists() );
+  }
+
+  @Test
+  void deletedFolderCanBeReplacedByFile() throws Exception {
+    final String path = "folder-replaced-by-file";
+    FileObject folder = resolve( path );
+    folder.createFolder();
+    assertEquals( FileType.FOLDER, folder.getType() );
+
+    // something else deletes the folder and creates a file instead
+    try ( S3Client client = S3Client.builder()
+      .endpointOverride( URI.create( S3_MOCK.getServiceEndpoint() ) )
+      .region( Region.US_EAST_1 )
+      .credentialsProvider( StaticCredentialsProvider.create( AwsBasicCredentials.create( "test", "test" ) ) )
+      .forcePathStyle( true )
+      .build() ) {
+      client.deleteObject( DeleteObjectRequest.builder().bucket( KettleS3Environment.BUCKET ).key( path + "/" ).build() );
+      client.putObject( PutObjectRequest.builder().bucket( KettleS3Environment.BUCKET ).key( path ).build(),
+        RequestBody.fromString( path, StandardCharsets.UTF_8 ) );
+    }
+
+    folder.refresh();
+    assertEquals( FileType.FILE, folder.getType() );
+    try ( InputStream in = folder.getContent().getInputStream() ) {
+      assertEquals( path, new String( in.readAllBytes(), StandardCharsets.UTF_8 ) );
+    }
   }
 
   @Test

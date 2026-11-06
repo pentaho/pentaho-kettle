@@ -86,6 +86,8 @@ public class S3LegacyUriIT {
     assertEquals( List.of( "file.txt" ), childNames( LEGACY_ROOT + "rw" ) );
 
     try ( FileObject file = resolve( LEGACY_ROOT + "rw/file.txt" ) ) {
+      assertEquals( "legacy content".getBytes( StandardCharsets.UTF_8 ).length, file.getContent().getSize() );
+      assertTrue( file.getContent().getLastModifiedTime() > 0 );
       assertTrue( file.delete() );
     }
     assertFalse( resolve( DIRECT_ROOT + "rw/file.txt" ).exists() );

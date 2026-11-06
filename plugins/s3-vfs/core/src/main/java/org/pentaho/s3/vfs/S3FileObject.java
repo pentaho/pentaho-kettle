@@ -18,7 +18,6 @@ import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
@@ -30,6 +29,7 @@ import org.apache.commons.vfs2.provider.AbstractFileName;
 import org.apache.commons.vfs2.provider.AbstractFileObject;
 import org.apache.commons.vfs2.util.FileObjectUtils;
 import org.pentaho.di.connections.vfs.provider.ConnectionFileObject;
+import org.pentaho.s3.vfs.client.S3TypeFetcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.core.ResponseInputStream;
@@ -41,13 +41,10 @@ import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.DeleteObjectResponse;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
-import software.amazon.awssdk.services.s3.model.HeadBucketRequest;
 import software.amazon.awssdk.services.s3.model.HeadObjectRequest;
 import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Request;
 import software.amazon.awssdk.services.s3.model.ListObjectsV2Response;
-import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
-import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 import software.amazon.awssdk.services.s3.model.S3Exception;
@@ -55,13 +52,14 @@ import software.amazon.awssdk.services.s3.model.S3Object;
 import com.google.common.annotations.VisibleForTesting;
 
 public class S3FileObject extends AbstractFileObject<S3FileSystem> {
-
-  private static final Logger logger = LoggerFactory.getLogger( S3FileObject.class );
   public static final String DELIMITER = "/";
 
-  private S3FileSystem fileSystem;
-  protected String bucketName;
-  protected String key;
+  private static final Logger logger = LoggerFactory.getLogger( S3FileObject.class );
+
+  private final S3FileSystem fileSystem;
+  private final S3TypeFetcher typeFetcher;
+  protected final String bucketName;
+  protected final String key;
 
   private ResponseInputStream<GetObjectResponse> s3Object;
   private HeadObjectResponse s3ObjectMetadata;
@@ -69,6 +67,7 @@ public class S3FileObject extends AbstractFileObject<S3FileSystem> {
   protected S3FileObject( final AbstractFileName name, final S3FileSystem fileSystem ) {
     super( name, fileSystem );
     this.fileSystem = fileSystem;
+    this.typeFetcher = new S3TypeFetcher( fileSystem::getS3Client, name );
     this.bucketName = getS3BucketName();
     this.key = getBucketRelativeS3Path();
   }
@@ -246,65 +245,16 @@ public class S3FileObject extends AbstractFileObject<S3FileSystem> {
     logger.trace( "Attach called on {}", getQualifiedName() );
 
     try {
-      injectType( fileSystem.isLegacyS3UrisEnabled()
-        ? fileSystem.getLegacyUriSupport().execute( bucketName, key, this::determineType )
-        : determineType( bucketName, key ) );
+      var result = fileSystem.isLegacyS3UrisEnabled()
+        ? fileSystem.getLegacyUriSupport().execute( bucketName, key, typeFetcher::fetchType )
+        : typeFetcher.fetchType( bucketName, key );
+      this.s3ObjectMetadata = result.metadata().orElse( null );
+      injectType( result.type() );
     } catch ( S3Exception e ) {
       throw new FileSystemException( "vfs.provider/get-type.error", getQualifiedName(), e );
     } finally {
       closeS3Object();
     }
-  }
-
-  /** @throws S3Exception */
-  private FileType determineType( String bucket, String key ) throws FileSystemException {
-    if ( key.isEmpty() ) {
-      try {
-        fileSystem.getS3Client().headBucket( HeadBucketRequest.builder().bucket( bucket ).build() );
-        return FileType.FOLDER;
-      } catch ( NoSuchBucketException e ) {
-        return FileType.IMAGINARY;
-      }
-    }
-
-    var fileType = checkIfFile( bucket, key );
-    if ( fileType.isEmpty() ) {
-      fileType = checkIfFolder( bucket, key );
-    }
-    return fileType.orElse( FileType.IMAGINARY );
-  }
-
-  /** @throws S3Exception */
-  private Optional<FileType> checkIfFile( String bucket, String key ) throws FileSystemException {
-    try {
-      s3ObjectMetadata = fileSystem.getS3Client().headObject( HeadObjectRequest.builder()
-        .bucket( bucket ).key( key ).build() );
-      // file, unless key ends in /
-      return Optional.of( getName().getType() );
-    } catch ( NoSuchKeyException e ) {
-      return Optional.empty();
-    }
-  }
-
-  private Optional<FileType> checkIfFolder( String bucket, String key ) throws FileSystemException {
-    String keyWithDelimiter = key + DELIMITER;
-    try {
-      // this will work if a zero-byte object was explicitly written
-      s3ObjectMetadata = fileSystem.getS3Client().headObject( HeadObjectRequest.builder()
-        .bucket( bucket ).key( keyWithDelimiter ).build() );
-      return Optional.of( FileType.FOLDER );
-    } catch ( NoSuchKeyException noKey ) {
-      ListObjectsV2Response ol = fileSystem.getS3Client().listObjectsV2( ListObjectsV2Request.builder()
-        .bucket( bucket )
-        .prefix( keyWithDelimiter )
-        .delimiter( DELIMITER )
-        .maxKeys( 1 )
-        .build() );
-      if ( !( ol.commonPrefixes().isEmpty() && ol.contents().isEmpty() ) ) {
-        return Optional.of( FileType.FOLDER );
-      }
-    }
-    return Optional.empty();
   }
 
   private void closeS3Object() throws IOException {
