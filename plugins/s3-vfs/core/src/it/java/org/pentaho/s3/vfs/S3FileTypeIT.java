@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/** Tests S3 file type detection and metadata through VFS. */
 public class S3FileTypeIT {
 
   @RegisterExtension
@@ -40,6 +41,8 @@ public class S3FileTypeIT {
     FileObject file = resolve( "types/file.txt" );
     assertTrue( file.exists() );
     assertEquals( FileType.FILE, file.getType() );
+    assertEquals( "types/file.txt".getBytes( StandardCharsets.UTF_8 ).length, file.getContent().getSize() );
+    assertTrue( file.getContent().getLastModifiedTime() > 0 );
   }
 
   @Test
@@ -47,6 +50,25 @@ public class S3FileTypeIT {
     write( "virtual/inside.txt" );
 
     FileObject folder = resolve( "virtual" );
+    assertTrue( folder.exists() );
+    assertEquals( FileType.FOLDER, folder.getType() );
+  }
+
+  @Test
+  void prefixWithOnlyNestedObjectsIsAFolder() throws Exception {
+    write( "virtual-nested/inner/inside.txt" );
+
+    FileObject folder = resolve( "virtual-nested" );
+    assertTrue( folder.exists() );
+    assertEquals( FileType.FOLDER, folder.getType() );
+  }
+
+  @Test
+  void explicitFolderMarkerIsAFolder() throws Exception {
+    FileObject folder = resolve( "explicit-type-folder" );
+    folder.createFolder();
+    folder.refresh();
+
     assertTrue( folder.exists() );
     assertEquals( FileType.FOLDER, folder.getType() );
   }
