@@ -40,6 +40,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -179,6 +180,26 @@ public class ConnectionManagerTest {
   @Test
   public void testSaveConnectionError() {
     assertFalse( connectionManager.save( new BadConnectionDetails() ) );
+  }
+
+  @Test
+  public void testGettersReturnCopies() {
+    addOne();
+
+    TestConnectionWithBucketsDetails byName =
+      (TestConnectionWithBucketsDetails) connectionManager.getConnectionDetails( CONNECTION_NAME );
+    TestConnectionWithBucketsDetails byKeyAndName = (TestConnectionWithBucketsDetails) connectionManager
+      .getConnectionDetails( TestConnectionWithBucketsProvider.SCHEME, CONNECTION_NAME );
+    TestConnectionWithBucketsDetails byScheme = (TestConnectionWithBucketsDetails) connectionManager
+      .getConnectionDetailsByScheme( TestConnectionWithBucketsProvider.SCHEME ).get( 0 );
+
+    assertNotSame( byName, connectionManager.getConnectionDetails( CONNECTION_NAME ) );
+    byName.setPassword( "changed" );
+    byKeyAndName.setPassword( "changed" );
+    byScheme.setPassword( "changed" );
+
+    assertEquals( PASSWORD,
+      ( (TestConnectionWithBucketsDetails) connectionManager.getConnectionDetails( CONNECTION_NAME ) ).getPassword() );
   }
 
   @Test
