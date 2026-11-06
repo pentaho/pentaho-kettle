@@ -23,6 +23,8 @@ import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.support.encryption.PasswordEncoderException;
 
+import java.math.BigInteger;
+
 /**
  * This class handles basic encryption of passwords in Kettle. Note that it's not really encryption, it's more
  * obfuscation. Passwords are <b>difficult</b> to read, not impossible.
@@ -117,15 +119,35 @@ public class Encr {
   @SuppressWarnings( "squid:S2068" ) public static final String PASSWORD_ENCRYPTED_PREFIX = "Encrypted ";
 
   /**
-   * Encrypt the password, but only if the password doesn't contain any variables.
+   * Encrypt the password, but only if the password doesn't contain any variables and isn't already encrypted.
    *
    * @param password
    *          The password to encrypt
-   * @return The encrypted password or the
+   * @return The encrypted password or the original value if it uses variables or is already encrypted
    */
   public static final String encryptPasswordIfNotUsingVariables( String password ) {
+    if ( isEncrypted( password ) ) {
+      return password;
+    }
 
     return encoder.encode( password, true );
+  }
+
+  /**
+   * Checks if the password is already encrypted: it starts with {@link #PASSWORD_ENCRYPTED_PREFIX}, followed by a
+   * hexadecimal number. Encrypting it again would add a second layer, and decrypting removes only one.
+   */
+  private static boolean isEncrypted( String password ) {
+    if ( password == null || !password.startsWith( PASSWORD_ENCRYPTED_PREFIX ) ) {
+      return false;
+    }
+
+    try {
+      new BigInteger( password.substring( PASSWORD_ENCRYPTED_PREFIX.length() ), 16 );
+      return true;
+    } catch ( NumberFormatException e ) {
+      return false;
+    }
   }
 
   /**
