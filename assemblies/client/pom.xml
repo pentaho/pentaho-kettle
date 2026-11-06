@@ -178,4 +178,46 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <!-- Spoon UI tests (ui/src/swtbot) against the zip this module just built: mvn verify -Pswtbot.
+         Needs a display (macOS session, or xvfb-run on Linux) and bash; not supported on Windows yet.
+         -Dswtbot.tests=<comma-separated test classes> runs a subset. -->
+    <profile>
+      <id>swtbot</id>
+      <properties>
+        <swtbot.tests></swtbot.tests>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>3.1.0</version>
+            <executions>
+              <execution>
+                <id>swtbot-ui-tests</id>
+                <phase>integration-test</phase>
+                <goals>
+                  <goal>exec</goal>
+                </goals>
+                <configuration>
+                  <executable>bash</executable>
+                  <arguments>
+                    <argument>${project.basedir}/../../ui/scripts/run-swtbot-tests.sh</argument>
+                  </arguments>
+                  <environmentVariables>
+                    <PDI_ZIP>${project.build.directory}/${project.build.finalName}.zip</PDI_ZIP>
+                    <SWTBOT_WORK_DIR>${project.build.directory}/swtbot</SWTBOT_WORK_DIR>
+                    <SWTBOT_TESTS>${swtbot.tests}</SWTBOT_TESTS>
+                    <M2_REPO>${settings.localRepository}</M2_REPO>
+                  </environmentVariables>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
