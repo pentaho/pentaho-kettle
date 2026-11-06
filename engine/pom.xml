@@ -166,10 +166,6 @@
       <artifactId>encoder</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.mozilla</groupId>
-      <artifactId>rhino</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.antlr</groupId>
       <artifactId>antlr-complete</artifactId>
       <version>${antlr-complete.version}</version>
@@ -239,28 +235,6 @@
       <groupId>infobright</groupId>
       <artifactId>infobright-core</artifactId>
       <version>${infobright-core.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.janino</groupId>
-      <artifactId>commons-compiler</artifactId>
-      <version>${janino.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.janino</groupId>
-      <artifactId>janino</artifactId>
-      <version>${janino.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>

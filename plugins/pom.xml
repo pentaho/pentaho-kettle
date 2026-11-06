@@ -104,6 +104,11 @@
         <module>pentaho-reporting</module>
         <module>rest</module>
         <module>put-a-file-with-ftp</module>
+        <module>eval-job-entry</module>
+        <module>exec-process</module>
+        <module>exec-sql</module>
+        <module>script-values-mod</module>
+        <module>janino</module>
       </modules>
     </profile>
 
