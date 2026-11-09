@@ -6,11 +6,11 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>s3-vfs</artifactId>
-    <version>11.1.0.0-SNAPSHOT</version>
+    <version>11.1.0.0-466</version>
   </parent>
   <groupId>pentaho</groupId>
   <artifactId>pentaho-s3-file-output</artifactId>
-  <version>11.1.0.0-SNAPSHOT</version>
+  <version>11.1.0.0-466</version>
   <packaging>jar</packaging>
   <licenses>
     <license>
@@ -21,7 +21,7 @@
     </license>
   </licenses>
   <properties>
-    <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
+    <pdi.version>11.1.0.0-466</pdi.version>
     <license.licenseName>apache_v2</license.licenseName>
     <slf4j-api.version>1.7.7</slf4j-api.version>
     <junit.version>4.12</junit.version>

@@ -18,13 +18,13 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>s3-vfs</artifactId>
-    <version>11.1.0.0-SNAPSHOT</version>
+    <version>11.1.0.0-466</version>
   </parent>
 
 
   <groupId>pentaho</groupId>
   <artifactId>pentaho-s3-vfs</artifactId>
-  <version>11.1.0.0-SNAPSHOT</version>
+  <version>11.1.0.0-466</version>
   <packaging>jar</packaging>
 
   <licenses>
@@ -39,9 +39,9 @@
   <properties>
 
     <!-- pentaho dependencies -->
-    <pdi.version>11.1.0.0-SNAPSHOT</pdi.version>
-    <pentaho-hadoop-shims.version>11.1.0.0-SNAPSHOT</pentaho-hadoop-shims.version>
-    <encryption-support.version>11.1.0.0-SNAPSHOT</encryption-support.version>
+    <pdi.version>11.1.0.0-466</pdi.version>
+    <pentaho-hadoop-shims.version>11.1.0.0-466</pentaho-hadoop-shims.version>
+    <encryption-support.version>11.1.0.0-466</encryption-support.version>
 
     <!-- JUnit 6 needs a provider the parent is too old to supply; the JUnit version itself is
          managed by the plugin parent, which the integration tests share -->
