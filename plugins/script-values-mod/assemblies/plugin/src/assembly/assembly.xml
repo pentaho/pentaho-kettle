@@ -24,6 +24,10 @@
       <directory>${project.build.directory}/assembly</directory>
       <outputDirectory>.</outputDirectory>
     </fileSet>
+    <fileSet>
+      <directory>${project.basedir}/samples</directory>
+      <outputDirectory>samples</outputDirectory>
+    </fileSet>
   </fileSets>
 
   <dependencySets>
