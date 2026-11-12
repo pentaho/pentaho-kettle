@@ -29,6 +29,10 @@
       <outputDirectory>.</outputDirectory>
       <filtered>true</filtered>
     </fileSet>
+    <fileSet>
+      <directory>${project.basedir}/samples</directory>
+      <outputDirectory>samples</outputDirectory>
+    </fileSet>
   </fileSets>
 
   <dependencySets>
