@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>exec-sql-row</artifactId>
-    <version>10.2.0.0-SNAPSHOT</version>
+    <version>10.2.0.11-458</version>
   </parent>
 
   <artifactId>exec-sql-row-plugins-impl</artifactId>

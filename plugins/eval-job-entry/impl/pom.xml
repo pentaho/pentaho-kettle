@@ -7,7 +7,7 @@
   <parent>
     <groupId>org.pentaho.di.plugins</groupId>
     <artifactId>eval-job-entry</artifactId>
-    <version>10.2.0.0-SNAPSHOT</version>
+    <version>10.2.0.11-458</version>
   </parent>
 
   <artifactId>eval-job-entry-plugins-impl</artifactId>
