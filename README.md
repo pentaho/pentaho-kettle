@@ -94,6 +94,23 @@ To run a single integration test in debug mode (for remote debugging in an IDE) 
 $ mvn verify -DrunITs -Dit.test=<<YourIT>> -Dmaven.failsafe.debug
 ```
 
+__UI tests (Spoon, SWTBot)__
+
+End-to-end tests that start the desktop client from the built client zip (`assemblies/client/target/pdi-ce-*.zip`) and drive it with SWTBot. They need a display (macOS desktop, or Linux with X or `xvfb-run`) and are not part of the normal build. See [ui/src/swtbot/README.md](ui/src/swtbot/README.md) for details, options and the headless Linux container.
+
+```
+$ bash ui/scripts/run-swtbot-tests.sh
+```
+
+Or with Maven, after the client zip is built:
+
+```
+$ mvn verify -Pswtbot
+$ mvn -o -Pswtbot -pl assemblies/client exec:exec@swtbot-ui-tests -Dswtbot.tests=<<fully.qualified.TestClass>>
+```
+
+Results are in `ui/target/swtbot-reports/` (`assemblies/client/target/swtbot/swtbot-reports/` with Maven).
+
 To skip test
 
 ```
