@@ -15,6 +15,7 @@ package org.pentaho.di.trans.steps.denormaliser;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -29,6 +30,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.metainject.MetaInject;
 import org.pentaho.di.trans.steps.metainject.MetaInjectMeta;
+import org.pentaho.di.trans.steps.scriptvalues_mod.ScriptValuesMetaMod;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -39,6 +41,8 @@ import java.util.Map;
 public class DenormaliserMetaInjectionIT {
 
   private static final String EXPECTED_VALUE = "1";
+
+  private static PluginInterface scriptValuePlugin;
 
   private TransMeta transMeta;
 
@@ -56,6 +60,24 @@ public class DenormaliserMetaInjectionIT {
       new Plugin( new String[] { "MetaInject" }, StepPluginType.class, StepMetaInterface.class, "Flow",
         "MetaInjectMeta", null, null, false, false, classMap, libraries, null, null );
     PluginRegistry.getInstance().registerPlugin( StepPluginType.class, plugin );
+
+    PluginRegistry registry = PluginRegistry.getInstance();
+    if ( registry.findPluginWithId( StepPluginType.class, "ScriptValueMod" ) == null ) {
+      Map<Class<?>, String> scriptClasses = new HashMap<>();
+      scriptClasses.put( StepMetaInterface.class, ScriptValuesMetaMod.class.getName() );
+      scriptValuePlugin =
+        new Plugin( new String[] { "ScriptValueMod" }, StepPluginType.class, StepMetaInterface.class, "Scripting",
+          "ScriptValuesMetaMod", null, null, false, false, scriptClasses, libraries, null, null );
+      registry.registerPlugin( StepPluginType.class, scriptValuePlugin );
+    }
+  }
+
+  @AfterClass
+  public static void removeScriptValuePlugin() {
+    if ( scriptValuePlugin != null ) {
+      PluginRegistry.getInstance().removePlugin( StepPluginType.class, scriptValuePlugin );
+      scriptValuePlugin = null;
+    }
   }
 
   @Before
