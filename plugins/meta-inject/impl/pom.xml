@@ -54,6 +54,12 @@
       </dependency>
         <!-- Test dependencies -->
         <dependency>
+            <groupId>org.pentaho.di.plugins</groupId>
+            <artifactId>script-values-mod-plugins-impl</artifactId>
+            <version>${pdi.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>pentaho-kettle</groupId>
             <artifactId>kettle-core</artifactId>
             <version>${pdi.version}</version>
