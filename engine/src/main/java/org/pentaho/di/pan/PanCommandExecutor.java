@@ -33,6 +33,7 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.pan.delegates.PanTransformationDelegate;
+import org.pentaho.di.pan.executors.LocalTransExecutorService.InitializationException;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
@@ -234,9 +235,24 @@ public class PanCommandExecutor extends AbstractBaseCommandExecutor {
         logExecutionStats( loggableTrans != null ? loggableTrans : trans, completionTimeSeconds );
         return exitWithStatus( CommandExecutorCodes.Pan.SUCCESS.getCode() );
       } else {
+        Trans executedTrans = getTransformationDelegate().getLastExecutedTrans();
+        if ( executedTrans != null ) {
+          String customExitCode = executedTrans.getVariable( Const.KETTLE_TRANS_PAN_JVM_EXIT_CODE );
+          if ( !Utils.isEmpty( customExitCode ) ) {
+            try {
+              return exitWithStatus( Integer.parseInt( customExitCode ) );
+            } catch ( NumberFormatException e ) {
+              getLog().logError( BaseMessages.getString( getPkgClazz(), "Pan.Error.TransJVMExitCodeInvalid",
+                Const.KETTLE_TRANS_PAN_JVM_EXIT_CODE, customExitCode ) );
+            }
+          }
+        }
         return exitWithStatus( CommandExecutorCodes.Pan.ERRORS_DURING_PROCESSING.getCode() );
       }
 
+    } catch ( InitializationException e ) {
+      getLog().logError( BaseMessages.getString( getPkgClazz(), "Pan.Error.UnablePrepareInitTrans" ), e );
+      return exitWithStatus( CommandExecutorCodes.Pan.UNABLE_TO_PREP_INIT_TRANS.getCode() );
     } catch ( KettleException e ) {
       getLog().logError( "Error executing transformation", e );
       return exitWithStatus( CommandExecutorCodes.Pan.UNEXPECTED_ERROR.getCode() );

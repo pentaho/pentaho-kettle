@@ -82,13 +82,23 @@ public class LocalTransExecutorService implements TransExecutorService {
     }
 
     // Prepare and start execution
-    trans.prepareExecution( arguments );
-    trans.startThreads();
+    try {
+      trans.prepareExecution( arguments );
+      trans.startThreads();
+    } catch ( KettleException e ) {
+      throw new InitializationException( e );
+    }
 
     // Wait for completion
     trans.waitUntilFinished();
 
     return trans.getResult();
+  }
+
+  public static class InitializationException extends KettleException {
+    public InitializationException( KettleException cause ) {
+      super( cause );
+    }
   }
 
   @Override

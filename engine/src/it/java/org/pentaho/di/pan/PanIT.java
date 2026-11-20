@@ -14,32 +14,42 @@
 package org.pentaho.di.pan;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.security.ExitInterceptor;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.security.Permission;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-@Ignore
 public class PanIT {
+  @Rule
+  public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
   private static final String FAILED_TO_INITIALIZE_ERROR_PATTERN = "failed to initialize!";
 
@@ -67,6 +77,58 @@ public class PanIT {
   @Before
   public void setUp() throws KettleException {
     KettleEnvironment.init();
+    Pan.setCommandExecutor( null );
+    ExitInterceptor.enableIntercept();
+  }
+
+  @After
+  public void tearDown() {
+    Pan.setCommandExecutor( null );
+    ExitInterceptor.disableIntercept();
+  }
+
+  @Test
+  public void testProcessExitCodes() throws Exception {
+    assertProcessExit( "fail_on_exec_2_hello_world.ktr", null,
+      CommandExecutorCodes.Pan.UNABLE_TO_PREP_INIT_TRANS.getCode(), FAILED_TO_INITIALIZE_ERROR_PATTERN );
+    assertProcessExit( "fail_on_prep_hello_world.ktr", null,
+      CommandExecutorCodes.Pan.UNABLE_TO_PREP_INIT_TRANS.getCode(), FAILED_TO_INITIALIZE_ERROR_PATTERN );
+    assertProcessExit( "fail_on_exec_hello_world.ktr", null,
+      CommandExecutorCodes.Pan.ERRORS_DURING_PROCESSING.getCode(), "Transformation detected one or more steps with errors" );
+  }
+
+  @Test
+  public void testCustomProcessExitCodes() throws Exception {
+    assertProcessExit( "fail_on_exec_hello_world.ktr", "42", 42, "Transformation detected one or more steps with errors" );
+    assertProcessExit( "fail_on_exec_hello_world.ktr", "0", 0, "Transformation detected one or more steps with errors" );
+    assertProcessExit( "fail_on_exec_hello_world.ktr", "invalid",
+      CommandExecutorCodes.Pan.ERRORS_DURING_PROCESSING.getCode(), "not an integer" );
+  }
+
+  private void assertProcessExit( String fixture, String customExitCode, int expected, String expectedOutput )
+    throws Exception {
+    String classPath = System.getProperty( "surefire.test.class.path" );
+    assertNotNull( "Failsafe test classpath", classPath );
+    String java = Paths.get( System.getProperty( "java.home" ), "bin", "java" ).toString();
+    File output = temporaryFolder.newFile();
+    ProcessBuilder builder = new ProcessBuilder( java, "-cp", classPath, Pan.class.getName(),
+      "/file:" + getRelativePathKTR( EXPECTED_COMPLETE_WITH_FAILURE_PATH + File.separator + fixture ),
+      "/level:Basic", "/norep" );
+    if ( customExitCode != null ) {
+      builder.command().add( 1, "-DKETTLE_TRANS_PAN_JVM_EXIT_CODE=" + customExitCode );
+    }
+    builder.redirectErrorStream( true );
+    builder.redirectOutput( output );
+    Process process = builder.start();
+    boolean finished = process.waitFor( 60, TimeUnit.SECONDS );
+    if ( !finished ) {
+      process.destroyForcibly();
+      process.waitFor();
+    }
+    String log = Files.readString( output.toPath(), StandardCharsets.UTF_8 );
+    assertTrue( "Pan timed out for " + fixture, finished );
+    assertEquals( fixture + " output:\n" + log, expected, process.exitValue() );
+    assertTrue( fixture + " output:\n" + log, log.contains( expectedOutput ) );
   }
 
   @Test
@@ -82,6 +144,7 @@ public class PanIT {
     try {
 
       Pan.main( new String[] { "/file:zip:file://" + testKTRFullPath + "!Pan.ktr", "/level:Basic", "/logfile:" + logFileFullPath } );
+      fail( "Pan should exit after execution" );
 
     } catch ( SecurityException e ) {
       // All OK / expected: SecurityException is purposely thrown when Pan triggers System.exitJVM()
@@ -120,6 +183,7 @@ public class PanIT {
     try {
 
       Pan.main( new String[] { "/file:" + testKTRFullPath, "/level:Basic", "/logfile:" + logFileFullPath } );
+      fail( "Pan should exit after execution" );
 
     } catch ( SecurityException e ) {
       // All OK / expected: SecurityException is purposely thrown when Pan triggers System.exitJVM()
@@ -169,6 +233,7 @@ public class PanIT {
         "/level:Basic",
         "/logfile:" + logFileFullPath,
         "/zip:" + base64Zip } );
+      fail( "Pan should exit after execution" );
 
     } catch ( SecurityException e ) {
       // All OK / expected: SecurityException is purposely thrown when Pan triggers System.exitJVM()
@@ -211,6 +276,7 @@ public class PanIT {
       try {
 
         Pan.main( new String[]{ "/file:" + testKTRFullPath, "/level:Basic", "/logfile:" + logFileFullPath } );
+        fail( "Pan should exit after execution" );
 
       } catch ( SecurityException e ) {
         // All OK / expected: SecurityException is purposely thrown when Pan triggers System.exitJVM()
@@ -252,6 +318,7 @@ public class PanIT {
       try {
 
         Pan.main( new String[]{ "/file:" + testKTRFullPath, "/level:Basic", "/logfile:" + logFileFullPath } );
+        fail( "Pan should exit after execution" );
 
       } catch ( SecurityException e ) {
         // All OK / expected: SecurityException is purposely thrown when Pan triggers System.exitJVM()
@@ -305,6 +372,7 @@ public class PanIT {
         "/param:" + param1Name + "=" + param1Val,
         "/param:" + param2Name + "=" + param2Val
       } );
+      fail( "Pan should exit after execution" );
 
     } catch ( SecurityException e ) {
       // All OK / expected: SecurityException is purposely thrown when Pan triggers System.exitJVM()
@@ -354,6 +422,7 @@ public class PanIT {
     try {
 
       Pan.main( new String[] { "/file:" + testKTRFullPath, "/level:Basic", "/logfile:" + logFileFullPath } );
+      fail( "Pan should exit after execution" );
 
     } catch ( SecurityException e ) {
       // All OK / expected: SecurityException is purposely thrown when Pan triggers System.exitJVM()
@@ -402,6 +471,7 @@ public class PanIT {
     try {
 
       Pan.main( new String[] { "/file:" + testKTRFullPath, "/level:Basic", "/logfile:" + logFileFullPath } );
+      fail( "Pan should exit after execution" );
 
     } catch ( SecurityException e ) {
       // All OK / expected: SecurityException is purposely thrown when Pan triggers System.exitJVM()
@@ -433,26 +503,17 @@ public class PanIT {
    * @param relativePath
    * @return
    */
-  private String getFileContentAsString( String relativePath ) {
-
-    String content = "";
-
-    try {
-      BufferedReader rd = new BufferedReader(
-        new InputStreamReader( this.getClass().getResourceAsStream( relativePath ) ) );
-      StringBuffer logFileContentBuffer = new StringBuffer();
+  private String getFileContentAsString( String relativePath ) throws IOException {
+    InputStream stream = getClass().getResourceAsStream( relativePath );
+    assertNotNull( "Missing log file: " + relativePath, stream );
+    try ( BufferedReader rd = new BufferedReader( new InputStreamReader( stream, StandardCharsets.UTF_8 ) ) ) {
+      StringBuilder logFileContentBuffer = new StringBuilder();
       String line;
       while ( ( line = rd.readLine() ) != null ) {
         logFileContentBuffer.append( line ).append( "\n" );
       }
-
-      content = logFileContentBuffer.toString();
-
-    } catch ( Throwable t ) {
-      // no-op
+      return logFileContentBuffer.toString();
     }
-
-    return content;
   }
 
 
@@ -494,25 +555,4 @@ public class PanIT {
     return this.getClass().getResource( ktrRelativePath ).getPath();
   }
 
-  public class MySecurityManager extends SecurityManager {
-
-    private SecurityManager baseSecurityManager;
-
-    public MySecurityManager( SecurityManager baseSecurityManager ) {
-      this.baseSecurityManager = baseSecurityManager;
-    }
-
-    @Override
-    public void checkPermission( Permission permission ) {
-      if ( permission.getName().startsWith( "exitVM" ) ) {
-        throw new SecurityException( "System exit not allowed" );
-      }
-      if ( baseSecurityManager != null ) {
-        baseSecurityManager.checkPermission( permission );
-      } else {
-        return;
-      }
-    }
-
-  }
 }
