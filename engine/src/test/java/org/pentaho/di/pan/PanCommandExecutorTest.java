@@ -24,6 +24,7 @@ import org.mockito.MockitoAnnotations;
 import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.base.Params;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
@@ -41,6 +42,7 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.kitchen.Kitchen;
 import org.pentaho.di.pan.delegates.PanTransformationDelegate;
+import org.pentaho.di.pan.executors.LocalTransExecutorService.KettleTransInitializationException;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.Trans;
@@ -410,6 +412,34 @@ public class PanCommandExecutorTest {
     assertNotNull( "Result should not be null", result );
     assertEquals( "Should return unexpected error code",
       CommandExecutorCodes.Pan.UNEXPECTED_ERROR.getCode(), result.getExitStatus() );
+  }
+
+  @Test
+  public void testExecuteWithDelegateInitializationException() throws Throwable {
+    when( mockDelegate.executeTransformation( any( Trans.class ),
+      any( TransExecutionConfiguration.class ), any( String[].class ) ) )
+      .thenThrow( new KettleTransInitializationException( new KettleException( "initialization failed" ) ) );
+    when( mockDelegate.createDefaultExecutionConfiguration() ).thenReturn( mock( TransExecutionConfiguration.class ) );
+
+    Result result = executorWithMocks.executeWithDelegate( mockTrans, new Params.Builder().build(), new String[0] );
+
+    assertEquals( CommandExecutorCodes.Pan.UNABLE_TO_PREP_INIT_TRANS.getCode(), result.getExitStatus() );
+  }
+
+  @Test
+  public void testExecuteWithDelegateUsesExecutedTransformationExitCode() throws Throwable {
+    Result errorResult = new Result();
+    errorResult.setNrErrors( 1 );
+    Trans executedTrans = mock( Trans.class );
+    when( executedTrans.getVariable( Const.KETTLE_TRANS_PAN_JVM_EXIT_CODE ) ).thenReturn( "0" );
+    when( mockDelegate.getLastExecutedTrans() ).thenReturn( executedTrans );
+    when( mockDelegate.executeTransformation( any( Trans.class ),
+      any( TransExecutionConfiguration.class ), any( String[].class ) ) ).thenReturn( errorResult );
+    when( mockDelegate.createDefaultExecutionConfiguration() ).thenReturn( mock( TransExecutionConfiguration.class ) );
+
+    Result result = executorWithMocks.executeWithDelegate( mockTrans, new Params.Builder().build(), new String[0] );
+
+    assertEquals( 0, result.getExitStatus() );
   }
 
   // Test 8: Edge Cases and Error Handling
