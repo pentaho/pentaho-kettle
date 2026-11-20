@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name>generate_rows_dummy</name>
+    <trans_type>Normal</trans_type>
+    <trans_status>0</trans_status>
+    <directory>/</directory>
+  </info>
+  <order>
+    <hop>
+      <from>Generate rows</from>
+      <to>Dummy</to>
+      <enabled>Y</enabled>
+    </hop>
+  </order>
+  <step>
+    <name>Generate rows</name>
+    <type>RowGenerator</type>
+    <copies>1</copies>
+    <limit>3</limit>
+    <fields>
+      <field>
+        <name>id</name>
+        <type>Integer</type>
+        <value>1</value>
+      </field>
+    </fields>
+    <GUI>
+      <xloc>100</xloc>
+      <yloc>100</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Dummy</name>
+    <type>Dummy</type>
+    <copies>1</copies>
+    <GUI>
+      <xloc>300</xloc>
+      <yloc>100</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step_error_handling>
+  </step_error_handling>
+</transformation>

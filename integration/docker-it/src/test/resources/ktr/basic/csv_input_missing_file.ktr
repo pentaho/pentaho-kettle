@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name>csv_input_missing_file</name>
+    <trans_type>Normal</trans_type>
+    <trans_status>0</trans_status>
+    <directory>/</directory>
+  </info>
+  <order>
+    <hop>
+      <from>CSV file input</from>
+      <to>Dummy</to>
+      <enabled>Y</enabled>
+    </hop>
+  </order>
+  <step>
+    <name>CSV file input</name>
+    <type>CsvInput</type>
+    <copies>1</copies>
+    <filename>/tmp/docker-it/missing/does-not-exist.csv</filename>
+    <filenameField/>
+    <rowNumField/>
+    <include>N</include>
+    <separator>,</separator>
+    <enclosure>"</enclosure>
+    <header>Y</header>
+    <bufferSize>50000</bufferSize>
+    <lazyConversion>N</lazyConversion>
+    <addResultFile>N</addResultFile>
+    <runningInParallel>N</runningInParallel>
+    <encoding>UTF-8</encoding>
+    <fields>
+      <field>
+        <name>id</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+      </field>
+    </fields>
+    <GUI>
+      <xloc>100</xloc>
+      <yloc>100</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step>
+    <name>Dummy</name>
+    <type>Dummy</type>
+    <copies>1</copies>
+    <GUI>
+      <xloc>300</xloc>
+      <yloc>100</yloc>
+      <draw>Y</draw>
+    </GUI>
+  </step>
+  <step_error_handling>
+  </step_error_handling>
+</transformation>

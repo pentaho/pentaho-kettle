@@ -1,0 +1,148 @@
+name: Docker Integration Tests
+
+on:
+  workflow_call:
+    inputs:
+      execution_types:
+        description: "Modes to run: PAN, CARTE, SERVER (comma separated)"
+        required: false
+        default: "PAN,CARTE,SERVER"
+        type: string
+      groups:
+        description: "JUnit tags to run, for example basic or ssh. Leave empty to run all."
+        required: false
+        default: ""
+        type: string
+      platform_version:
+        description: "PDI and Pentaho Server Docker image tag"
+        required: false
+        default: "11.1"
+        type: string
+      branch:
+        description: "Branch or commit to checkout"
+        required: false
+        default: master
+        type: string
+      runs_on:
+        description: "Runner label to use for the integration tests job"
+        required: false
+        default: ubuntu-latest
+        type: string
+  workflow_dispatch:
+    inputs:
+      execution_types:
+        description: "Modes to run: PAN, CARTE, SERVER (comma separated)"
+        required: false
+        default: "PAN,CARTE,SERVER"
+        type: string
+      groups:
+        description: "JUnit tags to run, for example basic or ssh. Leave empty to run all."
+        required: false
+        default: ""
+        type: string
+      platform_version:
+        description: "PDI and Pentaho Server Docker image tag"
+        required: false
+        default: "11.1"
+        type: string
+      branch:
+        description: "Branch or commit to checkout"
+        required: false
+        default: master
+        type: string
+      runs_on:
+        description: "Runner label to use for the integration tests job"
+        required: false
+        default: ubuntu-latest
+        type: string
+  push:
+    branches:
+      - master
+      - "release/*"
+    paths:
+      - "**"
+      - "!**/*.md"
+      - "!**/*.txt"
+      - "!docs/**"
+      - "!.github/**"
+      - ".github/workflows/docker-integration-tests.yaml"
+  pull_request:
+    branches:
+      - master
+      - "release/*"
+    paths:
+      - "**"
+      - "!**/*.md"
+      - "!**/*.txt"
+      - "!docs/**"
+      - "!.github/**"
+      - ".github/workflows/docker-integration-tests.yaml"
+
+concurrency:
+  group: docker-its-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+env:
+  ARTIFACTORY_HOST: ${{ vars.ARTIFACTORY_HOST || 'repo.pentaho.com' }}
+  ARTIFACTORY_USER: ${{ secrets.PENTAHO_CICD_ONE_USER }}
+  ARTIFACTORY_API_KEY: ${{ secrets.PENTAHO_CICD_ONE_KEY }}
+
+jobs:
+  docker-its:
+    runs-on: ${{ inputs.runs_on || 'ubuntu-latest' }}
+    timeout-minutes: 90
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout commit to test
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ (github.event_name == 'push' || github.event_name == 'pull_request') && github.sha || inputs.branch || github.sha }}
+
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+
+      - name: Log in to the Pentaho Docker registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.ARTIFACTORY_HOST }}
+          username: ${{ env.ARTIFACTORY_USER }}
+          password: ${{ env.ARTIFACTORY_API_KEY }}
+
+      - name: Set up Maven
+        run: |
+          chmod +x ./mvnw
+          echo "$(pwd)" >> "$GITHUB_PATH"
+
+      - name: Build PDI from the commit under test
+        run: ./mvnw install --batch-mode -DskipTests -pl assemblies/client -am
+
+      - name: Run the KTR files in Pan, Carte and Pentaho Server
+        env:
+          EXECUTION_TYPES: ${{ inputs.execution_types || 'PAN,CARTE,SERVER' }}
+          GROUPS: ${{ inputs.groups }}
+          PLATFORM_VERSION: ${{ inputs.platform_version || '11.1' }}
+        run: |
+          ./mvnw --batch-mode -f integration/docker-it/pom.xml verify \
+            -DrunDockerITs \
+            -Dpentaho.docker.pull.host="${ARTIFACTORY_HOST}/pnt-docker/" \
+            -Dpdi-plugin-tester.pdi-version="${PLATFORM_VERSION}" \
+            -Dpdi-plugin-tester.execution-types="${EXECUTION_TYPES}" \
+            -Dgroups="${GROUPS}"
+
+      - name: Upload the Failsafe reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-its-reports
+          path: integration/docker-it/target/failsafe-reports
+          if-no-files-found: warn
+          retention-days: 7
