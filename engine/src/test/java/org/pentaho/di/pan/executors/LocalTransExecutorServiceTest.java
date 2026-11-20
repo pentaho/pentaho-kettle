@@ -77,7 +77,7 @@ public class LocalTransExecutorServiceTest {
     try {
       localTransExecutorService.execute( trans, repository, delegate.createDefaultExecutionConfiguration(), new String[0] );
       fail( "Expected initialization failure" );
-    } catch ( LocalTransExecutorService.InitializationException e ) {
+    } catch ( LocalTransExecutorService.KettleTransInitializationException e ) {
       assertSame( failure, e.getCause() );
     }
     verify( trans, never() ).startThreads();
@@ -91,7 +91,7 @@ public class LocalTransExecutorServiceTest {
     try {
       localTransExecutorService.execute( trans, repository, delegate.createDefaultExecutionConfiguration(), new String[0] );
       fail( "Expected initialization failure" );
-    } catch ( LocalTransExecutorService.InitializationException e ) {
+    } catch ( LocalTransExecutorService.KettleTransInitializationException e ) {
       assertSame( failure, e.getCause() );
     }
     verify( trans, never() ).waitUntilFinished();

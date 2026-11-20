@@ -42,7 +42,7 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.kitchen.Kitchen;
 import org.pentaho.di.pan.delegates.PanTransformationDelegate;
-import org.pentaho.di.pan.executors.LocalTransExecutorService.InitializationException;
+import org.pentaho.di.pan.executors.LocalTransExecutorService.KettleTransInitializationException;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.Trans;
@@ -418,7 +418,7 @@ public class PanCommandExecutorTest {
   public void testExecuteWithDelegateInitializationException() throws Throwable {
     when( mockDelegate.executeTransformation( any( Trans.class ),
       any( TransExecutionConfiguration.class ), any( String[].class ) ) )
-      .thenThrow( new InitializationException( new KettleException( "initialization failed" ) ) );
+      .thenThrow( new KettleTransInitializationException( new KettleException( "initialization failed" ) ) );
     when( mockDelegate.createDefaultExecutionConfiguration() ).thenReturn( mock( TransExecutionConfiguration.class ) );
 
     Result result = executorWithMocks.executeWithDelegate( mockTrans, new Params.Builder().build(), new String[0] );
