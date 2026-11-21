@@ -25,11 +25,11 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.pentaho.di.core.exception.KettleException;
 
-import com.healthmarketscience.jackcess.ColumnBuilder;
-import com.healthmarketscience.jackcess.DataType;
-import com.healthmarketscience.jackcess.Database;
-import com.healthmarketscience.jackcess.Table;
-import com.healthmarketscience.jackcess.TableBuilder;
+import io.github.spannm.jackcess.ColumnBuilder;
+import io.github.spannm.jackcess.DataType;
+import io.github.spannm.jackcess.Database;
+import io.github.spannm.jackcess.Table;
+import io.github.spannm.jackcess.TableBuilder;
 
 public class MSAccessDatabaseUtilTest {
   private static final String COLUMN = "Data";
