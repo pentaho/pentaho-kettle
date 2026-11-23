@@ -12,27 +12,31 @@
 
 package org.pentaho.di.pan;
 
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.mockito.MockedStatic;
+import org.pentaho.di.base.CommandExecutorCodes;
+import org.pentaho.di.core.logging.LogLevel;
+import org.pentaho.di.i18n.LanguageChoice;
+import org.pentaho.di.security.ExitInterceptor;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mockStatic;
 
 @RunWith( Parameterized.class )
 public class PanLoggingLevelsIT {
@@ -77,16 +81,22 @@ public class PanLoggingLevelsIT {
   @Parameterized.Parameter
   public Level level;
 
-  @Test
+  @BeforeClass
+  public static void useEnglishLogMessages() {
+    Locale.setDefault( Locale.US );
+    LanguageChoice.getInstance().setDefaultLocale( Locale.US );
+  }
+
+  @Test( timeout = 120_000 )
   public void writesOnlyMessagesEnabledAtTheRequestedLevel() throws Exception {
     // The KTR resolves customers-100.txt relative to its own directory.
     Path transformation = fixture( "PDI_Logging_InputOutput.ktr" );
     Path logfile = prepareLogfile();
     runPan( transformation, logfile );
 
-    String log = Files.readString( logfile, StandardCharsets.UTF_8 );
+    String log = Files.readString( logfile, Charset.defaultCharset() );
     if ( atLeast( Level.MINIMAL ) ) {
-      String description = level == Level.ROWLEVEL ? "Row Level (very detailed)" : level.cliCode;
+      String description = LogLevel.valueOf( level.name() ).getDescription();
       assertMarker( log, LOG_LEVEL_HEADING + description, true );
     } else {
       assertMarker( log, LOG_LEVEL_HEADING, false );
@@ -132,55 +142,15 @@ public class PanLoggingLevelsIT {
     return logfile;
   }
 
-  private void runPan( Path transformation, Path logfile ) throws IOException, InterruptedException {
-    // Pan exits the JVM, so execute it in a child process.
-    Path home = temporaryFolder.newFolder( "home" ).toPath();
-    Path tmp = temporaryFolder.newFolder( "tmp" ).toPath();
-    Path console = temporaryFolder.newFile( "console.log" ).toPath();
-    String executable = System.getProperty( "os.name" ).startsWith( "Windows" ) ? "java.exe" : "java";
-    Path java = Path.of( System.getProperty( "java.home" ), "bin", executable );
-    ProcessBuilder builder = new ProcessBuilder( java.toString(),
-      "-cp", childClasspath(),
-      "-Dfile.encoding=UTF-8", "-Duser.language=en", "-Duser.country=US",
-      "-DKETTLE_HOME=" + home, "-DPENTAHO_METASTORE_FOLDER=" + home, "-Djava.io.tmpdir=" + tmp,
-      Pan.class.getName(), "-file", transformation.toString(), "-level", level.cliCode,
-      "-logfile", logfile.toString(), "-norep" );
-    builder.environment().put( "KETTLE_HOME", home.toString() );
-    builder.directory( home.toFile() ).redirectErrorStream( true ).redirectOutput( console.toFile() );
-
-    // Fail the test instead of waiting indefinitely for Pan.
-    Process process = builder.start();
-    boolean finished;
-    try {
-      finished = process.waitFor( 120, TimeUnit.SECONDS );
-    } finally {
-      if ( process.isAlive() ) {
-        process.destroyForcibly();
-        process.waitFor( 10, TimeUnit.SECONDS );
-      }
+  private void runPan( Path transformation, Path logfile ) throws Exception {
+    Pan.setCommandExecutor( null );
+    // The throwing interceptor would be caught by Pan.main and treated as an unexpected error.
+    try ( MockedStatic<ExitInterceptor> exit = mockStatic( ExitInterceptor.class ) ) {
+      Pan.main( new String[] { "-file", transformation.toString(), "-level", level.cliCode,
+        "-logfile", logfile.toString(), "-norep" } );
+      exit.verify( () -> ExitInterceptor.exit( CommandExecutorCodes.Pan.SUCCESS.getCode() ) );
+      exit.verifyNoMoreInteractions();
     }
-    if ( !finished ) {
-      fail( "Pan timed out at " + level + diagnostics( console, logfile ) );
-    }
-    if ( process.exitValue() != 0 ) {
-      fail( "Pan exited with " + process.exitValue() + " at " + level + diagnostics( console, logfile ) );
-    }
-    if ( !Files.isRegularFile( logfile ) ) {
-      fail( "Pan did not create its logfile at " + level + diagnostics( console, logfile ) );
-    }
-  }
-
-  private static String childClasspath() {
-    String classpath = System.getProperty( "surefire.test.class.path", System.getProperty( "java.class.path" ) );
-    Path parentDirectory = Path.of( System.getProperty( "user.dir" ) ).toAbsolutePath().normalize();
-    return Arrays.stream( classpath.split( Pattern.quote( File.pathSeparator ), -1 ) )
-      .map( entry -> parentDirectory.resolve( entry ).normalize().toString() )
-      .collect( Collectors.joining( File.pathSeparator ) );
-  }
-
-  private static String diagnostics( Path console, Path logfile ) throws IOException {
-    return "\nPan console:\n" + Files.readString( console, StandardCharsets.UTF_8 )
-      + "\nPan logfile:\n" + ( Files.isRegularFile( logfile )
-        ? Files.readString( logfile, StandardCharsets.UTF_8 ) : "(not created)" );
+    assertTrue( "Pan did not create its logfile at " + level, Files.isRegularFile( logfile ) );
   }
 }
