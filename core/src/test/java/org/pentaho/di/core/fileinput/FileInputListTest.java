@@ -22,6 +22,7 @@ import org.mockito.stubbing.Answer;
 import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 
@@ -127,9 +128,11 @@ public class FileInputListTest {
   }
 
   @Test
-  public void pdi20647OptionalUnresolvableUriIsReported() {
+  public void pdi20647OptionalUnresolvableUriIsReported() throws IOException {
+    KettleLogStore.init();
+    String invalidArchive = "zip:" + tempFolder.newFile( "not-a-zip.zip" ).toURI() + "!/input.txt";
     FileInputList files = FileInputList.createFileList( DefaultBowl.getInstance(), new Variables(),
-      new String[] { "pvfs://pdi20647-missing-connection/bucket/input.txt" }, new String[] { "" },
+      new String[] { invalidArchive }, new String[] { "" },
       new String[] { "" }, new String[] { "N" },
       new boolean[] { false } );
     assertEquals( 0, files.nrOfFiles() );
