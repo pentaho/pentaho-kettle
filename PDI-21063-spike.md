@@ -2,9 +2,10 @@
 
 Updated: 2026-11-24. Spike [PDI-21063](https://pentaho-eng.atlassian.net/browse/PDI-21063), epic [PDI-21042](https://pentaho-eng.atlassian.net/browse/PDI-21042).
 
-**Verdict:** the epic is not one bug. Its 10 tickets come from 6 independent
-causes (A-F). All six are reproduced with tests and have a proof-of-concept
-(PoC) fix that turns the tests green. C only shows up in a live Carte server.
+**Verdict:** the epic is not one bug. Its 10 tickets are tracked in 6
+workstreams (A-F), each with a reproduced mechanism and proof-of-concept
+(PoC). This does not cover every reported workflow: PDI-20647's Spoon
+reproduction remains unverified.
 
 A PoC shows that a fix direction works; it is not a production change. Each
 still needs design review, hardening, product QA and its own ticket/PR.
@@ -13,8 +14,10 @@ still needs design review, hardening, product QA and its own ticket/PR.
 
 Test results at the upstream tips on 2026-11-24 (kettle master `e7ec0605c72`,
 11.0 `cd4e024b599`, 10.2 `a1e577acf11`). **RED -> PoC** = a test of the
-correct behaviour fails and the spike PoC makes it pass; GREEN = already
-passes; n/a = code not on that line. Cause details are in the linked section.
+correct behaviour fails and the spike PoC makes it pass; GREEN = the covered
+probe passes, not proof the whole Jira is resolved; UNVERIFIED = the reported
+workflow was not tested; n/a = code not on that line. Baseline qualifications
+and cause details are in the linked section.
 
 | Jira | Reported symptom | Section | master | 11.0 | 10.2 |
 | --- | --- | --- | --- | --- | --- |
@@ -24,7 +27,7 @@ passes; n/a = code not on that line. Cause details are in the linked section.
 | [PDI-21074](https://pentaho-eng.atlassian.net/browse/PDI-21074) | Cancel leaks edits; rename corrupts connection | [B](#b) | GREEN | GREEN | RED -> PoC |
 | [PDI-20299](https://pentaho-eng.atlassian.net/browse/PDI-20299) | Cancel keeps edited/old name in memory | [B](#b) | GREEN | GREEN | RED -> PoC |
 | [PDI-20586](https://pentaho-eng.atlassian.net/browse/PDI-20586) | Edits/variable changes leave stale config (Carte) | [C](#c) | RED -> PoC | RED -> PoC | RED -> PoC |
-| [PDI-20647](https://pentaho-eng.atlassian.net/browse/PDI-20647) | Execution works after connection deleted | [C](#c) | GREEN | GREEN | RED -> PoC |
+| [PDI-20647](https://pentaho-eng.atlassian.net/browse/PDI-20647) | Spoon rerun succeeds after VFS connection deleted | [C](#c) | UNVERIFIED | UNVERIFIED | UNVERIFIED |
 | [PDI-21015](https://pentaho-eng.atlassian.net/browse/PDI-21015) | Repository changes invisible after refresh | [D](#d) | GREEN | RED -> PoC | n/a |
 | [PDI-19753](https://pentaho-eng.atlassian.net/browse/PDI-19753) | Parquet S3A to second bucket -> `Wrong FS` | [E](#e) | RED -> PoC | RED -> PoC | RED -> PoC |
 | [PDI-20874](https://pentaho-eng.atlassian.net/browse/PDI-20874) | GCS key-path variable never re-resolved | [F](#f) | RED -> PoC | RED -> PoC | RED -> PoC |
@@ -78,8 +81,18 @@ pentaho-kettle `spike/PDI-21063-master`.
 <a id="c"></a>
 ## C - PDI-20586, PDI-20647: stale connections in a long-running Carte
 
-In-process tests (core + MinIO) pass on every line; the bugs only appear when
-the caches live across requests in one Carte JVM.
+PDI-20586's variable-credential issue reproduces across requests in one Carte
+JVM, unlike the earlier in-process probes.
+
+**PDI-20647 coverage gap:** the reporter's Steps to Reproduce field specifies
+QAT **11.1.0.0-59**, **Spoon**: create a MinIO VFS connection, save a
+transformation that reads a text file, run it successfully, delete the
+connection, then rerun the same transformation. Our deletion probe instead
+uses a separate connection manager and a new Carte request, which resets
+connection caches. It also lists/writes files instead of executing the
+reported input step, so it is not a reproduction of the Spoon workflow.
+The ticket names `TableInput`, which is a JDBC/SQL step; the actual step and
+configuration need confirmation (no transformation or attachments supplied).
 
 - **Test:** `CarteConnectionCachingMinioIT` starts a real `Carte` and MinIO
   (two users, one bucket each) and runs a saved job over `GET
@@ -90,7 +103,7 @@ the caches live across requests in one Carte JVM.
 | --- | --- | --- | --- | --- |
 | Connection uses `${S3_ACCESS_KEY}`/`${S3_SECRET_KEY}`; each request passes other values | PDI-20586 | RED -> PoC 1 | RED -> PoC 1 | RED -> PoC 1 |
 | Another process edits the saved connection | PDI-20586 | GREEN | GREEN | RED -> PoC 2 |
-| Another process deletes the connection | PDI-20647 | GREEN | GREEN | RED -> PoC 2 |
+| Related Carte probe: separate manager deletes the connection, then a new request runs (not the reported Spoon workflow) | PDI-20647 | GREEN | GREEN | RED -> PoC 2 |
 
 - **Cause 1 - variables (all lines):** `KettleVFSImpl.buildFsOptions()`
   puts the caller's live `VariableSpace` into the pvfs `FileSystemOptions`.
@@ -102,7 +115,7 @@ the caches live across requests in one Carte JVM.
   the job entry and Text file output, while Get File Names (a step, identity
   hash) was correctly denied. This is the "job vs transformation level"
   mix-up in PDI-20586. It also leaks one file system per first-seen object.
-- **Cause 2 - edit/delete (10.2 only):** 10.2 `ConnectionManager` loads all
+- **Related Carte cause 2 - edit/delete (10.2 only):** 10.2 `ConnectionManager` loads all
   connections once and Carte never resets it. Master/11.0 call
   `clearBowlCache()` -> `ConnectionManager.reset()` on every Carte execution
   (BISERVER-15647, `472aac7c5dc`).
@@ -110,19 +123,27 @@ the caches live across requests in one Carte JVM.
   variable values) stored in the options instead of the live space.
 - **PoC 2 (10.2):** `BaseHttpServlet.resetConnections()` called at the same
   Carte entry points as master's `clearBowlCache()`.
-- **Results:** Carte IT 3/3 and `PvfsConnectionIsolationMinioIT` 5/5 on all
+- **Probe results:** Carte IT 3/3 and `PvfsConnectionIsolationMinioIT` 5/5 on all
   lines; core regression master 264, 11.0 203, 10.2 204; 10.2 engine
   `org.pentaho.di.www` 177 (JDK 11; on JDK 21, 119 pre-existing Mockito errors).
+  The pre-C Carte runs on master/11.0 already included the A PoC; they are
+  not verification of completely unmodified upstream.
+- **PDI-20647 possible later upstream change:** the December 2025 report
+  predates BISERVER-15647 (`472aac7c5dc`, committed May 2026), which added
+  `spoon.clearBowlCaches()` before local transformation execution in
+  `TransGraph`. This may explain different behavior on current master, but
+  needs validation against the reporter's workflow, not inference from Carte.
 - **Commits:** pentaho-kettle master `0876db9d896 -> 54dc61598ab`, 11.0
   `fa9e2a53e30 -> b2291ce6f8c`, 10.2 `e18b9f9a83d` (PoC 2) + `4c65c83ef20`
   (PoC 1); the 10.2 test is big-data-plugin `e5723654f`.
 - **Open:** a snapshot copies all variables on each lookup (cost); the cache
   is still compared by hash only, so collisions are possible; `reset()` is not
   safe while another job is reading connections (10.2); the Spoon browse-tree
-  cache (PDI-20586) and already-open handles after delete (PDI-20647) are not
-  covered.
+  cache (PDI-20586), the reported Spoon rerun, and already-open handles after
+  delete (PDI-20647) are not covered.
 - **Remaining effort:** 3-4 days (PoC 1 design + perf check on all lines,
-  PoC 2 for 10.2, Carte QA with variable credentials).
+  PoC 2 for 10.2, Carte QA with variable credentials). Exact PDI-20647
+  reproduction and any fix are not yet estimated.
 
 <a id="d"></a>
 ## D - PDI-21015: repository VFS refresh (11.0)
@@ -183,6 +204,9 @@ the caches live across requests in one Carte JVM.
 - [x] Every epic ticket mapped to a cause.
 - [x] Reproducing test per cause on master, 11.0, 10.2.
 - [x] PoC per reproduced cause on remote branches.
+- [ ] PDI-20647: confirm the input-step configuration and reproduce the Spoon
+      run/delete/rerun workflow on unmodified master; compare the reported
+      11.1.0.0-59 build if available.
 - [ ] Team decision on the A design (PDI-21035, PDI-20723, PDI-21092).
 - [ ] One implementation ticket per cause linked to PDI-21042.
 
