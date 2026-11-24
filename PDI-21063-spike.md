@@ -3,8 +3,8 @@
 Updated: 2026-11-24. Spike [PDI-21063](https://pentaho-eng.atlassian.net/browse/PDI-21063), epic [PDI-21042](https://pentaho-eng.atlassian.net/browse/PDI-21042).
 
 **Verdict:** the epic is not one bug. Its 10 tickets come from 6 independent
-causes (A-F). Five are reproduced with tests and have a proof-of-concept (PoC)
-fix that turns the tests green. C is not reproduced on any line.
+causes (A-F). All six are reproduced with tests and have a proof-of-concept
+(PoC) fix that turns the tests green. C only shows up in a live Carte server.
 
 A PoC shows that a fix direction works; it is not a production change. Each
 still needs design review, hardening, product QA and its own ticket/PR.
@@ -23,8 +23,8 @@ passes; n/a = code not on that line. Cause details are in the linked section.
 | [PDI-21092](https://pentaho-eng.atlassian.net/browse/PDI-21092) | Raw `s3://` + named PVFS mix switches config | [A](#a) | RED -> PoC | RED -> PoC | RED -> PoC |
 | [PDI-21074](https://pentaho-eng.atlassian.net/browse/PDI-21074) | Cancel leaks edits; rename corrupts connection | [B](#b) | GREEN | GREEN | RED -> PoC |
 | [PDI-20299](https://pentaho-eng.atlassian.net/browse/PDI-20299) | Cancel keeps edited/old name in memory | [B](#b) | GREEN | GREEN | RED -> PoC |
-| [PDI-20586](https://pentaho-eng.atlassian.net/browse/PDI-20586) | Edits/variable changes leave stale config (Carte) | [C](#c) | GREEN | GREEN | GREEN |
-| [PDI-20647](https://pentaho-eng.atlassian.net/browse/PDI-20647) | Execution works after connection deleted | [C](#c) | GREEN | GREEN | GREEN |
+| [PDI-20586](https://pentaho-eng.atlassian.net/browse/PDI-20586) | Edits/variable changes leave stale config (Carte) | [C](#c) | RED -> PoC | RED -> PoC | RED -> PoC |
+| [PDI-20647](https://pentaho-eng.atlassian.net/browse/PDI-20647) | Execution works after connection deleted | [C](#c) | GREEN | GREEN | RED -> PoC |
 | [PDI-21015](https://pentaho-eng.atlassian.net/browse/PDI-21015) | Repository changes invisible after refresh | [D](#d) | GREEN | RED -> PoC | n/a |
 | [PDI-19753](https://pentaho-eng.atlassian.net/browse/PDI-19753) | Parquet S3A to second bucket -> `Wrong FS` | [E](#e) | RED -> PoC | RED -> PoC | RED -> PoC |
 | [PDI-20874](https://pentaho-eng.atlassian.net/browse/PDI-20874) | GCS key-path variable never re-resolved | [F](#f) | RED -> PoC | RED -> PoC | RED -> PoC |
@@ -76,16 +76,53 @@ pentaho-kettle `spike/PDI-21063-master`.
   tests: 0.5 day.
 
 <a id="c"></a>
-## C - PDI-20586, PDI-20647: stale config / deleted connection (not reproduced)
+## C - PDI-20586, PDI-20647: stale connections in a long-running Carte
 
-- **Tests:** 3 core and 3 MinIO tests: a changed credential variable, an
-  edited and saved connection, and a deleted connection are all honoured on
-  the next lookup. The S3 file-system cache is keyed by the resolved options.
-  Tests are in the pentaho-kettle test commits listed under A.
-- **Not yet probed:** Carte remote variable flow and the Spoon browse-tree
-  cache (PDI-20586); already-open handles after delete (PDI-20647). A can
-  produce the same symptom, so re-test once A is fixed.
-- **Remaining effort:** 2-4 days of probing; a fix is not estimated.
+In-process tests (core + MinIO) pass on every line; the bugs only appear when
+the caches live across requests in one Carte JVM.
+
+- **Test:** `CarteConnectionCachingMinioIT` starts a real `Carte` and MinIO
+  (two users, one bucket each) and runs a saved job over `GET
+  /kettle/executeJob/`: Create file (job entry) -> transformation with Get
+  File Names + Text file output, all on `pvfs://<conn>/${BUCKET}`.
+
+| Scenario | Jira | master | 11.0 | 10.2 |
+| --- | --- | --- | --- | --- |
+| Connection uses `${S3_ACCESS_KEY}`/`${S3_SECRET_KEY}`; each request passes other values | PDI-20586 | RED -> PoC 1 | RED -> PoC 1 | RED -> PoC 1 |
+| Another process edits the saved connection | PDI-20586 | GREEN | GREEN | RED -> PoC 2 |
+| Another process deletes the connection | PDI-20647 | GREEN | GREEN | RED -> PoC 2 |
+
+- **Cause 1 - variables (all lines):** `KettleVFSImpl.buildFsOptions()`
+  puts the caller's live `VariableSpace` into the pvfs `FileSystemOptions`.
+  Commons VFS caches file systems by options and compares them by
+  `hashCode()` only. `JobEntryBase` and `AbstractMeta` (`TransMeta`) hash by
+  name/filename, so every later run of the same job reuses the first run's
+  `ConnectionFileSystem` and its variables. Seen: request 2 (user B) got `403`
+  in the job entry; request 3 (user B -> bucket A) wrote with user A's keys in
+  the job entry and Text file output, while Get File Names (a step, identity
+  hash) was correctly denied. This is the "job vs transformation level"
+  mix-up in PDI-20586. It also leaks one file system per first-seen object.
+- **Cause 2 - edit/delete (10.2 only):** 10.2 `ConnectionManager` loads all
+  connections once and Carte never resets it. Master/11.0 call
+  `clearBowlCache()` -> `ConnectionManager.reset()` on every Carte execution
+  (BISERVER-15647, `472aac7c5dc`).
+- **PoC 1:** new `VariableSpaceSnapshot` (immutable copy, equality on the
+  variable values) stored in the options instead of the live space.
+- **PoC 2 (10.2):** `BaseHttpServlet.resetConnections()` called at the same
+  Carte entry points as master's `clearBowlCache()`.
+- **Results:** Carte IT 3/3 and `PvfsConnectionIsolationMinioIT` 5/5 on all
+  lines; core regression master 264, 11.0 203, 10.2 204; 10.2 engine
+  `org.pentaho.di.www` 177 (JDK 11; on JDK 21, 119 pre-existing Mockito errors).
+- **Commits:** pentaho-kettle master `0876db9d896 -> 54dc61598ab`, 11.0
+  `fa9e2a53e30 -> b2291ce6f8c`, 10.2 `e18b9f9a83d` (PoC 2) + `4c65c83ef20`
+  (PoC 1); the 10.2 test is big-data-plugin `ac42eb530`.
+- **Open:** a snapshot copies all variables on each lookup (cost); the cache
+  is still compared by hash only, so collisions are possible; `reset()` is not
+  safe while another job is reading connections (10.2); the Spoon browse-tree
+  cache (PDI-20586) and already-open handles after delete (PDI-20647) are not
+  covered.
+- **Remaining effort:** 3-4 days (PoC 1 design + perf check on all lines,
+  PoC 2 for 10.2, Carte QA with variable credentials).
 
 <a id="d"></a>
 ## D - PDI-21015: repository VFS refresh (11.0)
@@ -147,8 +184,7 @@ pentaho-kettle `spike/PDI-21063-master`.
 - [x] Reproducing test per cause on master, 11.0, 10.2.
 - [x] PoC per reproduced cause on remote branches.
 - [ ] Team decision on the A design (PDI-21035, PDI-20723, PDI-21092).
-- [ ] One implementation ticket per cause linked to PDI-21042; C stays an
-      investigation ticket (PDI-20586, PDI-20647).
+- [ ] One implementation ticket per cause linked to PDI-21042.
 
 ## Appendix: how to run
 
@@ -163,10 +199,11 @@ On kettle 10.2 run Maven from `core/`. For the plugin ITs, first
 # B (PDI-21074, PDI-20299) - kettle core
 mvn -o test -Dtest='PvfsResolutionIsolationTest,ConnectionManagerEditIsolationTest' -Dcheckstyle.skip -Djacoco.skip=true
 
-# A/C MinIO IT - kettle master plugins/s3-vfs/core
-mvn verify -Dit.test=PvfsConnectionIsolationMinioIT -Dtest=NONE -Dsurefire.failIfNoSpecifiedTests=false -Dcheckstyle.skip -Djacoco.skip=true
-# A/C MinIO IT - kettle 11.0 plugins/s3-vfs/core, big-data-plugin 10.2 s3-vfs (JUnit 4, surefire)
-mvn test -Dtest=PvfsConnectionIsolationMinioIT -Dcheckstyle.skip -Djacoco.skip=true
+# A/C MinIO ITs - kettle master plugins/s3-vfs/core
+mvn verify -Dit.test='PvfsConnectionIsolationMinioIT,CarteConnectionCachingMinioIT' -Dtest=NONE -Dsurefire.failIfNoSpecifiedTests=false -Dcheckstyle.skip -Djacoco.skip=true
+# A/C MinIO ITs - kettle 11.0 plugins/s3-vfs/core, big-data-plugin 10.2 s3-vfs (JUnit 4, surefire)
+# 10.2 Carte IT: first install kettle 10.2 core AND engine
+mvn test -Dtest='PvfsConnectionIsolationMinioIT,CarteConnectionCachingMinioIT' -Dcheckstyle.skip -Djacoco.skip=true
 
 # D (PDI-21015) - kettle 11.0 plugins/repo-vfs/repo-vfs-server-local (master: repo-vfs-pur)
 mvn test -Dtest=LocalPurTest -Dcheckstyle.skip -Djacoco.skip=true
