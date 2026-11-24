@@ -233,6 +233,8 @@ public class LocalPurFileObject extends AbstractFileObject<LocalPurFileSystem> {
 
   @Override
   public void refresh() throws FileSystemException {
+    // super called to clear children name cache from getChildren
+    super.refresh();
     RepositoryFile newFile = pur.getFile( getName().getPath() );
     if ( newFile != null ) {
       this.file = newFile;
