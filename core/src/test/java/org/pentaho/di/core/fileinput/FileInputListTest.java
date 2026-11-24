@@ -23,6 +23,7 @@ import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 
 import java.io.IOException;
 
@@ -123,6 +124,26 @@ public class FileInputListTest {
 
     assertNotNull( fileInputList );
     assertEquals( TOTAL_NUMBER_OF_FOLDERS_NO_ROOT, fileInputList.nrOfFiles() );
+  }
+
+  @Test
+  public void pdi20647OptionalUnresolvableUriIsReported() {
+    FileInputList files = FileInputList.createFileList( DefaultBowl.getInstance(), new Variables(),
+      new String[] { "pvfs://pdi20647-missing-connection/bucket/input.txt" }, new String[] { "" },
+      new String[] { "" }, new String[] { "N" },
+      new boolean[] { false } );
+    assertEquals( 0, files.nrOfFiles() );
+    assertEquals( "a resolution error is not an absent optional file", 1, files.getNonAccessibleFiles().size() );
+  }
+
+  @Test
+  public void pdi20647MissingOptionalFileRemainsSkippable() {
+    String missing = tempFolder.getRoot().toPath().resolve( "absent.txt" ).toString();
+    FileInputList files = FileInputList.createFileList( DefaultBowl.getInstance(), new Variables(),
+      new String[] { missing }, new String[] { "" }, new String[] { "" }, new String[] { "N" },
+      new boolean[] { false } );
+    assertEquals( 0, files.nrOfFiles() );
+    assertEquals( 0, files.nrOfMissingFiles() );
   }
 
   /**
