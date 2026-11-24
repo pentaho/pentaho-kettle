@@ -234,6 +234,7 @@ public class StartTransServlet extends BaseHttpServlet implements CartePluginInt
         servletLoggingObject.setContainerObjectId( carteObjectId );
         servletLoggingObject.setLogLevel( trans.getLogLevel() );
         trans.setParent( servletLoggingObject );
+        resetConnections( trans.getTransMeta().getBowl() );
 
         executeTrans( trans );
 

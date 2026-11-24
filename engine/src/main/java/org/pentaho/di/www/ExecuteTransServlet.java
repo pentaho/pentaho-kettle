@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
@@ -252,6 +253,7 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginI
     try {
 
       final Repository repository = openRepository( repOption, userOption, passOption );
+      resetConnections( DefaultBowl.getInstance() );
       final TransMeta transMeta = loadTransformation( repository, transOption );
 
       // Set the servlet parameters as variables in the transformation

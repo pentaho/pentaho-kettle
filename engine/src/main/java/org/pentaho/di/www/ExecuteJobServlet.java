@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.encryption.Encr;
@@ -196,6 +197,7 @@ public class ExecuteJobServlet extends BaseHttpServlet implements CartePluginInt
     Repository repository;
     try {
       repository = openRepository( repOption, userOption, passOption );
+      resetConnections( DefaultBowl.getInstance() );
     } catch ( KettleRepositoryNotFoundException krnfe ) {
       // Repository not found.
       response.setStatus( HttpServletResponse.SC_NOT_FOUND );

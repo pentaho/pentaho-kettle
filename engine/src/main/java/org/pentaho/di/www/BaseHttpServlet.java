@@ -22,6 +22,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.pentaho.di.core.bowl.Bowl;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -201,5 +203,17 @@ public class BaseHttpServlet extends HttpServlet {
       logError( "Error finding repository from KettleRepositoryLocator", e );
     }
     return null;
+  }
+
+  /**
+   * PDI-21063 spike (PDI-20586/PDI-20647): re-read VFS connections from the metastore before each execution, so
+   * connections edited or deleted by another process are seen without restarting Carte.
+   */
+  protected void resetConnections( Bowl bowl ) {
+    try {
+      ( bowl == null ? DefaultBowl.getInstance() : bowl ).getConnectionManager().reset();
+    } catch ( Exception e ) {
+      logError( "Unable to reset the connection manager", e );
+    }
   }
 }
