@@ -1,153 +1,147 @@
 # PDI-21063 - VFS caching spike
 
-Updated: 2026-11-24. Spike [PDI-21063](https://pentaho-eng.atlassian.net/browse/PDI-21063),
-epic [PDI-21042](https://pentaho-eng.atlassian.net/browse/PDI-21042).
+Updated: 2026-11-24. Spike [PDI-21063](https://pentaho-eng.atlassian.net/browse/PDI-21063), epic [PDI-21042](https://pentaho-eng.atlassian.net/browse/PDI-21042).
 
 **Verdict:** the epic is not one bug. Its 10 tickets come from 6 independent
 causes (A-F). Five are reproduced with tests and have a proof-of-concept (PoC)
 fix that turns the tests green. C is not reproduced on any line.
 
-PoC = proof that a fix direction works, not a production change. Each still
-needs design review, hardening, product QA and its own ticket/PR.
+A PoC shows that a fix direction works; it is not a production change. Each
+still needs design review, hardening, product QA and its own ticket/PR.
 
-## Status per Jira ticket
+## Jira index
 
-Results are at the upstream tips on 2026-11-24 (kettle master `e7ec0605c72`,
-11.0 `cd4e024b599`, 10.2 `a1e577acf11`). RED = a test asserting correct
-behaviour fails; GREEN = it passes; n/a = code not present on that line.
+Test results at the upstream tips on 2026-11-24 (kettle master `e7ec0605c72`,
+11.0 `cd4e024b599`, 10.2 `a1e577acf11`). **RED -> PoC** = a test of the
+correct behaviour fails and the spike PoC makes it pass; GREEN = already
+passes; n/a = code not on that line. Cause details are in the linked section.
 
-| Jira | Symptom | Cause | master | 11.0 | 10.2 | PoC fix |
-| --- | --- | --- | --- | --- | --- | --- |
-| [PDI-21035](https://pentaho-eng.atlassian.net/browse/PDI-21035) | Parallel output to two S3 connections -> `403` | A | RED | RED | RED | Proven, all lines |
-| [PDI-20723](https://pentaho-eng.atlassian.net/browse/PDI-20723) | Parallel PVFS reads across providers fail | A | RED | RED | RED | Proven, all lines |
-| [PDI-21092](https://pentaho-eng.atlassian.net/browse/PDI-21092) | Raw `s3://` + named PVFS mix switches config | A | RED | RED | RED | Proven, all lines |
-| [PDI-21074](https://pentaho-eng.atlassian.net/browse/PDI-21074) | Cancel leaks edits; rename corrupts connection | B | GREEN | GREEN | RED | Proven on 10.2 (pentaho/pentaho-kettle#10782) |
-| [PDI-20299](https://pentaho-eng.atlassian.net/browse/PDI-20299) | Cancel keeps edited/old name in memory | B | GREEN | GREEN | RED | Proven on 10.2 (pentaho/pentaho-kettle#10782) |
-| [PDI-20586](https://pentaho-eng.atlassian.net/browse/PDI-20586) | Edits/variable changes leave stale config (Carte) | C | GREEN | GREEN | GREEN | None - not reproduced |
-| [PDI-20647](https://pentaho-eng.atlassian.net/browse/PDI-20647) | Execution works after connection deleted | C | GREEN | GREEN | GREEN | None - not reproduced |
-| [PDI-21015](https://pentaho-eng.atlassian.net/browse/PDI-21015) | Repository changes invisible after refresh | D | GREEN (fixed) | RED | n/a | Proven on 11.0 (folder listing only) |
-| [PDI-19753](https://pentaho-eng.atlassian.net/browse/PDI-19753) | Parquet S3A to second bucket -> `Wrong FS` | E | RED | RED | RED | Proven, all lines |
-| [PDI-20874](https://pentaho-eng.atlassian.net/browse/PDI-20874) | GCS key-path variable never re-resolved | F | RED 2/3 | RED 3/3 | RED 3/3 | Proven, all lines |
+| Jira | Reported symptom | Section | master | 11.0 | 10.2 |
+| --- | --- | --- | --- | --- | --- |
+| [PDI-21035](https://pentaho-eng.atlassian.net/browse/PDI-21035) | Parallel output to two S3 connections -> `403` | [A](#a) | RED -> PoC | RED -> PoC | RED -> PoC |
+| [PDI-20723](https://pentaho-eng.atlassian.net/browse/PDI-20723) | Parallel PVFS reads across providers fail | [A](#a) | RED -> PoC | RED -> PoC | RED -> PoC |
+| [PDI-21092](https://pentaho-eng.atlassian.net/browse/PDI-21092) | Raw `s3://` + named PVFS mix switches config | [A](#a) | RED -> PoC | RED -> PoC | RED -> PoC |
+| [PDI-21074](https://pentaho-eng.atlassian.net/browse/PDI-21074) | Cancel leaks edits; rename corrupts connection | [B](#b) | GREEN | GREEN | RED -> PoC |
+| [PDI-20299](https://pentaho-eng.atlassian.net/browse/PDI-20299) | Cancel keeps edited/old name in memory | [B](#b) | GREEN | GREEN | RED -> PoC |
+| [PDI-20586](https://pentaho-eng.atlassian.net/browse/PDI-20586) | Edits/variable changes leave stale config (Carte) | [C](#c) | GREEN | GREEN | GREEN |
+| [PDI-20647](https://pentaho-eng.atlassian.net/browse/PDI-20647) | Execution works after connection deleted | [C](#c) | GREEN | GREEN | GREEN |
+| [PDI-21015](https://pentaho-eng.atlassian.net/browse/PDI-21015) | Repository changes invisible after refresh | [D](#d) | GREEN | RED -> PoC | n/a |
+| [PDI-19753](https://pentaho-eng.atlassian.net/browse/PDI-19753) | Parquet S3A to second bucket -> `Wrong FS` | [E](#e) | RED -> PoC | RED -> PoC | RED -> PoC |
+| [PDI-20874](https://pentaho-eng.atlassian.net/browse/PDI-20874) | GCS key-path variable never re-resolved | [F](#f) | RED -> PoC | RED -> PoC | RED -> PoC |
 
+Branches: `spike/PDI-21063-{master,11.0,10.2}` on the `befc` forks of
+[pentaho-kettle](https://github.com/befc/pentaho-kettle/branches/all?query=spike%2FPDI-21063),
+[big-data-plugin](https://github.com/befc/big-data-plugin/tree/spike/PDI-21063-10.2),
+[pentaho-hadoop-shims](https://github.com/befc/pentaho-hadoop-shims/branches/all?query=spike%2FPDI-21063) and
+[pdi-plugins-ee](https://github.com/befc/pdi-plugins-ee/branches/all?query=spike%2FPDI-21063).
+Each has the tests first (RED), then the fix (GREEN); commits below are
+`test -> fix`. Build changes are test-scoped only. This document is on
+pentaho-kettle `spike/PDI-21063-master`.
+
+<a id="a"></a>
 ## A - PDI-21035, PDI-20723, PDI-21092: shared PVFS resolution context
 
 - **Cause:** `ConnectionFileSystem.initializeVariableSpace()` writes
-  `connection=<name>` into the caller's shared `VariableSpace`;
-  `KettleVFSImpl.buildFsOptions()` later reads it to build provider options.
+  `connection=<name>` into the caller's shared `VariableSpace`, and
+  `KettleVFSImpl.buildFsOptions()` reads it back to build provider options.
   Parallel steps overwrite each other's value, and a raw `s3://` URI inherits
-  the last PVFS connection. Provider-independent; the S3 `403` is a symptom.
-- **Tests:** `PvfsResolutionIsolationTest` (3 deterministic core tests) and
-  `PvfsConnectionIsolationMinioIT` (real S3 via MinIO, two users restricted
-  to their own buckets). Before the fix, 38-40 of 80 parallel writes got
-  `403` on every line.
-- **PoC:** resolve into a child `Variables` initialized from the caller's
-  space, so the caller's space is never written. The method is identical on
-  all lines; one commit cherry-picks cleanly.
-- **PoC result:** core tests 3 RED -> GREEN and MinIO IT 5/5 on master, 11.0
-  and 10.2 (10.2 IT lives in big-data-plugin). Neighbouring suites
-  (`org.pentaho.di.connections.**`, `org.pentaho.di.core.vfs.**`) have no new
-  failures: master 264/264, 11.0 203/203, 10.2 204/204. Full master s3-vfs
-  module passes.
-- **Open:** pick the final design (PoC child space vs passing the connection
-  explicitly); check the cost of copying variables per lookup; search plugins
-  for code reading `connection` after a lookup; nested `zip:pvfs://` untested.
+  the last PVFS connection. Not S3-specific; the `403` is only the symptom.
+- **Tests:** `PvfsResolutionIsolationTest` (3 core tests) and
+  `PvfsConnectionIsolationMinioIT` (two MinIO users, each limited to its own
+  bucket; 38-40 of 80 parallel writes got `403`).
+- **PoC:** resolve into a child `Variables` copied from the caller's space,
+  so the shared space is never written. The code is identical on all lines.
+  MinIO IT 5/5. No new failures in `org.pentaho.di.connections.**` +
+  `org.pentaho.di.core.vfs.**` (master 264, 11.0 203, 10.2 204 tests) or the
+  master s3-vfs module.
+- **Commits (pentaho-kettle):** master `8548d5cc84e -> 99b2ae9bfbf`, 11.0
+  `e77e8cb86f0 -> cd54cca1fac`, 10.2 `1c2c118331d -> b7aa087c35a`; the 10.2 IT
+  is in big-data-plugin `d6688ef35`.
+- **Open:** final design (PoC child space vs passing the connection
+  explicitly); cost of copying variables per lookup; plugins that read
+  `connection` after a lookup; nested `zip:pvfs://` untested.
+- **Remaining effort:** 3-4.5 days (design, master, 11.0/10.2 backports, QA).
 
+<a id="b"></a>
 ## B - PDI-21074, PDI-20299: live connection details (10.2 only)
 
-- **Cause:** 10.2 `ConnectionManager.getConnectionDetails()` returns the cached
-  instance, so dialogs mutate it before Save and Cancel cannot undo it.
-  Master and 11.0 already return a clone.
-- **Tests:** `ConnectionManagerEditIsolationTest` (3 tests), RED on 10.2 only.
-- **PoC:** cherry-pick of the open PR pentaho/pentaho-kettle#10782. 3 RED ->
-  GREEN, no core regressions.
-- **Open:** merge pentaho/pentaho-kettle#10782, optionally with these tests.
+- **Cause:** 10.2 `ConnectionManager.getConnectionDetails()` returns the
+  cached instance, so dialogs change it before Save and Cancel cannot undo
+  it. Master and 11.0 already return a clone.
+- **Tests:** `ConnectionManagerEditIsolationTest` (3 tests).
+- **PoC:** cherry-pick of the open PR pentaho/pentaho-kettle#10782; no core
+  regressions.
+- **Commits (pentaho-kettle 10.2):** `1c2c118331d -> 915ba742858`.
+- **Open / effort:** merge pentaho/pentaho-kettle#10782, optionally with these
+  tests: 0.5 day.
 
+<a id="c"></a>
 ## C - PDI-20586, PDI-20647: stale config / deleted connection (not reproduced)
 
-- **Tests:** 3 core tests and 3 MinIO tests: a changed credential variable,
-  an edited+saved connection and a deleted connection are all honoured on the
-  next lookup. GREEN on every line. The S3 file-system cache is keyed by the
-  resolved options, so new credentials produce a new file system.
+- **Tests:** 3 core and 3 MinIO tests: a changed credential variable, an
+  edited and saved connection, and a deleted connection are all honoured on
+  the next lookup. The S3 file-system cache is keyed by the resolved options.
+  Tests are in the pentaho-kettle test commits listed under A.
 - **Not yet probed:** Carte remote variable flow and the Spoon browse-tree
   cache (PDI-20586); already-open handles after delete (PDI-20647). A can
-  produce the same symptom, so re-test after A is fixed.
+  produce the same symptom, so re-test once A is fixed.
+- **Remaining effort:** 2-4 days of probing; a fix is not estimated.
 
+<a id="d"></a>
 ## D - PDI-21015: repository VFS refresh (11.0)
 
-- **Cause:** master fixed this under BACKLOG-50458 in two commits, neither on
-  11.0. D1 `a7e490b133f`: `refresh()` calls `super.refresh()` to clear the
+- **Cause:** master fixed this under BACKLOG-50458 in two commits that are not
+  on 11.0. D1 `a7e490b133f`: `refresh()` calls `super.refresh()` to clear the
   Commons VFS child-name cache. D2 `af236de294b`: the connection list
   refreshes the metastore. 10.2 has no repo-vfs module.
-- **Tests:** 2 new `LocalPurTest` tests (another client adds/deletes a file,
-  then refresh). RED on 11.0, GREEN on master. Needs VPN.
-- **PoC:** D1 backported to `LocalPurFileObject.refresh()` (one line).
-  2 RED -> GREEN, `LocalPurTest` 8/8.
-- **Open:** D2 not reproduced and not ported: 11.0 pentaho-metastore lacks
-  `IMetaStore.refresh()`. Re-enable the 11 QA scenarios disabled by
-  QUALITY-12059 after the backport.
+- **Tests:** 2 new `LocalPurTest` tests (another client adds or deletes a
+  file, then refresh). Needs VPN.
+- **PoC:** D1 backported to `LocalPurFileObject.refresh()` (one line);
+  `LocalPurTest` 8/8.
+- **Commits (pentaho-kettle 11.0):** `e77e8cb86f0 -> 6059096c908`.
+- **Open:** D2 not reproduced or ported; 11.0 pentaho-metastore lacks
+  `IMetaStore.refresh()`. Re-enable the QA scenarios disabled by QUALITY-12059.
+- **Remaining effort:** 0.5 day (D1) + 1-2 days (D2, if wanted).
 
+<a id="e"></a>
 ## E - PDI-19753: Hadoop bridge file-system cache key
 
 - **Cause:** pentaho-hadoop-shims `PvfsHadoopBridge` caches one Hadoop
-  `FileSystem` per `PvfsConf`, without the bucket. The S3A file system for
-  bucket A is reused for bucket B and `checkPath()` throws `Wrong FS`.
-- **Test:** `ParquetPvfsS3AMultipleBucketsIT` (MinIO), plus a one-bucket control.
-- **PoC:** key the cache by connection and bucket (authority). Same change in
-  `common-base` (master, 11.0) and `shims/apache/driver` (10.2).
-  1 error -> 0 on all lines; shim module tests have no failures.
+  `FileSystem` per `PvfsConf`, ignoring the bucket. Bucket A's S3A file
+  system is reused for bucket B, and `checkPath()` throws `Wrong FS`.
+- **Test:** `ParquetPvfsS3AMultipleBucketsIT` (MinIO), with a one-bucket control.
+- **PoC:** key the cache by connection and bucket (authority), in
+  `common-base` (master, 11.0) and `shims/apache/driver` (10.2); shim module
+  tests have no failures.
+- **Commits (pentaho-hadoop-shims):** master `9571093c14 -> 6ca62b11a9`, 11.0
+  `e6246f847b -> 68ecfa479a`, 10.2 `8bb756972a -> 96214c8110`.
 - **Open:** the "last used" `fs` field is still order-dependent; relies on
   `fs.s3a.impl.disable.cache=true`; authority for HCP/GCS/ADLS unchecked;
-  cached file systems are not closed on `close()`; the cache key holds
+  cached file systems not closed on `close()`; the cache key holds
   credentials (pre-existing).
+- **Remaining effort:** 1.5-2 days.
 
+<a id="f"></a>
 ## F - PDI-20874: GCS credential materialization (not a cache bug)
 
 - **Cause:** `GoogleCloudStorageProvider.prepare()` stores the key JSON at
   save time and `getOpts()` always uses it, never re-reading `keyPath`. On
   11.0 and 10.2 `prepare()` also skips variable substitution, so a variable
-  key path is never read (master fixed that part in `3a1b83448`).
+  key path is never read (fixed on master in `3a1b83448`). This is why master
+  fails 2 of 3 tests and 11.0/10.2 fail all 3.
 - **Tests:** `GoogleCloudStorageCredentialPersistenceTest` (3 tests).
-- **PoC:** `getOpts()` resolves and reads the current `keyPath`, falling back
+- **PoC:** `getOpts()` reads the currently resolved `keyPath`, falling back
   to the stored key only when there is no path; `prepare()` substitutes
-  variables (backport on 11.0/10.2). RED -> 3/3 on all lines; module 7/7 on
-  master and 11.0. 10.2 has 3 pre-existing `GoogleCloudStorageFileObjectTest`
-  errors (Mockito on JDK 21), unchanged by the fix.
+  variables (backport on 11.0/10.2). Module 7/7 on master and 11.0; 10.2 has
+  3 pre-existing `GoogleCloudStorageFileObjectTest` errors (Mockito on JDK
+  21), with or without the fix.
+- **Commits (pdi-plugins-ee):** master `f124deb06 -> b55ddce9b`, 11.0
+  `aeb270115 -> ab3676dd1`, 10.2 `10298cc96 -> bce12e620`.
 - **Open:** a missing key file now fails instead of silently using the stale
   key (product decision); `getLocations()` and `test()` still use the stored key.
+- **Remaining effort:** 1-2 days.
 
-## Branches and commits
-
-All on the `befc` forks. Each branch: reproduction tests first (RED), then
-the PoC fix (GREEN). Format: test commit -> fix commit.
-
-| Cause (Jira) | Repo | master | 11.0 | 10.2 |
-| --- | --- | --- | --- | --- |
-| A (PDI-21035, PDI-20723, PDI-21092) | [pentaho-kettle](https://github.com/befc/pentaho-kettle/branches/all?query=spike%2FPDI-21063) | `8548d5cc84e` -> `99b2ae9bfbf` | `e77e8cb86f0` -> `cd54cca1fac` | `1c2c118331d` -> `b7aa087c35a` |
-| A (10.2 S3 IT only) | [big-data-plugin](https://github.com/befc/big-data-plugin/tree/spike/PDI-21063-10.2) | - | - | `d6688ef35` (test) |
-| B (PDI-21074, PDI-20299) | pentaho-kettle | tests only | tests only | `1c2c118331d` -> `915ba742858` |
-| C (PDI-20586, PDI-20647) | pentaho-kettle | tests only | tests only | tests only |
-| D (PDI-21015) | pentaho-kettle | tests only | `e77e8cb86f0` -> `6059096c908` | - |
-| E (PDI-19753) | [pentaho-hadoop-shims](https://github.com/befc/pentaho-hadoop-shims/branches/all?query=spike%2FPDI-21063) | `9571093c14` -> `6ca62b11a9` | `e6246f847b` -> `68ecfa479a` | `8bb756972a` -> `96214c8110` |
-| F (PDI-20874) | [pdi-plugins-ee](https://github.com/befc/pdi-plugins-ee/branches/all?query=spike%2FPDI-21063) | `f124deb06` -> `b55ddce9b` | `aeb270115` -> `ab3676dd1` | `10298cc96` -> `bce12e620` |
-
-Branch names: `spike/PDI-21063-{master,11.0,10.2}`. This document is on
-pentaho-kettle `spike/PDI-21063-master`. Build changes are test-scoped only
-(MinIO Testcontainers; logging deps in shims 10.2).
-
-## Remaining effort and next steps
-
-Engineering person-days with Copilot assistance, after the PoCs.
-
-| Cause (Jira) | Remaining work | Days |
-| --- | --- | --- |
-| A (PDI-21035, PDI-20723, PDI-21092) | Decide design, harden on master, backport to 11.0/10.2, QA | 3-4.5 |
-| B (PDI-21074, PDI-20299) | Merge pentaho/pentaho-kettle#10782 + tests | 0.5 |
-| C (PDI-20586, PDI-20647) | Carte / browse-tree / open-handle probes; fix not estimated | 2-4 |
-| D (PDI-21015) | D1 backport PR; D2 metastore backport if wanted | 0.5 + 1-2 |
-| E (PDI-19753) | Harden PoC on master, 11.0, 10.2 | 1.5-2 |
-| F (PDI-20874) | Product decision on missing key file, harden, backports | 1-2 |
-
-To close the spike:
+## Closing the spike
 
 - [x] Every epic ticket mapped to a cause.
 - [x] Reproducing test per cause on master, 11.0, 10.2.
