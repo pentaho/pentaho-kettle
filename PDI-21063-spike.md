@@ -115,7 +115,7 @@ the caches live across requests in one Carte JVM.
   `org.pentaho.di.www` 177 (JDK 11; on JDK 21, 119 pre-existing Mockito errors).
 - **Commits:** pentaho-kettle master `0876db9d896 -> 54dc61598ab`, 11.0
   `fa9e2a53e30 -> b2291ce6f8c`, 10.2 `e18b9f9a83d` (PoC 2) + `4c65c83ef20`
-  (PoC 1); the 10.2 test is big-data-plugin `ac42eb530`.
+  (PoC 1); the 10.2 test is big-data-plugin `e5723654f`.
 - **Open:** a snapshot copies all variables on each lookup (cost); the cache
   is still compared by hash only, so collisions are possible; `reset()` is not
   safe while another job is reading connections (10.2); the Spoon browse-tree
