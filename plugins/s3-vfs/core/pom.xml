@@ -212,6 +212,12 @@
       <version>2.0.5</version>
       <scope>test</scope>
     </dependency>
+    <!-- CarteConnectionCachingMinioIT starts Carte in-process -->
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-session</artifactId>
+      <scope>test</scope>
+    </dependency>
 
     <!-- in-JVM S3 server; no Docker required -->
     <dependency>
