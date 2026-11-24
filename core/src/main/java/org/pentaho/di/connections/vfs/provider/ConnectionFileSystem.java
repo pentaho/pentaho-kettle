@@ -188,12 +188,18 @@ public class ConnectionFileSystem extends AbstractFileSystem implements FileSyst
       throw new IOException( "Missing connection configuration" );
     }
 
-    VariableSpace varSpace = getSpace();
-    if ( varSpace == null ) {
+    VariableSpace callerSpace = getSpace();
+    if ( callerSpace == null ) {
       throw new IOException( "Failed to initialize connection variables" );
     }
 
     String connectionName = details.getName();
+
+    // The caller's space is shared (e.g. by all steps of a transformation), so the connection selection must not be
+    // written into it: concurrent resolutions would overwrite each other's selection (PDI-21035, PDI-20723) and later
+    // raw-URI requests would inherit it (PDI-21092). Each resolution gets its own child space instead.
+    VariableSpace varSpace = new Variables();
+    varSpace.initializeVariablesFrom( callerSpace );
 
     // Used by KettleVFSImpl#buildFsOptions -> VFSHelper#getOpts(...).
     varSpace.setVariable( CONNECTION, connectionName );
