@@ -14,17 +14,22 @@
 package org.pentaho.di.core.fileinput;
 
 import org.apache.commons.vfs2.FileObject;
+import org.apache.commons.vfs2.impl.DefaultFileSystemManager;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import static org.mockito.ArgumentMatchers.any;
 import org.mockito.stubbing.Answer;
+import org.pentaho.di.connections.ConnectionManager;
+import org.pentaho.di.connections.vfs.provider.ConnectionFileProvider;
+import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.KettleLogStore;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.core.vfs.KettleVFS;
 
 import java.io.IOException;
 
@@ -128,11 +133,16 @@ public class FileInputListTest {
   }
 
   @Test
-  public void pdi20647OptionalUnresolvableUriIsReported() throws IOException {
+  public void pdi20647OptionalUnresolvableUriIsReported() throws Exception {
     KettleLogStore.init();
-    String invalidArchive = "zip:" + tempFolder.newFile( "not-a-zip.zip" ).toURI() + "!/input.txt";
-    FileInputList files = FileInputList.createFileList( DefaultBowl.getInstance(), new Variables(),
-      new String[] { invalidArchive }, new String[] { "" },
+    DefaultFileSystemManager fsm = (DefaultFileSystemManager) KettleVFS.getInstance().getFileSystemManager();
+    if ( !fsm.hasProvider( ConnectionFileProvider.SCHEME ) ) {
+      fsm.addProvider( ConnectionFileProvider.SCHEME, new ConnectionFileProvider() );
+    }
+    Bowl bowl = mock( Bowl.class );
+    when( bowl.getManager( ConnectionManager.class ) ).thenReturn( mock( ConnectionManager.class ) );
+    FileInputList files = FileInputList.createFileList( bowl, new Variables(),
+      new String[] { "pvfs://pdi20647-missing-connection/bucket/input.txt" }, new String[] { "" },
       new String[] { "" }, new String[] { "N" },
       new boolean[] { false } );
     assertEquals( 0, files.nrOfFiles() );
