@@ -21,6 +21,7 @@ import org.apache.commons.vfs2.FileSystemException;
 import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.provider.compressed.CompressedFileFileObject;
 import org.apache.commons.vfs2.provider.local.LocalFile;
+import org.pentaho.di.connections.vfs.provider.ConnectionFileObject;
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.Const;
@@ -236,7 +237,12 @@ public class FileInputList {
       try {
         FileObject directoryFileObject = KettleVFS.getInstance( bowl ).getFileObject( onefile, space );
         boolean processFolder = true;
-        if ( onerequired ) {
+        if ( directoryFileObject instanceof ConnectionFileObject
+          && directoryFileObject.getType() == FileType.IMAGINARY
+          && ( (ConnectionFileObject) directoryFileObject ).getResolvedFileObject() == null ) {
+          fileInputList.addNonAccessibleFile( directoryFileObject );
+          processFolder = false;
+        } else if ( onerequired ) {
           if ( !directoryFileObject.exists() ) {
             // if we don't find folder..no need to continue
             fileInputList.addNonExistantFile( directoryFileObject );
