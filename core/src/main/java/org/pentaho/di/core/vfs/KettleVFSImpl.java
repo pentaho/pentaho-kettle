@@ -215,7 +215,7 @@ public class KettleVFSImpl implements IKettleVFS {
         }
       }
       if ( scheme.equals( "pvfs" ) ) {
-        configBuilder.setParameter( fsOptions, "VariableSpace", varSpace, vfsFilename );
+        configBuilder.setParameter( fsOptions, "VariableSpace", new VariableSpaceSnapshot( varSpace ), vfsFilename );
       }
     } catch ( KettleException ex ) {
       // keep backward compatible API in KettleVFS
