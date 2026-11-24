@@ -181,5 +181,12 @@
       <version>4.3.0</version>
       <scope>test</scope>
     </dependency>
+    <!-- PDI-21063 spike: MinIO for PvfsConnectionIsolationMinioIT -->
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers-minio</artifactId>
+      <version>2.0.5</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>

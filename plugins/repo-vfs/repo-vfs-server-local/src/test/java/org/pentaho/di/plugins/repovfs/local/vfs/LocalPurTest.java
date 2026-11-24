@@ -169,6 +169,38 @@ public class LocalPurTest {
     }
   }
 
+  // PDI-21015: changes made by another repository client must be visible after an explicit refresh.
+  @Test
+  void pdi21015RefreshShowsChildAddedByAnotherClient() throws Exception {
+    RepositoryFileAcl acl = createBasicAcl( MockUnifiedRepository.root().getName() );
+    RepositoryFile folder = createFolderPur( repository.getFile( "/" ), "/pdi21015-add", acl );
+    createTextFilePur( folder, "/pdi21015-add/existing.txt", "a", acl );
+
+    FileObject dir = fsm.resolveFile( url( "/pdi21015-add" ) );
+    assertEquals( 1, dir.getChildren().length );
+
+    createTextFilePur( folder, "/pdi21015-add/added-elsewhere.txt", "b", acl );
+    dir.refresh();
+
+    assertEquals( 2, dir.getChildren().length, "child added by another client is not listed after refresh" );
+  }
+
+  @Test
+  void pdi21015RefreshHidesChildDeletedByAnotherClient() throws Exception {
+    RepositoryFileAcl acl = createBasicAcl( MockUnifiedRepository.root().getName() );
+    RepositoryFile folder = createFolderPur( repository.getFile( "/" ), "/pdi21015-del", acl );
+    createTextFilePur( folder, "/pdi21015-del/keep.txt", "a", acl );
+    RepositoryFile doomed = createTextFilePur( folder, "/pdi21015-del/deleted-elsewhere.txt", "b", acl );
+
+    FileObject dir = fsm.resolveFile( url( "/pdi21015-del" ) );
+    assertEquals( 2, dir.getChildren().length );
+
+    repository.deleteFile( doomed.getId(), true, null );
+    dir.refresh();
+
+    assertEquals( 1, dir.getChildren().length, "child deleted by another client is still listed after refresh" );
+  }
+
   private void writeToFile( FileObject file1, String textContent ) throws IOException, FileSystemException {
     try ( var out = file1.getContent().getOutputStream() ) {
       IOUtils.write( textContent, out, StandardCharsets.UTF_8 );
