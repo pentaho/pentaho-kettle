@@ -33,6 +33,8 @@ import org.testcontainers.containers.Container;
 import org.testcontainers.containers.MinIOContainer;
 import org.testcontainers.utility.DockerImageName;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -45,7 +47,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -222,6 +227,53 @@ public class PvfsConnectionIsolationMinioIT {
 
     expectWriteFailure( "pvfs://" + name + "/" + BUCKET_A + "/delete-after.txt", new Variables(),
       "a deleted connection was still usable" );
+  }
+
+  @Test
+  public void nestedZipOverPvfsResolvesCredentialVariablesFromCaller() throws Exception {
+    S3Details connection = details( "conn-zip-var-" + UUID.randomUUID().toString().substring( 0, 8 ) );
+    connection.setAccessKey( "${S3_ACCESS_KEY}" );
+    connection.setSecretKey( "${S3_SECRET_KEY}" );
+    assertTrue( "precondition: connection saved", manager.save( connection ) );
+
+    VariableSpace variables = new Variables();
+    variables.setVariable( "S3_ACCESS_KEY", USER_A );
+    variables.setVariable( "S3_SECRET_KEY", SECRET_A );
+    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+    try ( ZipOutputStream zip = new ZipOutputStream( bytes ) ) {
+      zip.putNextEntry( new ZipEntry( "entry.txt" ) );
+      zip.write( "variables".getBytes( StandardCharsets.UTF_8 ) );
+      zip.closeEntry();
+    }
+
+    String literal = saveConnection( "conn-zip-literal-", USER_A, SECRET_A );
+    String literalArchive = "pvfs://" + literal + "/" + BUCKET_A + "/literal.zip";
+    VariableSpace literalSpace = new Variables();
+    FileObject literalFile = KettleVFS.getInstance( bowl ).getFileObject( literalArchive, literalSpace );
+    try ( OutputStream out = literalFile.getContent().getOutputStream() ) {
+      out.write( bytes.toByteArray() );
+    }
+    FileObject literalEntry =
+      KettleVFS.getInstance( bowl ).getFileObject( "zip:" + literalArchive + "!/entry.txt", literalSpace );
+    try ( InputStream in = literalEntry.getContent().getInputStream() ) {
+      assertEquals( "nested ZIP with literal credentials must work", "variables",
+        new String( in.readAllBytes(), StandardCharsets.UTF_8 ) );
+    }
+
+    String archive = "pvfs://" + connection.getName() + "/" + BUCKET_A + "/nested-var.zip";
+    FileObject plain = KettleVFS.getInstance( bowl ).getFileObject( archive, variables );
+    try ( OutputStream out = plain.getContent().getOutputStream() ) {
+      out.write( bytes.toByteArray() );
+    }
+    try ( InputStream in = plain.getContent().getInputStream() ) {
+      assertArrayEquals( "plain PVFS must read the archive", bytes.toByteArray(), in.readAllBytes() );
+    }
+
+    FileObject entry = KettleVFS.getInstance( bowl ).getFileObject( "zip:" + archive + "!/entry.txt", variables );
+    try ( InputStream in = entry.getContent().getInputStream() ) {
+      assertEquals( "zip:pvfs must resolve the caller's credential variables", "variables",
+        new String( in.readAllBytes(), StandardCharsets.UTF_8 ) );
+    }
   }
 
   private static S3Details details( String name ) {
