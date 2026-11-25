@@ -20,12 +20,14 @@ B fixes 2), and one is not caching at all (G). Ticketing per symptom would
 mean the same code changed and reviewed several times, with partial fixes in
 between. Recommended split:
 
-- One **implementation ticket per cause** (A-G, plus the new `zip:pvfs` gap),
-  in the epic, owning the code change, tests and backports.
-- Link the symptom tickets to it with **is fixed by**. Close them only after
-  their reported workflow is retested on the fixed build.
-- Where a symptom ticket already describes the cause, reuse it instead of
-  creating a new one (column "Ticket" below).
+- **One Jira bug per root cause** (A-G, plus the new `zip:pvfs` gap), owning
+  the code change, tests and backports.
+- **Main Jira** = the existing ticket closest to the root cause with the
+  easiest reproduction. Create a new bug only when none exists.
+- Other tickets with the same cause are linked **is fixed by** the main one.
+  They stay open and are closed (Fixed, not Duplicate) only after their own
+  reported workflow is retested on the fixed build.
+- Add a root-cause block to the main Jira; keep the reporter's text.
 
 Jira today (2026-11-25): all 10 tickets Open (PDI-20586 Blocked), no fix
 versions, no implementation tickets.
@@ -36,21 +38,42 @@ Effort = developer days with Copilot agents, including hardening, unit/IT
 tests and backports; product QA is extra. Spike branches already hold the
 tests and a PoC for each.
 
-| Cause | Ticket | Fixes | User impact | Lines | Effort | Depends on |
+| Cause | Main Jira | Also fixed (is fixed by main) | User impact | Lines | Effort | Depends on |
 |---|---|---|---|---|---|---|
-| [A](#a) shared PVFS context | new, or reuse PDI-20723 | PDI-21035, PDI-20723, PDI-21092 | Parallel S3/PVFS steps fail or **use another connection's credentials** | all | 3-4 d | B first on 10.2 |
-| [B](#b) live connection details | PDI-21074 | PDI-21074, PDI-20299 | Cancel doesn't undo edits; rename corrupts connection | 10.2 | 0.5 d | PR pentaho/pentaho-kettle#10782 |
-| [C](#c) stale Carte connections | PDI-20586 | PDI-20586 | Carte reruns use the **first run's credentials/variables** | all | 3-4 d | A; cheaper cache key |
-| [D](#d) repository refresh | PDI-21015 | PDI-21015 | Repository changes invisible until restart | 11.0 | 0.5 d (+1-2 d D2) | VPN |
-| [E](#e) Hadoop bridge cache key | PDI-19753 | PDI-19753 | Parquet to a second bucket fails (`Wrong FS`) | all | 1.5-2 d | - |
-| [F](#f) GCS key materialization | PDI-20874 | PDI-20874 | Changed GCS key file ignored | all | 1-2 d | - |
-| [G](#g) deleted connection, optional input | PDI-20647 | PDI-20647 | Run **succeeds with 0 rows** after connection deleted | master (+0.5-1 d per backport) | 1-2 d | Reporter's step confirmed |
-| `zip:pvfs` `${VAR}` credentials | **new** | none (found by spike) | `403` reading zips over a connection with variable credentials | to check | not estimated | - |
+| [A](#a) shared PVFS context | PDI-21035 | PDI-20723, PDI-21092 | Parallel S3/PVFS steps fail or **use another connection's credentials** | all | 3-4 d | B first on 10.2 |
+| [B](#b) live connection details | PDI-21074 | PDI-20299 | Cancel doesn't undo edits; rename corrupts connection | 10.2 | 0.5 d | PR pentaho/pentaho-kettle#10782 |
+| [C](#c) stale Carte connections | PDI-20586 | - | Carte reruns use the **first run's credentials/variables** | all | 3-4 d | A; cheaper cache key |
+| [D](#d) repository refresh | PDI-21015 | - | Repository changes invisible until restart | 11.0 | 0.5 d (+1-2 d D2) | VPN |
+| [E](#e) Hadoop bridge cache key | PDI-19753 | - | Parquet to a second bucket fails (`Wrong FS`) | all | 1.5-2 d | - |
+| [F](#f) GCS key materialization | PDI-20874 | - | Changed GCS key file ignored | all | 1-2 d | - |
+| [G](#g) deleted connection, optional input | PDI-20647 | - | Run **succeeds with 0 rows** after connection deleted | master (+0.5-1 d per backport) | 1-2 d | Reporter's step confirmed |
+| `zip:pvfs` `${VAR}` credentials | **new bug** | - (found by spike) | `403` reading zips over a connection with variable credentials | to check | not estimated | - |
 
 Total: about 11-19 developer days for A-G (upper end includes D2 and G backports), which fits
 4 weeks for one developer with QA running in parallel. Highest user risk:
 A and C (a run can use another connection's or an earlier run's
 credentials); cheapest: B and D (half a day each).
+
+### Jira edit tracker
+
+Root-cause block = cause, reproducing test, PoC direction, affected lines and
+compare links from [Branches](#branches), headed "Root cause (PDI-21063 spike)".
+
+| # | Jira | Role | Edits | Done |
+|---|---|---|---|---|
+| 1 | [PDI-21035](https://pentaho-eng.atlassian.net/browse/PDI-21035) | Main A | Root-cause block ([A](#a)). Summary -> "PVFS resolution shares step variables: parallel or mixed PVFS/raw URIs use the wrong connection" (403 is one symptom). | [ ] |
+| 2 | [PDI-20723](https://pentaho-eng.atlassian.net/browse/PDI-20723) | Linked A | Replace "duplicates PDI-21035" with "is fixed by PDI-21035". Comment: root cause tracked in PDI-21035. | [ ] |
+| 3 | [PDI-21092](https://pentaho-eng.atlassian.net/browse/PDI-21092) | Linked A | Add "is fixed by PDI-21035" (keep "action item from"). Comment: samples covered by the A tests. | [ ] |
+| 4 | [PDI-21074](https://pentaho-eng.atlassian.net/browse/PDI-21074) | Main B | Root-cause block ([B](#b)): 10.2 only, master/11.0 already clone. Link PR pentaho/pentaho-kettle#10782. | [ ] |
+| 5 | [PDI-20299](https://pentaho-eng.atlassian.net/browse/PDI-20299) | Linked B | Add "is fixed by PDI-21074". Comment: root cause tracked in PDI-21074. | [ ] |
+| 6 | [PDI-20586](https://pentaho-eng.atlassian.net/browse/PDI-20586) | Main C | Root-cause block ([C](#c)) with the Carte reproduction; note it recurs after PDI-20194 (Done 11.0, 10.2.0.3). Status is Blocked: confirm with the assignee it still applies. | [ ] |
+| 7 | [PDI-21015](https://pentaho-eng.atlassian.net/browse/PDI-21015) | Main D | Root-cause block ([D](#d)): 11.0 backport of BACKLOG-50458 (`a7e490b133f`, `af236de294b`). | [ ] |
+| 8 | [PDI-19753](https://pentaho-eng.atlassian.net/browse/PDI-19753) | Main E | Root-cause block ([E](#e)). Set affects versions 11.1, 11.0, 10.2 (none today). Replace "is caused by PDI-21035" with "relates to PDI-21035" (different cause). | [ ] |
+| 9 | [PDI-20874](https://pentaho-eng.atlassian.net/browse/PDI-20874) | Main F | Root-cause block ([F](#f)). Add 11.0 to affects versions. | [ ] |
+| 10 | [PDI-20647](https://pentaho-eng.atlassian.net/browse/PDI-20647) | Main G | Root-cause block ([G](#g)): input validation, not caching. After the reporter confirms, summary `TableInput` -> Text File Input. | [ ] |
+| 11 | new bug | Main zip gap | Create in PDI-21042: "`zip:pvfs://` does not resolve connection credential variables (e.g. Unzip from S3)". Repro test in [Branches](#branches). Link "relates to PDI-21035". | [ ] |
+| 12 | [PDI-21063](https://pentaho-eng.atlassian.net/browse/PDI-21063) | Spike | Link "relates to" the 8 main Jiras. Comment: link to this doc and the main -> linked map. | [ ] |
+| 13 | all | Check | Re-read links, affects versions and summaries on every ticket above. | [ ] |
 
 ## Jira index
 
@@ -74,13 +97,7 @@ and cause details are in the linked section.
 | [PDI-20874](https://pentaho-eng.atlassian.net/browse/PDI-20874) | GCS key-path variable never re-resolved | [F](#f) | RED -> PoC | RED -> PoC | RED -> PoC |
 | [PDI-20647](https://pentaho-eng.atlassian.net/browse/PDI-20647) | Spoon rerun succeeds after VFS connection deleted | [G](#g) | RED -> PoC | UNVERIFIED | UNVERIFIED |
 
-Branches: `spike/PDI-21063-{master,11.0,10.2}` on the `befc` forks of
-[pentaho-kettle](https://github.com/befc/pentaho-kettle/branches/all?query=spike%2FPDI-21063),
-[big-data-plugin](https://github.com/befc/big-data-plugin/tree/spike/PDI-21063-10.2),
-[pentaho-hadoop-shims](https://github.com/befc/pentaho-hadoop-shims/branches/all?query=spike%2FPDI-21063) and
-[pdi-plugins-ee](https://github.com/befc/pdi-plugins-ee/branches/all?query=spike%2FPDI-21063).
-Each has the tests first (RED), then the fix (GREEN); commits below are
-`test -> fix`. Build changes are test-scoped only. This document is on
+Branches and compare links: [Branches](#branches). This document is on
 pentaho-kettle `spike/PDI-21063-master`.
 
 <a id="a"></a>
@@ -99,9 +116,6 @@ pentaho-kettle `spike/PDI-21063-master`.
   MinIO IT 5/5. No new failures in `org.pentaho.di.connections.**` +
   `org.pentaho.di.core.vfs.**` (master 264, 11.0 203, 10.2 204 tests) or the
   master s3-vfs module.
-- **Commits (pentaho-kettle):** master `8548d5cc84e -> 99b2ae9bfbf`, 11.0
-  `e77e8cb86f0 -> cd54cca1fac`, 10.2 `1c2c118331d -> b7aa087c35a`; the 10.2 IT
-  is in big-data-plugin `d6688ef35`.
 - **Design options (master):**
   - **A1 child copy:** the PoC above; `connection` is written into a per-resolution copy.
   - **A2 explicit connection:** `ConnectionFileSystem` passes the name to `VFSHelper.getOpts` and resolves the
@@ -141,9 +155,7 @@ pentaho-kettle `spike/PDI-21063-master`.
 - **Recommendation:** A2. It has no hidden state, no copy, is faster, and passes the same tests. A2 risk: provider
   URIs bypass `buildFsOptions`. That matches stock whenever a connection was selected, but needs review of the
   fallback when `getOpts` returns `null`.
-- **Commits (pentaho-kettle, master):** tests + benchmark `spike/PDI-21063-A-design` `b0e925b2170`; A1
-  `spike/PDI-21063-A1-child-copy` `3987a9d3914`; A2 `spike/PDI-21063-A2-explicit-connection` `3b356132de2`.
-  The `+ C` columns cherry-pick `54dc61598ab`.
+- **Branches:** [compare links](#branches); the `+ C` benchmark columns cherry-pick `54dc61598ab`.
 - **Remaining effort:** 3-4 days (A2 hardening, master, 11.0/10.2 backports after B, QA, nested-variable ticket
   separately).
 
@@ -156,7 +168,7 @@ pentaho-kettle `spike/PDI-21063-master`.
 - **Tests:** `ConnectionManagerEditIsolationTest` (3 tests).
 - **PoC:** cherry-pick of the open PR pentaho/pentaho-kettle#10782; no core
   regressions.
-- **Commits (pentaho-kettle 10.2):** `1c2c118331d -> 915ba742858`.
+- **Branches:** [compare links](#branches).
 - **Open / effort:** merge pentaho/pentaho-kettle#10782, optionally with these
   tests: 0.5 day.
 
@@ -192,9 +204,7 @@ pentaho-kettle `spike/PDI-21063-master`.
   `org.pentaho.di.www` 177 (JDK 11; on JDK 21, 119 pre-existing Mockito errors).
   The pre-C Carte runs on master/11.0 already included the A PoC; they are
   not verification of completely unmodified upstream.
-- **Commits:** pentaho-kettle master `0876db9d896 -> 54dc61598ab`, 11.0
-  `fa9e2a53e30 -> b2291ce6f8c`, 10.2 `e18b9f9a83d` (PoC 2) + `4c65c83ef20`
-  (PoC 1); the 10.2 test is big-data-plugin `e5723654f`.
+- **Branches:** [compare links](#branches).
 - **Open:** a snapshot copies, sorts and hashes all variables on each lookup:
   +22-127% per PVFS lookup over A alone (measured in [A](#a)), worse than
   linear. Needs a cheaper key, e.g. only the variables the connection
@@ -216,7 +226,7 @@ pentaho-kettle `spike/PDI-21063-master`.
   file, then refresh). Needs VPN.
 - **PoC:** D1 backported to `LocalPurFileObject.refresh()` (one line);
   `LocalPurTest` 8/8.
-- **Commits (pentaho-kettle 11.0):** `e77e8cb86f0 -> 6059096c908`.
+- **Branches:** [compare links](#branches).
 - **Open:** D2 not reproduced or ported; 11.0 pentaho-metastore lacks
   `IMetaStore.refresh()`. Re-enable the QA scenarios disabled by QUALITY-12059.
 - **Remaining effort:** 0.5 day (D1) + 1-2 days (D2, if wanted).
@@ -231,8 +241,7 @@ pentaho-kettle `spike/PDI-21063-master`.
 - **PoC:** key the cache by connection and bucket (authority), in
   `common-base` (master, 11.0) and `shims/apache/driver` (10.2); shim module
   tests have no failures.
-- **Commits (pentaho-hadoop-shims):** master `9571093c14 -> 6ca62b11a9`, 11.0
-  `e6246f847b -> 68ecfa479a`, 10.2 `8bb756972a -> 96214c8110`.
+- **Branches:** [compare links](#branches).
 - **Open:** the "last used" `fs` field is still order-dependent; relies on
   `fs.s3a.impl.disable.cache=true`; authority for HCP/GCS/ADLS unchecked;
   cached file systems not closed on `close()`; the cache key holds
@@ -253,8 +262,7 @@ pentaho-kettle `spike/PDI-21063-master`.
   variables (backport on 11.0/10.2). Module 7/7 on master and 11.0; 10.2 has
   3 pre-existing `GoogleCloudStorageFileObjectTest` errors (Mockito on JDK
   21), with or without the fix.
-- **Commits (pdi-plugins-ee):** master `f124deb06 -> b55ddce9b`, 11.0
-  `aeb270115 -> ab3676dd1`, 10.2 `10298cc96 -> bce12e620`.
+- **Branches:** [compare links](#branches).
 - **Open:** a missing key file now fails instead of silently using the stale
   key (product decision); `getLocations()` and `test()` still use the stored key.
 - **Remaining effort:** 1-2 days.
@@ -307,8 +315,7 @@ pentaho-kettle `spike/PDI-21063-master`.
   `org.pentaho:pentaho-ce-jar-parent-pom:11.1.0.0-59`; the alternative
   `repo.pentaho.com` endpoint returns HTTP 401. Source evidence is not runtime
   proof. The exact Spoon test has not run on 11.0/10.2.
-- **Commits (master):** Spoon fixture/test `a843759ccd5`, corrected core
-  reproduction `cdae9e3dee7` -> PoC `252a62638ef`.
+- **Branches:** [compare links](#branches).
 - **Manual replay:** create the named MinIO connection, upload
   `input.txt` containing `alpha\nbeta\n`, set the sample's three parameters,
   save and run, delete that connection in Spoon, rerun with Required=`N`.
@@ -318,6 +325,35 @@ pentaho-kettle `spike/PDI-21063-master`.
   modes and live GUI execution. Already-open handles are outside this test.
   Allow 1-2 days for master hardening/product QA, plus 0.5-1 day per requested
   backport; historical artifact access can extend elapsed time.
+
+<a id="branches"></a>
+## Branches (tests and PoC fixes)
+
+All on the `befc` forks, branches `spike/PDI-21063-{master,11.0,10.2}`; A
+designs on `spike/PDI-21063-A-design`, `-A1-child-copy`, `-A2-explicit-connection`.
+**Tests** compares the upstream base with the test commit (RED); **PoC fix**
+compares the test commit with the fix (GREEN). Build changes are test-scoped only.
+\* Shared test commit for the line (10.2: A and B tests; 11.0: A, B and D tests).
+
+| Cause | Main Jira | Repo | Line | Tests | PoC fix |
+|---|---|---|---|---|---|
+| [A](#a) | PDI-21035 | pentaho-kettle | master | [8548d5cc84e](https://github.com/befc/pentaho-kettle/compare/e7ec0605c72...8548d5cc84e) | [99b2ae9bfbf](https://github.com/befc/pentaho-kettle/compare/8548d5cc84e...99b2ae9bfbf) (A1) |
+| [A design](#a) | PDI-21035 | pentaho-kettle | master | [b0e925b2170](https://github.com/befc/pentaho-kettle/compare/8548d5cc84e...b0e925b2170) (benchmark, nested zip) | [3987a9d3914](https://github.com/befc/pentaho-kettle/compare/b0e925b2170...3987a9d3914) (A1), [3b356132de2](https://github.com/befc/pentaho-kettle/compare/b0e925b2170...3b356132de2) (A2) |
+| [A](#a) | PDI-21035 | pentaho-kettle | 11.0 | [e77e8cb86f0](https://github.com/befc/pentaho-kettle/compare/cd4e024b599...e77e8cb86f0) * | [cd54cca1fac](https://github.com/befc/pentaho-kettle/compare/e77e8cb86f0...cd54cca1fac) |
+| [A](#a) | PDI-21035 | pentaho-kettle + big-data-plugin | 10.2 | [1c2c118331d](https://github.com/befc/pentaho-kettle/compare/a1e577acf11...1c2c118331d) *, [d6688ef35](https://github.com/befc/big-data-plugin/compare/f7274e20a...d6688ef35) (IT) | [b7aa087c35a](https://github.com/befc/pentaho-kettle/compare/1c2c118331d...b7aa087c35a) |
+| [B](#b) | PDI-21074 | pentaho-kettle | 10.2 | [1c2c118331d](https://github.com/befc/pentaho-kettle/compare/a1e577acf11...1c2c118331d) * | [915ba742858](https://github.com/befc/pentaho-kettle/compare/b7aa087c35a...915ba742858) |
+| [C](#c) | PDI-20586 | pentaho-kettle | master | [0876db9d896](https://github.com/befc/pentaho-kettle/compare/3094b39f136...0876db9d896) | [54dc61598ab](https://github.com/befc/pentaho-kettle/compare/0876db9d896...54dc61598ab) |
+| [C](#c) | PDI-20586 | pentaho-kettle | 11.0 | [fa9e2a53e30](https://github.com/befc/pentaho-kettle/compare/6059096c908...fa9e2a53e30) | [b2291ce6f8c](https://github.com/befc/pentaho-kettle/compare/fa9e2a53e30...b2291ce6f8c) |
+| [C](#c) | PDI-20586 | big-data-plugin + pentaho-kettle | 10.2 | [e5723654f](https://github.com/befc/big-data-plugin/compare/d6688ef35...e5723654f) | [4c65c83ef20](https://github.com/befc/pentaho-kettle/compare/915ba742858...4c65c83ef20) (PoC 2 + PoC 1) |
+| [D](#d) | PDI-21015 | pentaho-kettle | 11.0 | [e77e8cb86f0](https://github.com/befc/pentaho-kettle/compare/cd4e024b599...e77e8cb86f0) * | [6059096c908](https://github.com/befc/pentaho-kettle/compare/cd54cca1fac...6059096c908) |
+| [E](#e) | PDI-19753 | pentaho-hadoop-shims | master | [9571093c14](https://github.com/befc/pentaho-hadoop-shims/compare/df750a007a...9571093c14) | [6ca62b11a9](https://github.com/befc/pentaho-hadoop-shims/compare/9571093c14...6ca62b11a9) |
+| [E](#e) | PDI-19753 | pentaho-hadoop-shims | 11.0 | [e6246f847b](https://github.com/befc/pentaho-hadoop-shims/compare/a383bb8408...e6246f847b) | [68ecfa479a](https://github.com/befc/pentaho-hadoop-shims/compare/e6246f847b...68ecfa479a) |
+| [E](#e) | PDI-19753 | pentaho-hadoop-shims | 10.2 | [8bb756972a](https://github.com/befc/pentaho-hadoop-shims/compare/381a33596a...8bb756972a) | [96214c8110](https://github.com/befc/pentaho-hadoop-shims/compare/8bb756972a...96214c8110) |
+| [F](#f) | PDI-20874 | pdi-plugins-ee | master | [f124deb06](https://github.com/befc/pdi-plugins-ee/compare/ab9e0cf81...f124deb06) | [b55ddce9b](https://github.com/befc/pdi-plugins-ee/compare/f124deb06...b55ddce9b) |
+| [F](#f) | PDI-20874 | pdi-plugins-ee | 11.0 | [aeb270115](https://github.com/befc/pdi-plugins-ee/compare/9aaad602b...aeb270115) | [ab3676dd1](https://github.com/befc/pdi-plugins-ee/compare/aeb270115...ab3676dd1) |
+| [F](#f) | PDI-20874 | pdi-plugins-ee | 10.2 | [10298cc96](https://github.com/befc/pdi-plugins-ee/compare/051f68059...10298cc96) | [bce12e620](https://github.com/befc/pdi-plugins-ee/compare/10298cc96...bce12e620) |
+| [G](#g) | PDI-20647 | pentaho-kettle | master | [cdae9e3dee7](https://github.com/befc/pentaho-kettle/compare/0cc9ea04073...cdae9e3dee7) | [252a62638ef](https://github.com/befc/pentaho-kettle/compare/cdae9e3dee7...252a62638ef) |
+| zip gap | new bug | pentaho-kettle | master | [b0e925b2170](https://github.com/befc/pentaho-kettle/compare/8548d5cc84e...b0e925b2170) | none |
 
 ## Closing the spike
 
@@ -330,8 +366,9 @@ pentaho-kettle `spike/PDI-21063-master`.
       readers and nested `zip:pvfs://` measured; options reported.
 - [x] Ticket split and 4-week candidates proposed ([Planning summary](#planning-summary-popm)).
 
-Design choices, fix versions and ticket creation belong to the
-implementation tickets, not this spike.
+- [ ] Jira edits ([tracker](#jira-edit-tracker)).
+
+Design choices and fix versions belong to the implementation tickets.
 
 ## Appendix: how to run
 
