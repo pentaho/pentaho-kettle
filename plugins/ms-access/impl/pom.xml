@@ -37,7 +37,7 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.healthmarketscience.jackcess</groupId>
+      <groupId>io.github.spannm</groupId>
       <artifactId>jackcess</artifactId>
       <scope>compile</scope>
     </dependency>
