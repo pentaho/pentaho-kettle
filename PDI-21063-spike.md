@@ -2,8 +2,8 @@
 
 Updated: 2026-11-25. Spike [PDI-21063](https://pentaho-eng.atlassian.net/browse/PDI-21063), epic [PDI-21042](https://pentaho-eng.atlassian.net/browse/PDI-21042).
 
-**Verdict:** the epic is not one bug. Its 10 tickets span 6 workstreams
-(A-F), with independent cache and input-validation causes in C.
+**Verdict:** the epic is not one bug. Its 10 tickets span 7 workstreams
+(A-G); G is input validation, not caching.
 PDI-20647 now reproduces on unmodified master through Spoon, interpreting
 the ticket's ambiguous `TableInput` wording as **Text File Input**.
 Other uncovered workflows remain explicitly listed below.
@@ -28,10 +28,10 @@ and cause details are in the linked section.
 | [PDI-21074](https://pentaho-eng.atlassian.net/browse/PDI-21074) | Cancel leaks edits; rename corrupts connection | [B](#b) | GREEN | GREEN | RED -> PoC |
 | [PDI-20299](https://pentaho-eng.atlassian.net/browse/PDI-20299) | Cancel keeps edited/old name in memory | [B](#b) | GREEN | GREEN | RED -> PoC |
 | [PDI-20586](https://pentaho-eng.atlassian.net/browse/PDI-20586) | Edits/variable changes leave stale config (Carte) | [C](#c) | RED -> PoC | RED -> PoC | RED -> PoC |
-| [PDI-20647](https://pentaho-eng.atlassian.net/browse/PDI-20647) | Spoon rerun succeeds after VFS connection deleted | [C2](#c2) | RED -> PoC | UNVERIFIED | UNVERIFIED |
 | [PDI-21015](https://pentaho-eng.atlassian.net/browse/PDI-21015) | Repository changes invisible after refresh | [D](#d) | GREEN | RED -> PoC | n/a |
 | [PDI-19753](https://pentaho-eng.atlassian.net/browse/PDI-19753) | Parquet S3A to second bucket -> `Wrong FS` | [E](#e) | RED -> PoC | RED -> PoC | RED -> PoC |
 | [PDI-20874](https://pentaho-eng.atlassian.net/browse/PDI-20874) | GCS key-path variable never re-resolved | [F](#f) | RED -> PoC | RED -> PoC | RED -> PoC |
+| [PDI-20647](https://pentaho-eng.atlassian.net/browse/PDI-20647) | Spoon rerun succeeds after VFS connection deleted | [G](#g) | RED -> PoC | UNVERIFIED | UNVERIFIED |
 
 Branches: `spike/PDI-21063-{master,11.0,10.2}` on the `befc` forks of
 [pentaho-kettle](https://github.com/befc/pentaho-kettle/branches/all?query=spike%2FPDI-21063),
@@ -72,7 +72,7 @@ pentaho-kettle `spike/PDI-21063-master`.
 - **Cost per PVFS lookup** (`PvfsLookupCostIT`, MinIO, file-object resolution only, no S3 request timed; JDK 21;
   median of 7x1 s after 3 s warm-up; stock and A1/A2 measured twice, stock varied by about 10%):
 
-  | Variables in space | Stock | A1 | A2 | A1 + C1 PoC 1 | A2 + C1 PoC 1 |
+  | Variables in space | Stock | A1 | A2 | A1 + C PoC 1 | A2 + C PoC 1 |
   |---|---|---|---|---|---|
   | 190 (System only) | 69-76 µs | 76-78 µs | 65-66 µs | 93 µs | 81 µs |
   | 1,190 | 198-220 µs | 229-230 µs | 180-181 µs | 376 µs | 292 µs |
@@ -81,7 +81,7 @@ pentaho-kettle `spike/PDI-21063-master`.
   A1 adds one variable copy per resolution (8 µs at 190 variables, 139 µs at 5,190): +1-20% time, +7-11%
   allocation. A2 skips one variable scan: 5-20% faster and 1-6% less allocation than stock. Both are small next to
   an S3 request (milliseconds); A1 only matters for per-row lookups at volume (about +1 s per 100k files). The real
-  cost is C1's snapshot (+22-127%, see [C1](#c)).
+  cost is C's snapshot (+22-127%, see [C](#c)).
 - **Who reads `connection`:** upstream master of pentaho-kettle, pdi-plugins-ee, big-data-plugin,
   pentaho-hadoop-shims, pentaho-big-data-ee, pdi-ee-plugin and pentaho-metaverse has one reader,
   `KettleVFSImpl.buildFsOptions`. That is the BACKLOG-28010 (2019) feature where a user-set `connection` variable
@@ -102,7 +102,7 @@ pentaho-kettle `spike/PDI-21063-master`.
   fallback when `getOpts` returns `null`.
 - **Commits (pentaho-kettle, master):** tests + benchmark `spike/PDI-21063-A-design` `b0e925b2170`; A1
   `spike/PDI-21063-A1-child-copy` `3987a9d3914`; A2 `spike/PDI-21063-A2-explicit-connection` `3b356132de2`.
-  The `+ C1` columns cherry-pick `54dc61598ab`.
+  The `+ C` columns cherry-pick `54dc61598ab`.
 - **Remaining effort:** 3-4 days (A2 hardening, master, 11.0/10.2 backports after B, QA, nested-variable ticket
   separately).
 
@@ -120,9 +120,7 @@ pentaho-kettle `spike/PDI-21063-master`.
   tests: 0.5 day.
 
 <a id="c"></a>
-## C - PDI-20586, PDI-20647: two distinct lifecycle issues
-
-### C1 - PDI-20586: stale connections in a long-running Carte
+## C - PDI-20586: stale connections in a long-running Carte
 
 - **Test:** `CarteConnectionCachingMinioIT` starts a real Carte and MinIO
   (two users, one bucket each) and runs a saved job over `GET
@@ -143,7 +141,7 @@ pentaho-kettle `spike/PDI-21063-master`.
   `clearBowlCache()` -> `ConnectionManager.reset()` on every Carte execution
   (BISERVER-15647, `472aac7c5dc`). External edit/delete probes pass on
   master/11.0 and fail before PoC 2 on 10.2. The deletion probe is related
-  evidence, **not PDI-20647's reported Spoon input workflow**.
+  evidence, **not PDI-20647's reported Spoon workflow** (see [G](#g)).
 - **PoC 1:** new `VariableSpaceSnapshot` (immutable copy, equality on the
   variable values) stored in the options instead of the live space.
 - **PoC 2 (10.2):** `BaseHttpServlet.resetConnections()` called at the same
@@ -165,61 +163,6 @@ pentaho-kettle `spike/PDI-21063-master`.
   browse-tree cache remains untested.
 - **Remaining effort:** 3-4 days (PoC 1 design + perf check on all lines,
   PoC 2 for 10.2, Carte QA with variable credentials).
-
-<a id="c2"></a>
-### C2 - PDI-20647: optional input masks an undefined connection
-
-- **Reporter workflow:** QAT **11.1.0.0-59**, Spoon, save a text-reading
-  transformation, run it, delete its MinIO VFS connection, rerun. No `.ktr`
-  was supplied. `TableInput` is a JDBC/SQL step; **Text File Input is our
-  explicit interpretation**, using the user-authorized constructed fixture.
-- **Reproduction:** `SpoonConnectionDeletionMinioIT` loads
-  [this reusable transformation](plugins/s3-vfs/core/src/test/resources/PDI-20647-spoon-read-delete-rerun.ktr).
-  It executes real `TransGraph.start`, Spoon cache refresh, local runtime
-  factory, XML metastore/connection manager, Text File Input and MinIO.
-  The same open graph/metadata/manager survive run/delete/rerun. Only SWT
-  hosting, save-dialog/autosave interaction and UI scheduling are mocked;
-  runtime preparation and execution run directly. First run reads exactly
-  `alpha`, `beta`; after verified deletion, the remote file still exists,
-  but the default optional input returns **0 rows, 0 errors, no preparation
-  exception**. Required-input and genuinely missing optional-file controls
-  already behave correctly.
-- **Cause:** `ConnectionFileSystem` returns `UndefinedConnectionFileObject`
-  for a missing connection, with type `IMAGINARY` and no resolved provider
-  object. `FileInputList` treats it like an absent optional file. An empty
-  file list then completes successfully. **Not cached data/credentials.**
-  Current master's pre-execution cache refresh does not fix this symptom.
-- **PoC:** classify an imaginary connection alias with no resolved provider
-  as non-accessible, independently of Required, using the existing file-input
-  error path. Preserve legitimate missing optional files, connection/bucket
-  roots and existing generic-exception handling. Rejected direction:
-  recording all resolution exceptions does **not** fix this Spoon case,
-  because undefined-connection resolution itself does not throw.
-- **Evidence:** isolated upstream master `e7ec0605c722ba5574951a21bc1ac1e464b7ef87`,
-  no A/C production PoCs: core 6 tests / 1 expected failure and Spoon 3 / 1
-  expected failure before this PoC; then core/provider 147/147, Text File
-  Input 22/22 and Spoon 3/3. Repeated Spoon with `S3FileTypeIT` in one reused
-  JVM: 9/9, none skipped. Combined on the spike branch with the existing
-  A/Carte PoCs: core controls 12/12 and MinIO ITs 11/11.
-  JDK 21.0.12, Maven 3.9.16; reactor `verify`, no shared Maven snapshot
-  installation.
-- **Historical build:** exact tag `11.1.0.0-59` (`03415f2eef6`) contains
-  the same undefined-object/optional-file mechanism. Runtime validation is
-  **blocked** by unavailable parent
-  `org.pentaho:pentaho-ce-jar-parent-pom:11.1.0.0-59`; the alternative
-  `repo.pentaho.com` endpoint returns HTTP 401. Source evidence is not runtime
-  proof. The exact Spoon test has not run on 11.0/10.2.
-- **Commits (master):** Spoon fixture/test `a843759ccd5`, corrected core
-  reproduction `cdae9e3dee7` -> PoC `252a62638ef`.
-- **Manual replay:** create the named MinIO connection, upload
-  `input.txt` containing `alpha\nbeta\n`, set the sample's three parameters,
-  save and run, delete that connection in Spoon, rerun with Required=`N`.
-  The PoC must report an initialization error, not successful zero-row input.
-- **Open / effort:** accept the step interpretation; review the alias
-  classification and regression-test other file-list consumers, error-ignore
-  modes and live GUI execution. Already-open handles are outside this test.
-  Allow 1-2 days for master hardening/product QA, plus 0.5-1 day per requested
-  backport; historical artifact access can extend elapsed time.
 
 <a id="d"></a>
 ## D - PDI-21015: repository VFS refresh (11.0)
@@ -275,10 +218,70 @@ pentaho-kettle `spike/PDI-21063-master`.
   key (product decision); `getLocations()` and `test()` still use the stored key.
 - **Remaining effort:** 1-2 days.
 
+<a id="g"></a>
+## G - PDI-20647: optional input masks a deleted connection (not a cache bug)
+
+- **Why separate from C:** first suspected to be a stale cached connection, like
+  PDI-20586. The Spoon reproduction showed a different cause (input
+  validation), different code (`FileInputList`) and a different fix. The
+  Carte deletion probe in [C](#c) is unrelated to this ticket's workflow.
+
+- **Reporter workflow:** QAT **11.1.0.0-59**, Spoon, save a text-reading
+  transformation, run it, delete its MinIO VFS connection, rerun. No `.ktr`
+  was supplied. `TableInput` is a JDBC/SQL step; **Text File Input is our
+  explicit interpretation**, using the user-authorized constructed fixture.
+- **Reproduction:** `SpoonConnectionDeletionMinioIT` loads
+  [this reusable transformation](plugins/s3-vfs/core/src/test/resources/PDI-20647-spoon-read-delete-rerun.ktr).
+  It executes real `TransGraph.start`, Spoon cache refresh, local runtime
+  factory, XML metastore/connection manager, Text File Input and MinIO.
+  The same open graph/metadata/manager survive run/delete/rerun. Only SWT
+  hosting, save-dialog/autosave interaction and UI scheduling are mocked;
+  runtime preparation and execution run directly. First run reads exactly
+  `alpha`, `beta`; after verified deletion, the remote file still exists,
+  but the default optional input returns **0 rows, 0 errors, no preparation
+  exception**. Required-input and genuinely missing optional-file controls
+  already behave correctly.
+- **Cause:** `ConnectionFileSystem` returns `UndefinedConnectionFileObject`
+  for a missing connection, with type `IMAGINARY` and no resolved provider
+  object. `FileInputList` treats it like an absent optional file. An empty
+  file list then completes successfully. **Not cached data/credentials.**
+  Current master's pre-execution cache refresh does not fix this symptom.
+- **PoC:** classify an imaginary connection alias with no resolved provider
+  as non-accessible, independently of Required, using the existing file-input
+  error path. Preserve legitimate missing optional files, connection/bucket
+  roots and existing generic-exception handling. Rejected direction:
+  recording all resolution exceptions does **not** fix this Spoon case,
+  because undefined-connection resolution itself does not throw.
+- **Evidence:** isolated upstream master `e7ec0605c722ba5574951a21bc1ac1e464b7ef87`,
+  no A/C PoCs: core 6 tests / 1 expected failure and Spoon 3 / 1
+  expected failure before this PoC; then core/provider 147/147, Text File
+  Input 22/22 and Spoon 3/3. Repeated Spoon with `S3FileTypeIT` in one reused
+  JVM: 9/9, none skipped. Combined on the spike branch with the existing
+  A/Carte PoCs: core controls 12/12 and MinIO ITs 11/11.
+  JDK 21.0.12, Maven 3.9.16; reactor `verify`, no shared Maven snapshot
+  installation.
+- **Historical build:** exact tag `11.1.0.0-59` (`03415f2eef6`) contains
+  the same undefined-object/optional-file mechanism. Runtime validation is
+  **blocked** by unavailable parent
+  `org.pentaho:pentaho-ce-jar-parent-pom:11.1.0.0-59`; the alternative
+  `repo.pentaho.com` endpoint returns HTTP 401. Source evidence is not runtime
+  proof. The exact Spoon test has not run on 11.0/10.2.
+- **Commits (master):** Spoon fixture/test `a843759ccd5`, corrected core
+  reproduction `cdae9e3dee7` -> PoC `252a62638ef`.
+- **Manual replay:** create the named MinIO connection, upload
+  `input.txt` containing `alpha\nbeta\n`, set the sample's three parameters,
+  save and run, delete that connection in Spoon, rerun with Required=`N`.
+  The PoC must report an initialization error, not successful zero-row input.
+- **Open / effort:** accept the step interpretation; review the alias
+  classification and regression-test other file-list consumers, error-ignore
+  modes and live GUI execution. Already-open handles are outside this test.
+  Allow 1-2 days for master hardening/product QA, plus 0.5-1 day per requested
+  backport; historical artifact access can extend elapsed time.
+
 ## Closing the spike
 
 - [x] Every epic ticket mapped to a workstream and covered/uncovered scenarios.
-- [x] Cross-line tests for the original A-F probes; C2 validated on master.
+- [x] Cross-line tests for the original A-F probes; G validated on master.
 - [x] PoC per reproduced cause on remote branches.
 - [x] PDI-20647: reproduce Spoon run/delete/rerun on unmodified master and
       validate a PoC, under the documented Text File Input interpretation.
@@ -298,7 +301,7 @@ On kettle 10.2 run Maven from `core/`. For the plugin ITs, first
 `mvn -o install -DskipTests` the branch's kettle `core`.
 
 ```sh
-# A/C1 (PDI-21035, PDI-20723, PDI-21092 / PDI-20586) and
+# A/C (PDI-21035, PDI-20723, PDI-21092 / PDI-20586) and
 # B (PDI-21074, PDI-20299) - kettle core
 mvn -o test -Dtest='PvfsResolutionIsolationTest,ConnectionManagerEditIsolationTest' -Dcheckstyle.skip -Djacoco.skip=true
 
@@ -314,7 +317,7 @@ mvn -B verify -nsu -DskipDefault -Pbase,plugins,highdeps -pl plugins/s3-vfs/core
 # 10.2 Carte IT: first install kettle 10.2 core AND engine
 mvn test -Dtest='PvfsConnectionIsolationMinioIT,CarteConnectionCachingMinioIT' -Dcheckstyle.skip -Djacoco.skip=true
 
-# C2 (PDI-20647) - kettle master ROOT, reactor artifacts, no install
+# G (PDI-20647) - kettle master ROOT, reactor artifacts, no install
 mvn -B verify -nsu -DskipDefault -Pbase,plugins,highdeps \
   -pl plugins/s3-vfs/core -am -Dit.test=SpoonConnectionDeletionMinioIT \
   -Dtest=FileInputListTest -Dsurefire.failIfNoSpecifiedTests=false \
