@@ -66,8 +66,8 @@ compare links from [Branches](#branches), headed "Root cause (PDI-21063 spike)".
 | 3 | [PDI-21092](https://pentaho-eng.atlassian.net/browse/PDI-21092) | Samples | No edit: retain existing "action item from PDI-21035". | [x] |
 | 4 | [PDI-21074](https://pentaho-eng.atlassian.net/browse/PDI-21074) | Main B | Spike evidence, comparison links and PR pentaho/pentaho-kettle#10782 added. | [x] |
 | 5 | [PDI-20299](https://pentaho-eng.atlassian.net/browse/PDI-20299) | Linked B | Linked as duplicate of PDI-21074; added comment to retest the original UI scenario. | [x] |
-| 6 | [PDI-20586](https://pentaho-eng.atlassian.net/browse/PDI-20586) | Main C | Root-cause block ([C](#c)) with the Carte reproduction; note it recurs after PDI-20194 (Done 11.0, 10.2.0.3). Status is Blocked: confirm with the assignee it still applies. | [ ] |
-| 7 | [PDI-21015](https://pentaho-eng.atlassian.net/browse/PDI-21015) | Main D | Root-cause block ([D](#d)): 11.0 backport of BACKLOG-50458 (`a7e490b133f`, `af236de294b`). | [ ] |
+| 6 | [PDI-20586](https://pentaho-eng.atlassian.net/browse/PDI-20586) | Main C | Summary and Carte spike findings added; status remains Blocked for the owner to review. | [x] |
+| 7 | [PDI-21015](https://pentaho-eng.atlassian.net/browse/PDI-21015) | Main D | Add spike findings ([D](#d)): file refresh PoC tested; reported connection-list refresh not reproduced or ported. | [ ] |
 | 8 | [PDI-19753](https://pentaho-eng.atlassian.net/browse/PDI-19753) | Main E | Root-cause block ([E](#e)). Set affects versions 11.1, 11.0, 10.2 (none today). Replace "is caused by PDI-21035" with "relates to PDI-21035" (different cause). | [ ] |
 | 9 | [PDI-20874](https://pentaho-eng.atlassian.net/browse/PDI-20874) | Main F | Root-cause block ([F](#f)). Add 11.0 to affects versions. | [ ] |
 | 10 | [PDI-20647](https://pentaho-eng.atlassian.net/browse/PDI-20647) | Main G | Root-cause block ([G](#g)): input validation, not caching. After the reporter confirms, summary `TableInput` -> Text File Input. | [ ] |
