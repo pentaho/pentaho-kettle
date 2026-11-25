@@ -329,7 +329,7 @@ pentaho-kettle `spike/PDI-21063-master`.
 <a id="branches"></a>
 ## Branches (tests and PoC fixes)
 
-All on the `befc` forks, branches `spike/PDI-21063-{master,11.0,10.2}`; A
+All on the `pentaho` repositories (not personal forks), branches `spike/PDI-21063-{master,11.0,10.2}`; A
 designs on `spike/PDI-21063-A-design`, `-A1-child-copy`, `-A2-explicit-connection`.
 **Tests** compares the upstream base with the test commit (RED); **PoC fix**
 compares the test commit with the fix (GREEN). Build changes are test-scoped only.
@@ -337,23 +337,23 @@ compares the test commit with the fix (GREEN). Build changes are test-scoped onl
 
 | Cause | Main Jira | Repo | Line | Tests | PoC fix |
 |---|---|---|---|---|---|
-| [A](#a) | PDI-21035 | pentaho-kettle | master | [8548d5cc84e](https://github.com/befc/pentaho-kettle/compare/e7ec0605c72...8548d5cc84e) | [99b2ae9bfbf](https://github.com/befc/pentaho-kettle/compare/8548d5cc84e...99b2ae9bfbf) (A1) |
-| [A design](#a) | PDI-21035 | pentaho-kettle | master | [b0e925b2170](https://github.com/befc/pentaho-kettle/compare/8548d5cc84e...b0e925b2170) (benchmark, nested zip) | [3987a9d3914](https://github.com/befc/pentaho-kettle/compare/b0e925b2170...3987a9d3914) (A1), [3b356132de2](https://github.com/befc/pentaho-kettle/compare/b0e925b2170...3b356132de2) (A2) |
-| [A](#a) | PDI-21035 | pentaho-kettle | 11.0 | [e77e8cb86f0](https://github.com/befc/pentaho-kettle/compare/cd4e024b599...e77e8cb86f0) * | [cd54cca1fac](https://github.com/befc/pentaho-kettle/compare/e77e8cb86f0...cd54cca1fac) |
-| [A](#a) | PDI-21035 | pentaho-kettle + big-data-plugin | 10.2 | [1c2c118331d](https://github.com/befc/pentaho-kettle/compare/a1e577acf11...1c2c118331d) *, [d6688ef35](https://github.com/befc/big-data-plugin/compare/f7274e20a...d6688ef35) (IT) | [b7aa087c35a](https://github.com/befc/pentaho-kettle/compare/1c2c118331d...b7aa087c35a) |
-| [B](#b) | PDI-21074 | pentaho-kettle | 10.2 | [1c2c118331d](https://github.com/befc/pentaho-kettle/compare/a1e577acf11...1c2c118331d) * | [915ba742858](https://github.com/befc/pentaho-kettle/compare/b7aa087c35a...915ba742858) |
-| [C](#c) | PDI-20586 | pentaho-kettle | master | [0876db9d896](https://github.com/befc/pentaho-kettle/compare/3094b39f136...0876db9d896) | [54dc61598ab](https://github.com/befc/pentaho-kettle/compare/0876db9d896...54dc61598ab) |
-| [C](#c) | PDI-20586 | pentaho-kettle | 11.0 | [fa9e2a53e30](https://github.com/befc/pentaho-kettle/compare/6059096c908...fa9e2a53e30) | [b2291ce6f8c](https://github.com/befc/pentaho-kettle/compare/fa9e2a53e30...b2291ce6f8c) |
-| [C](#c) | PDI-20586 | big-data-plugin + pentaho-kettle | 10.2 | [e5723654f](https://github.com/befc/big-data-plugin/compare/d6688ef35...e5723654f) | [4c65c83ef20](https://github.com/befc/pentaho-kettle/compare/915ba742858...4c65c83ef20) (PoC 2 + PoC 1) |
-| [D](#d) | PDI-21015 | pentaho-kettle | 11.0 | [e77e8cb86f0](https://github.com/befc/pentaho-kettle/compare/cd4e024b599...e77e8cb86f0) * | [6059096c908](https://github.com/befc/pentaho-kettle/compare/cd54cca1fac...6059096c908) |
-| [E](#e) | PDI-19753 | pentaho-hadoop-shims | master | [9571093c14](https://github.com/befc/pentaho-hadoop-shims/compare/df750a007a...9571093c14) | [6ca62b11a9](https://github.com/befc/pentaho-hadoop-shims/compare/9571093c14...6ca62b11a9) |
-| [E](#e) | PDI-19753 | pentaho-hadoop-shims | 11.0 | [e6246f847b](https://github.com/befc/pentaho-hadoop-shims/compare/a383bb8408...e6246f847b) | [68ecfa479a](https://github.com/befc/pentaho-hadoop-shims/compare/e6246f847b...68ecfa479a) |
-| [E](#e) | PDI-19753 | pentaho-hadoop-shims | 10.2 | [8bb756972a](https://github.com/befc/pentaho-hadoop-shims/compare/381a33596a...8bb756972a) | [96214c8110](https://github.com/befc/pentaho-hadoop-shims/compare/8bb756972a...96214c8110) |
-| [F](#f) | PDI-20874 | pdi-plugins-ee | master | [f124deb06](https://github.com/befc/pdi-plugins-ee/compare/ab9e0cf81...f124deb06) | [b55ddce9b](https://github.com/befc/pdi-plugins-ee/compare/f124deb06...b55ddce9b) |
-| [F](#f) | PDI-20874 | pdi-plugins-ee | 11.0 | [aeb270115](https://github.com/befc/pdi-plugins-ee/compare/9aaad602b...aeb270115) | [ab3676dd1](https://github.com/befc/pdi-plugins-ee/compare/aeb270115...ab3676dd1) |
-| [F](#f) | PDI-20874 | pdi-plugins-ee | 10.2 | [10298cc96](https://github.com/befc/pdi-plugins-ee/compare/051f68059...10298cc96) | [bce12e620](https://github.com/befc/pdi-plugins-ee/compare/10298cc96...bce12e620) |
-| [G](#g) | PDI-20647 | pentaho-kettle | master | [cdae9e3dee7](https://github.com/befc/pentaho-kettle/compare/0cc9ea04073...cdae9e3dee7) | [252a62638ef](https://github.com/befc/pentaho-kettle/compare/cdae9e3dee7...252a62638ef) |
-| zip gap | new bug | pentaho-kettle | master | [b0e925b2170](https://github.com/befc/pentaho-kettle/compare/8548d5cc84e...b0e925b2170) | none |
+| [A](#a) | PDI-21035 | pentaho-kettle | master | [8548d5cc84e](https://github.com/pentaho/pentaho-kettle/compare/e7ec0605c72...8548d5cc84e) | [99b2ae9bfbf](https://github.com/pentaho/pentaho-kettle/compare/8548d5cc84e...99b2ae9bfbf) (A1) |
+| [A design](#a) | PDI-21035 | pentaho-kettle | master | [b0e925b2170](https://github.com/pentaho/pentaho-kettle/compare/8548d5cc84e...b0e925b2170) (benchmark, nested zip) | [3987a9d3914](https://github.com/pentaho/pentaho-kettle/compare/b0e925b2170...3987a9d3914) (A1), [3b356132de2](https://github.com/pentaho/pentaho-kettle/compare/b0e925b2170...3b356132de2) (A2) |
+| [A](#a) | PDI-21035 | pentaho-kettle | 11.0 | [e77e8cb86f0](https://github.com/pentaho/pentaho-kettle/compare/cd4e024b599...e77e8cb86f0) * | [cd54cca1fac](https://github.com/pentaho/pentaho-kettle/compare/e77e8cb86f0...cd54cca1fac) |
+| [A](#a) | PDI-21035 | pentaho-kettle + big-data-plugin | 10.2 | [1c2c118331d](https://github.com/pentaho/pentaho-kettle/compare/a1e577acf11...1c2c118331d) *, [d6688ef35](https://github.com/pentaho/big-data-plugin/compare/f7274e20a...d6688ef35) (IT) | [b7aa087c35a](https://github.com/pentaho/pentaho-kettle/compare/1c2c118331d...b7aa087c35a) |
+| [B](#b) | PDI-21074 | pentaho-kettle | 10.2 | [1c2c118331d](https://github.com/pentaho/pentaho-kettle/compare/a1e577acf11...1c2c118331d) * | [915ba742858](https://github.com/pentaho/pentaho-kettle/compare/b7aa087c35a...915ba742858) |
+| [C](#c) | PDI-20586 | pentaho-kettle | master | [0876db9d896](https://github.com/pentaho/pentaho-kettle/compare/3094b39f136...0876db9d896) | [54dc61598ab](https://github.com/pentaho/pentaho-kettle/compare/0876db9d896...54dc61598ab) |
+| [C](#c) | PDI-20586 | pentaho-kettle | 11.0 | [fa9e2a53e30](https://github.com/pentaho/pentaho-kettle/compare/6059096c908...fa9e2a53e30) | [b2291ce6f8c](https://github.com/pentaho/pentaho-kettle/compare/fa9e2a53e30...b2291ce6f8c) |
+| [C](#c) | PDI-20586 | big-data-plugin + pentaho-kettle | 10.2 | [e5723654f](https://github.com/pentaho/big-data-plugin/compare/d6688ef35...e5723654f) | [4c65c83ef20](https://github.com/pentaho/pentaho-kettle/compare/915ba742858...4c65c83ef20) (PoC 2 + PoC 1) |
+| [D](#d) | PDI-21015 | pentaho-kettle | 11.0 | [e77e8cb86f0](https://github.com/pentaho/pentaho-kettle/compare/cd4e024b599...e77e8cb86f0) * | [6059096c908](https://github.com/pentaho/pentaho-kettle/compare/cd54cca1fac...6059096c908) |
+| [E](#e) | PDI-19753 | pentaho-hadoop-shims | master | [9571093c14](https://github.com/pentaho/pentaho-hadoop-shims/compare/df750a007a...9571093c14) | [6ca62b11a9](https://github.com/pentaho/pentaho-hadoop-shims/compare/9571093c14...6ca62b11a9) |
+| [E](#e) | PDI-19753 | pentaho-hadoop-shims | 11.0 | [e6246f847b](https://github.com/pentaho/pentaho-hadoop-shims/compare/a383bb8408...e6246f847b) | [68ecfa479a](https://github.com/pentaho/pentaho-hadoop-shims/compare/e6246f847b...68ecfa479a) |
+| [E](#e) | PDI-19753 | pentaho-hadoop-shims | 10.2 | [8bb756972a](https://github.com/pentaho/pentaho-hadoop-shims/compare/381a33596a...8bb756972a) | [96214c8110](https://github.com/pentaho/pentaho-hadoop-shims/compare/8bb756972a...96214c8110) |
+| [F](#f) | PDI-20874 | pdi-plugins-ee | master | [f124deb06](https://github.com/pentaho/pdi-plugins-ee/compare/ab9e0cf81...f124deb06) | [b55ddce9b](https://github.com/pentaho/pdi-plugins-ee/compare/f124deb06...b55ddce9b) |
+| [F](#f) | PDI-20874 | pdi-plugins-ee | 11.0 | [aeb270115](https://github.com/pentaho/pdi-plugins-ee/compare/9aaad602b...aeb270115) | [ab3676dd1](https://github.com/pentaho/pdi-plugins-ee/compare/aeb270115...ab3676dd1) |
+| [F](#f) | PDI-20874 | pdi-plugins-ee | 10.2 | [10298cc96](https://github.com/pentaho/pdi-plugins-ee/compare/051f68059...10298cc96) | [bce12e620](https://github.com/pentaho/pdi-plugins-ee/compare/10298cc96...bce12e620) |
+| [G](#g) | PDI-20647 | pentaho-kettle | master | [cdae9e3dee7](https://github.com/pentaho/pentaho-kettle/compare/0cc9ea04073...cdae9e3dee7) | [252a62638ef](https://github.com/pentaho/pentaho-kettle/compare/cdae9e3dee7...252a62638ef) |
+| zip gap | new bug | pentaho-kettle | master | [b0e925b2170](https://github.com/pentaho/pentaho-kettle/compare/8548d5cc84e...b0e925b2170) | none |
 
 ## Closing the spike
 
