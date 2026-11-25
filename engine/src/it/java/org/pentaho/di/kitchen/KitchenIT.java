@@ -15,7 +15,9 @@ package org.pentaho.di.kitchen;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.security.ExitInterceptor;
@@ -27,7 +29,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Base64;
 import java.util.UUID;
 
@@ -38,6 +43,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 public class KitchenIT {
+
+  @Rule
+  public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
   private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
   private final ByteArrayOutputStream errContent = new ByteArrayOutputStream();
@@ -53,6 +61,7 @@ public class KitchenIT {
   private static final String EXPECTED_COMPLETE_WITH_SUCCESS_PATH = BASE_PATH + "expected_complete_with_success";
   private static final String EXPECTED_COMPLETE_WITH_FAILURE_PATH = BASE_PATH + "expected_complete_with_failure";
   private static final String EXPECTED_PARAMS_PASSED_ALONG = BASE_PATH + "expected_params_passed_along";
+  private static final String EXPECTED_ARGUMENTS_PASSED_ALONG = "test_kjbs/expected_args_passed_along";
 
   private static final String[] KTRS_EXPECTED_COMPLETE_WITH_SUCCESS = new String[] {
     "runs_well_hello_world.kjb"
@@ -255,6 +264,60 @@ public class KitchenIT {
       if ( f != null && f.exists() ) {
         f.deleteOnExit();
       }
+    }
+  }
+
+  @Test
+  public void testFileJobWithPositionalArguments() throws Exception {
+    String[] argumentValues = {
+      "var1", "var2", "var3", "var4", "var5", "var6", "var7", "var8", "var9", "var10"
+    };
+    String[] variableNames = {
+      "dbDetails", "sessionID", "webrootPath", "C4", "C5", "C6", "C7", "C8", "C9", "C10"
+    };
+
+    Path directory = temporaryFolder.newFolder( "kitchen-arguments" ).toPath();
+    for ( String fixture : new String[] { "test.kjb", "test.ktr" } ) {
+      String resource = EXPECTED_ARGUMENTS_PASSED_ALONG + "/" + fixture;
+      try ( InputStream input = getClass().getResourceAsStream( resource ) ) {
+        assertNotNull( "Missing Kitchen arguments fixture: " + fixture, input );
+        Files.copy( input, directory.resolve( fixture ) );
+      }
+    }
+
+    Path logFile = directory.resolve( "kitchen.log" );
+    try {
+      Kitchen.main( new String[] {
+        "/file:" + directory.resolve( "test.kjb" ),
+        argumentValues[ 0 ], argumentValues[ 1 ], argumentValues[ 2 ], argumentValues[ 3 ], argumentValues[ 4 ],
+        argumentValues[ 5 ], argumentValues[ 6 ], argumentValues[ 7 ], argumentValues[ 8 ], argumentValues[ 9 ],
+        "/level:Debug",
+        "/logfile:" + logFile,
+        "/norep"
+      } );
+      fail( "Kitchen should exit after execution" );
+    } catch ( SecurityException e ) {
+      String logFileContent = Files.readString( logFile, Charset.defaultCharset() );
+
+      String[] expectedLogMessages = {
+        "Transformation - Nr of arguments detected:10",
+        "Kitchen - Finished!"
+      };
+      for ( String expected : expectedLogMessages ) {
+        assertTrue( "Missing expected Kitchen log message: " + expected + "\n" + logFileContent,
+          logFileContent.contains( expected ) );
+      }
+      for ( int i = 0; i < argumentValues.length; i++ ) {
+        String expected =
+          "Set Variables.0 - Set variable " + variableNames[ i ] + " to value [" + argumentValues[ i ] + "]";
+        assertTrue( "Missing positional argument in Kitchen log: " + expected + "\n" + logFileContent,
+          logFileContent.contains( expected ) );
+      }
+      assertFalse( logFileContent.contains( FAILED_JOB_EXEC_PATTERN ) );
+
+      Result result = Kitchen.getCommandExecutor().getResult();
+      assertNotNull( result );
+      assertEquals( CommandExecutorCodes.Kitchen.SUCCESS.getCode(), result.getExitStatus() );
     }
   }
 
