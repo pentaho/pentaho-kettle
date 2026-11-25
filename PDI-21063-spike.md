@@ -24,9 +24,9 @@ between. Recommended split:
   the code change, tests and backports.
 - **Main Jira** = the existing ticket closest to the root cause with the
   easiest reproduction. Create a new bug only when none exists.
-- Other tickets with the same cause are linked **is fixed by** the main one.
-  They stay open and are closed (Fixed, not Duplicate) only after their own
-  reported workflow is retested on the fixed build.
+- Related reports can remain linked as **duplicates** where appropriate.
+  Leave them open until their own reported workflow is retested on the fixed
+  build.
 - Add a root-cause block to the main Jira; keep the reporter's text.
 
 Jira today (2026-11-25): all 10 tickets Open (PDI-20586 Blocked), no fix
@@ -38,7 +38,7 @@ Effort = developer days with Copilot agents, including hardening, unit/IT
 tests and backports; product QA is extra. Spike branches already hold the
 tests and a PoC for each.
 
-| Cause | Main Jira | Also fixed (is fixed by main) | User impact | Lines | Effort | Depends on |
+| Cause | Main Jira | Related reports | User impact | Lines | Effort | Depends on |
 |---|---|---|---|---|---|---|
 | [A](#a) shared PVFS context | PDI-21035 | PDI-20723, PDI-21092 | Parallel S3/PVFS steps fail or **use another connection's credentials** | all | 3-4 d | B first on 10.2 |
 | [B](#b) live connection details | PDI-21074 | PDI-20299 | Cancel doesn't undo edits; rename corrupts connection | 10.2 | 0.5 d | PR pentaho/pentaho-kettle#10782 |
@@ -61,11 +61,11 @@ compare links from [Branches](#branches), headed "Root cause (PDI-21063 spike)".
 
 | # | Jira | Role | Edits | Done |
 |---|---|---|---|---|
-| 1 | [PDI-21035](https://pentaho-eng.atlassian.net/browse/PDI-21035) | Main A | Root-cause block ([A](#a)). Summary -> "PVFS resolution shares step variables: parallel or mixed PVFS/raw URIs use the wrong connection" (403 is one symptom). | [ ] |
-| 2 | [PDI-20723](https://pentaho-eng.atlassian.net/browse/PDI-20723) | Linked A | Replace "duplicates PDI-21035" with "is fixed by PDI-21035". Comment: root cause tracked in PDI-21035. | [ ] |
-| 3 | [PDI-21092](https://pentaho-eng.atlassian.net/browse/PDI-21092) | Linked A | Add "is fixed by PDI-21035" (keep "action item from"). Comment: samples covered by the A tests. | [ ] |
-| 4 | [PDI-21074](https://pentaho-eng.atlassian.net/browse/PDI-21074) | Main B | Root-cause block ([B](#b)): 10.2 only, master/11.0 already clone. Link PR pentaho/pentaho-kettle#10782. | [ ] |
-| 5 | [PDI-20299](https://pentaho-eng.atlassian.net/browse/PDI-20299) | Linked B | Add "is fixed by PDI-21074". Comment: root cause tracked in PDI-21074. | [ ] |
+| 1 | [PDI-21035](https://pentaho-eng.atlassian.net/browse/PDI-21035) | Main A | Summary and spike findings added; links to the spike comment. | [x] |
+| 2 | [PDI-20723](https://pentaho-eng.atlassian.net/browse/PDI-20723) | Linked A | Kept "duplicates PDI-21035"; added comment to retest the original scenario. | [x] |
+| 3 | [PDI-21092](https://pentaho-eng.atlassian.net/browse/PDI-21092) | Samples | No edit: retain existing "action item from PDI-21035". | [x] |
+| 4 | [PDI-21074](https://pentaho-eng.atlassian.net/browse/PDI-21074) | Main B | Spike evidence, comparison links and PR pentaho/pentaho-kettle#10782 added. | [x] |
+| 5 | [PDI-20299](https://pentaho-eng.atlassian.net/browse/PDI-20299) | Linked B | Assess duplicate of PDI-21074 and comment; retest the original UI scenario. | [ ] |
 | 6 | [PDI-20586](https://pentaho-eng.atlassian.net/browse/PDI-20586) | Main C | Root-cause block ([C](#c)) with the Carte reproduction; note it recurs after PDI-20194 (Done 11.0, 10.2.0.3). Status is Blocked: confirm with the assignee it still applies. | [ ] |
 | 7 | [PDI-21015](https://pentaho-eng.atlassian.net/browse/PDI-21015) | Main D | Root-cause block ([D](#d)): 11.0 backport of BACKLOG-50458 (`a7e490b133f`, `af236de294b`). | [ ] |
 | 8 | [PDI-19753](https://pentaho-eng.atlassian.net/browse/PDI-19753) | Main E | Root-cause block ([E](#e)). Set affects versions 11.1, 11.0, 10.2 (none today). Replace "is caused by PDI-21035" with "relates to PDI-21035" (different cause). | [ ] |
