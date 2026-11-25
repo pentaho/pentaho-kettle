@@ -47,7 +47,7 @@ tests and a PoC for each.
 | [E](#e) Hadoop bridge cache key | PDI-19753 | - | Parquet to a second bucket fails (`Wrong FS`) | all | 1.5-2 d | - |
 | [F](#f) GCS key materialization | PDI-20874 | - | Changed GCS key file ignored | all | 1-2 d | - |
 | [G](#g) deleted connection, optional input | PDI-20647 | - | Run **succeeds with 0 rows** after connection deleted | master (+0.5-1 d per backport) | 1-2 d | Reporter's step confirmed |
-| `zip:pvfs` `${VAR}` credentials | **new bug** | - (found by spike) | `403` reading zips over a connection with variable credentials | to check | not estimated | - |
+| `zip:pvfs` `${VAR}` credentials | **new bug** | - (found by spike) | `403` reading zips over a connection with variable credentials | master, 11.0, 10.2 | not estimated | - |
 
 Total: about 11-19 developer days for A-G (upper end includes D2 and G backports), which fits
 4 weeks for one developer with QA running in parallel. Highest user risk:
@@ -153,7 +153,11 @@ pentaho-kettle `spike/PDI-21063-master`.
 - **Nested `zip:pvfs://`:** parallel reads through two connections on one shared space are already isolated on
   stock and in A1/A2, and the caller's space stays clean. The PVFS layer under `zip:` receives the zip options,
   not the caller's space. **New gap, not an A ticket:** a connection with `${VAR}` credentials fails with `403`
-  through `zip:pvfs://` on stock and in A1/A2, while plain `pvfs://` works. It needs its own ticket.
+  through `zip:pvfs://` on stock and in A1/A2, while plain `pvfs://` works. On unmodified 11.0 (`cd4e024b599`)
+  and 10.2 (kettle `a1e577acf11`, big-data-plugin `f7274e20a`), the focused MinIO test also fails with 403
+  `InvalidAccessKeyId`; plain PVFS with variable credentials and nested ZIP with literal credentials pass.
+  Each release test was repeated, 1 run / 1 expected error / 0 skipped; the code-under-test includes no A PoC.
+  The Spoon Unzip workflow and released builds were not tested. No PoC fix exists; it needs its own ticket.
 - **10.2:** `getConnectionDetails()` returns the shared cached instance ([B](#b)), so `details.setSpace()` still
   races between steps in A1 and A2. Merge B (pentaho/pentaho-kettle#10782) before A on 10.2. This is from code
   reading; not tested.
@@ -336,7 +340,7 @@ pentaho-kettle `spike/PDI-21063-master`.
 
 All on the `pentaho` repositories (not personal forks), branches `spike/PDI-21063-{master,11.0,10.2}`; A
 designs on `spike/PDI-21063-A-design`, `-A1-child-copy`, `-A2-explicit-connection`.
-**Tests** compares the upstream base with the test commit (RED); **PoC fix**
+**Tests** compares the baseline or preceding test commit with the reproduction (RED); **PoC fix**
 compares the test commit with the fix (GREEN). Build changes are test-scoped only.
 \* Shared test commit for the line (10.2: A and B tests; 11.0: A, B and D tests).
 
@@ -359,6 +363,8 @@ compares the test commit with the fix (GREEN). Build changes are test-scoped onl
 | [F](#f) | PDI-20874 | pdi-plugins-ee | 10.2 | [10298cc96](https://github.com/pentaho/pdi-plugins-ee/compare/051f68059...10298cc96) | [bce12e620](https://github.com/pentaho/pdi-plugins-ee/compare/10298cc96...bce12e620) |
 | [G](#g) | PDI-20647 | pentaho-kettle | master | [cdae9e3dee7](https://github.com/pentaho/pentaho-kettle/compare/0cc9ea04073...cdae9e3dee7) | [252a62638ef](https://github.com/pentaho/pentaho-kettle/compare/cdae9e3dee7...252a62638ef) |
 | zip gap | new bug | pentaho-kettle | master | [b0e925b2170](https://github.com/pentaho/pentaho-kettle/compare/8548d5cc84e...b0e925b2170) | none |
+| zip gap | new bug | pentaho-kettle | 11.0 | [ee56ea0c369](https://github.com/pentaho/pentaho-kettle/compare/e77e8cb86f0...ee56ea0c369) ([branch](https://github.com/pentaho/pentaho-kettle/tree/spike/PDI-21063-zip-11.0)) | none |
+| zip gap | new bug | big-data-plugin | 10.2 | [664a19be4](https://github.com/pentaho/big-data-plugin/compare/d6688ef35...664a19be4) ([branch](https://github.com/pentaho/big-data-plugin/tree/spike/PDI-21063-zip-10.2)) | none |
 
 ## Closing the spike
 
@@ -399,6 +405,10 @@ mvn -B verify -nsu -DskipDefault -Pbase,plugins,highdeps -pl plugins/s3-vfs/core
 # A/C MinIO ITs - kettle 11.0 plugins/s3-vfs/core, big-data-plugin 10.2 s3-vfs (JUnit 4, surefire)
 # 10.2 Carte IT: first install kettle 10.2 core AND engine
 mvn test -Dtest='PvfsConnectionIsolationMinioIT,CarteConnectionCachingMinioIT' -Dcheckstyle.skip -Djacoco.skip=true
+# ZIP variable gap: 11.0 kettle plugins/s3-vfs/core or 10.2 big-data-plugin s3-vfs,
+# after installing the unmodified kettle core for that line; expected RED
+mvn -B -o test -Dtest='PvfsConnectionIsolationMinioIT#nestedZipOverPvfsResolvesCredentialVariablesFromCaller' \
+  -Dcheckstyle.skip -Djacoco.skip=true
 
 # G (PDI-20647) - kettle master ROOT, reactor artifacts, no install
 mvn -B verify -nsu -DskipDefault -Pbase,plugins,highdeps \
