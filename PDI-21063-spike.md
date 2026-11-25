@@ -68,17 +68,17 @@ compare links from [Branches](#branches), headed "Root cause (PDI-21063 spike)".
 | 5 | [PDI-20299](https://pentaho-eng.atlassian.net/browse/PDI-20299) | Linked B | Linked as duplicate of PDI-21074; added comment to retest the original UI scenario. | [x] |
 | 6 | [PDI-20586](https://pentaho-eng.atlassian.net/browse/PDI-20586) | Main C | Summary and Carte spike findings added; status remains Blocked for the owner to review. | [x] |
 | 7 | [PDI-21015](https://pentaho-eng.atlassian.net/browse/PDI-21015) | Main D | Spike findings added: file refresh PoC tested; reported connection-list refresh not reproduced or ported. | [x] |
-| 8 | [PDI-19753](https://pentaho-eng.atlassian.net/browse/PDI-19753) | Main E | Spike findings added; link to PDI-21035 changed to "relates to". Affects versions remain unspecified. | [x] |
+| 8 | [PDI-19753](https://pentaho-eng.atlassian.net/browse/PDI-19753) | Main E | Spike findings added; link to PDI-21035 changed to "relates to". Affects versions: 10.2, 11.0, 11.1. | [x] |
 | 9 | [PDI-20874](https://pentaho-eng.atlassian.net/browse/PDI-20874) | Main F | Spike findings and branch comparisons added. | [x] |
 | 9a | [PDI-20874](https://pentaho-eng.atlassian.net/browse/PDI-20874) | Main F | Added 11.0 to affects versions (tested on the 11.0 branch). | [x] |
 | 10 | [PDI-20647](https://pentaho-eng.atlassian.net/browse/PDI-20647) | Main G | Added Text File Input spike findings and comparison links. | [x] |
-| 10a | [PDI-20647](https://pentaho-eng.atlassian.net/browse/PDI-20647) | Main G | Confirm the reported transformation and investigate the possible Text File Input → Table Input chain; keep the existing title meanwhile. | [ ] |
+| 10a | [PDI-20647](https://pentaho-eng.atlassian.net/browse/PDI-20647) | Main G | No additional chain test needed for the spike; Text File Input reproduces the symptom. The exact reported transformation remains unverified. | [x] |
 | 11 | new bug | Main zip gap | Create in PDI-21042: "`zip:pvfs://` does not resolve connection credential variables (e.g. Unzip from S3)". Repro test in [Branches](#branches). Link "relates to PDI-21035". | [ ] |
 | 12 | [PDI-21063](https://pentaho-eng.atlassian.net/browse/PDI-21063) | Spike | Posted [spike findings comment](https://pentaho-eng.atlassian.net/browse/PDI-21063?focusedCommentId=469015), including ticket mapping and comparisons. | [x] |
 | 12a | [PDI-21063](https://pentaho-eng.atlassian.net/browse/PDI-21063) | Spike | No separate "relates to" links needed; tickets share the epic. | [x] |
 | 13 | all | Check | Re-read links, affects versions and summaries on the existing epic tickets. | [x] |
-| 13a | PDI-21074, PDI-20586, PDI-21015 | Follow-up | Add direct branch links if consistent branch/test/PoC formatting is desired; compare links are present. | [ ] |
-| 13b | [PDI-19753](https://pentaho-eng.atlassian.net/browse/PDI-19753) | Follow-up | Affects versions are unspecified; review whether to add release versions. | [ ] |
+| 13a | PDI-21074, PDI-20586, PDI-21015 | Follow-up | Added direct branch, test and PoC links. | [x] |
+| 13b | [PDI-19753](https://pentaho-eng.atlassian.net/browse/PDI-19753) | Follow-up | Affects versions 10.2, 11.0 and 11.1 added. | [x] |
 
 ## Jira index
 
