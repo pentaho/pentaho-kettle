@@ -71,9 +71,11 @@ compare links from [Branches](#branches), headed "Root cause (PDI-21063 spike)".
 | 8 | [PDI-19753](https://pentaho-eng.atlassian.net/browse/PDI-19753) | Main E | Spike findings added. Replace "is caused by PDI-21035" with "relates to PDI-21035" (different cause); review affects versions. | [ ] |
 | 9 | [PDI-20874](https://pentaho-eng.atlassian.net/browse/PDI-20874) | Main F | Spike findings and branch comparisons added. | [x] |
 | 9a | [PDI-20874](https://pentaho-eng.atlassian.net/browse/PDI-20874) | Main F | Add 11.0 to affects versions (tested on the 11.0 branch). | [ ] |
-| 10 | [PDI-20647](https://pentaho-eng.atlassian.net/browse/PDI-20647) | Main G | Root-cause block ([G](#g)): input validation, not caching. After the reporter confirms, summary `TableInput` -> Text File Input. | [ ] |
+| 10 | [PDI-20647](https://pentaho-eng.atlassian.net/browse/PDI-20647) | Main G | Added Text File Input spike findings and comparison links. | [x] |
+| 10a | [PDI-20647](https://pentaho-eng.atlassian.net/browse/PDI-20647) | Main G | Confirm the reported transformation and investigate the possible Text File Input → Table Input chain; keep the existing title meanwhile. | [ ] |
 | 11 | new bug | Main zip gap | Create in PDI-21042: "`zip:pvfs://` does not resolve connection credential variables (e.g. Unzip from S3)". Repro test in [Branches](#branches). Link "relates to PDI-21035". | [ ] |
-| 12 | [PDI-21063](https://pentaho-eng.atlassian.net/browse/PDI-21063) | Spike | Link "relates to" the 8 main Jiras. Comment: link to this doc and the main -> linked map. | [ ] |
+| 12 | [PDI-21063](https://pentaho-eng.atlassian.net/browse/PDI-21063) | Spike | Posted [spike findings comment](https://pentaho-eng.atlassian.net/browse/PDI-21063?focusedCommentId=469015), including ticket mapping and comparisons. | [x] |
+| 12a | [PDI-21063](https://pentaho-eng.atlassian.net/browse/PDI-21063) | Spike | Review whether to add "relates to" links to the main Jiras. | [ ] |
 | 13 | all | Check | Re-read links, affects versions and summaries on every ticket above. | [ ] |
 
 ## Jira index
