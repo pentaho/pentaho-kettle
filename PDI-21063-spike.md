@@ -65,7 +65,7 @@ compare links from [Branches](#branches), headed "Root cause (PDI-21063 spike)".
 | 2 | [PDI-20723](https://pentaho-eng.atlassian.net/browse/PDI-20723) | Linked A | Kept "duplicates PDI-21035"; added comment to retest the original scenario. | [x] |
 | 3 | [PDI-21092](https://pentaho-eng.atlassian.net/browse/PDI-21092) | Samples | No edit: retain existing "action item from PDI-21035". | [x] |
 | 4 | [PDI-21074](https://pentaho-eng.atlassian.net/browse/PDI-21074) | Main B | Spike evidence, comparison links and PR pentaho/pentaho-kettle#10782 added. | [x] |
-| 5 | [PDI-20299](https://pentaho-eng.atlassian.net/browse/PDI-20299) | Linked B | Assess duplicate of PDI-21074 and comment; retest the original UI scenario. | [ ] |
+| 5 | [PDI-20299](https://pentaho-eng.atlassian.net/browse/PDI-20299) | Linked B | Linked as duplicate of PDI-21074; added comment to retest the original UI scenario. | [x] |
 | 6 | [PDI-20586](https://pentaho-eng.atlassian.net/browse/PDI-20586) | Main C | Root-cause block ([C](#c)) with the Carte reproduction; note it recurs after PDI-20194 (Done 11.0, 10.2.0.3). Status is Blocked: confirm with the assignee it still applies. | [ ] |
 | 7 | [PDI-21015](https://pentaho-eng.atlassian.net/browse/PDI-21015) | Main D | Root-cause block ([D](#d)): 11.0 backport of BACKLOG-50458 (`a7e490b133f`, `af236de294b`). | [ ] |
 | 8 | [PDI-19753](https://pentaho-eng.atlassian.net/browse/PDI-19753) | Main E | Root-cause block ([E](#e)). Set affects versions 11.1, 11.0, 10.2 (none today). Replace "is caused by PDI-21035" with "relates to PDI-21035" (different cause). | [ ] |
