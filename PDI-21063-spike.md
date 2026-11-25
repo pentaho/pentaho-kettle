@@ -11,6 +11,60 @@ Other uncovered workflows remain explicitly listed below.
 A PoC shows that a fix direction works; it is not a production change. Each
 still needs design review, hardening, product QA and its own ticket/PR.
 
+## Planning summary (PO/PM)
+
+### Split the work per cause, not per symptom
+
+The 10 epic tickets are symptoms. Several share one cause (A fixes 3 tickets,
+B fixes 2), and one is not caching at all (G). Ticketing per symptom would
+mean the same code changed and reviewed several times, with partial fixes in
+between. Proposal:
+
+- One **implementation ticket per cause** (A-G, plus the new `zip:pvfs` gap),
+  in the epic, owning the code change, tests and backports.
+- Link the symptom tickets to it with **is fixed by**. Close them only after
+  their reported workflow is retested on the fixed build.
+- One sub-task per release line (master, 11.0, 10.2), so lines can ship
+  independently.
+- Where a symptom ticket already describes the cause, reuse it instead of
+  creating a new one (column "Ticket" below).
+
+Jira today (2026-11-25): all 10 tickets Open (PDI-20586 Blocked), no fix
+versions, no implementation tickets.
+
+### Candidates for the next 4 weeks
+
+Effort = developer days with Copilot agents, including hardening, unit/IT
+tests and backports; product QA is extra. Spike branches already hold the
+tests and a PoC for each.
+
+| Cause | Ticket | Fixes | User impact | Lines | Effort | Depends on | Suggested |
+|---|---|---|---|---|---|---|---|
+| [A](#a) shared PVFS context | new, or reuse PDI-20723 | PDI-21035, PDI-20723, PDI-21092 | Parallel S3/PVFS steps fail or **use another connection's credentials** | all | 3-4 d | A1/A2 decision; B first on 10.2 | Week 1-2 |
+| [B](#b) live connection details | PDI-21074 | PDI-21074, PDI-20299 | Cancel doesn't undo edits; rename corrupts connection | 10.2 | 0.5 d | PR pentaho/pentaho-kettle#10782 | Week 1 |
+| [C](#c) stale Carte connections | PDI-20586 | PDI-20586 | Carte reruns use the **first run's credentials/variables** | all | 3-4 d | A; cheaper cache key | Week 2-3 |
+| [D](#d) repository refresh | PDI-21015 | PDI-21015 | Repository changes invisible until restart | 11.0 | 0.5 d (+1-2 d D2) | VPN | Week 1 |
+| [E](#e) Hadoop bridge cache key | PDI-19753 | PDI-19753 | Parquet to a second bucket fails (`Wrong FS`) | all | 1.5-2 d | - | Week 3 |
+| [F](#f) GCS key materialization | PDI-20874 | PDI-20874 | Changed GCS key file ignored | all | 1-2 d | Product: missing key = error? | Week 3-4 |
+| [G](#g) deleted connection, optional input | PDI-20647 | PDI-20647 | Run **succeeds with 0 rows** after connection deleted | master (+0.5-1 d per backport) | 1-2 d | Reporter confirms Text File Input | Week 4 |
+| `zip:pvfs` `${VAR}` credentials | **new** | none (found by spike) | `403` reading zips over a connection with variable credentials | to check | not estimated | - | Backlog |
+
+Total: about 11-19 developer days for A-G (upper end includes D2 and G backports), which fits
+4 weeks for one developer with QA running in parallel. Suggested cut if
+capacity is short: A, B, C and D first (credential mix-ups and cheap
+backports), then E, F, G.
+
+### Decisions needed
+
+1. Approve the per-cause split and the ticket reuse above.
+2. A design: A2 (recommended) or A1. Both break raw `s3://` steps that only
+   worked by inheriting another step's `connection` (release note).
+3. Fix versions and backport scope for 11.0 and 10.2.
+4. PDI-21092 is a Story of extra samples: close it as covered by A.
+5. F: should a missing GCS key file fail the run instead of using the old key?
+6. G: confirm the Text File Input reading with the reporter, and whether
+   PDI-20647 stays in this caching epic.
+
 ## Jira index
 
 Test results at the upstream tips on 2026-11-24 (kettle master `e7ec0605c72`,
@@ -289,8 +343,10 @@ pentaho-kettle `spike/PDI-21063-master`.
       if access is restored, and validate any requested 11.0/10.2 backports.
 - [x] A design inputs (PDI-21035, PDI-20723, PDI-21092): cost, `connection`
       readers and nested `zip:pvfs://` measured; recommendation A2.
-- [ ] Team decision on the A design.
-- [ ] One implementation ticket per cause linked to PDI-21042.
+- [x] Ticket split and 4-week candidates proposed ([Planning summary](#planning-summary-popm)).
+- [ ] PO/PM decisions 1-6 in the planning summary (includes the A design).
+- [ ] Create/reuse one implementation ticket per cause in PDI-21042, link the
+      symptom tickets with "is fixed by", and open the `zip:pvfs` ticket.
 
 ## Appendix: how to run
 
