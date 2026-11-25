@@ -68,7 +68,7 @@ compare links from [Branches](#branches), headed "Root cause (PDI-21063 spike)".
 | 5 | [PDI-20299](https://pentaho-eng.atlassian.net/browse/PDI-20299) | Linked B | Linked as duplicate of PDI-21074; added comment to retest the original UI scenario. | [x] |
 | 6 | [PDI-20586](https://pentaho-eng.atlassian.net/browse/PDI-20586) | Main C | Summary and Carte spike findings added; status remains Blocked for the owner to review. | [x] |
 | 7 | [PDI-21015](https://pentaho-eng.atlassian.net/browse/PDI-21015) | Main D | Spike findings added: file refresh PoC tested; reported connection-list refresh not reproduced or ported. | [x] |
-| 8 | [PDI-19753](https://pentaho-eng.atlassian.net/browse/PDI-19753) | Main E | Root-cause block ([E](#e)). Set affects versions 11.1, 11.0, 10.2 (none today). Replace "is caused by PDI-21035" with "relates to PDI-21035" (different cause). | [ ] |
+| 8 | [PDI-19753](https://pentaho-eng.atlassian.net/browse/PDI-19753) | Main E | Spike findings added. Replace "is caused by PDI-21035" with "relates to PDI-21035" (different cause); review affects versions. | [ ] |
 | 9 | [PDI-20874](https://pentaho-eng.atlassian.net/browse/PDI-20874) | Main F | Root-cause block ([F](#f)). Add 11.0 to affects versions. | [ ] |
 | 10 | [PDI-20647](https://pentaho-eng.atlassian.net/browse/PDI-20647) | Main G | Root-cause block ([G](#g)): input validation, not caching. After the reporter confirms, summary `TableInput` -> Text File Input. | [ ] |
 | 11 | new bug | Main zip gap | Create in PDI-21042: "`zip:pvfs://` does not resolve connection credential variables (e.g. Unzip from S3)". Repro test in [Branches](#branches). Link "relates to PDI-21035". | [ ] |
