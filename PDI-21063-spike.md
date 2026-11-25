@@ -1,6 +1,6 @@
 # PDI-21063 - VFS caching spike
 
-Updated: 2026-11-24. Spike [PDI-21063](https://pentaho-eng.atlassian.net/browse/PDI-21063), epic [PDI-21042](https://pentaho-eng.atlassian.net/browse/PDI-21042).
+Updated: 2026-11-25. Spike [PDI-21063](https://pentaho-eng.atlassian.net/browse/PDI-21063), epic [PDI-21042](https://pentaho-eng.atlassian.net/browse/PDI-21042).
 
 **Verdict:** the epic is not one bug. Its 10 tickets span 6 workstreams
 (A-F), with independent cache and input-validation causes in C.
@@ -61,10 +61,50 @@ pentaho-kettle `spike/PDI-21063-master`.
 - **Commits (pentaho-kettle):** master `8548d5cc84e -> 99b2ae9bfbf`, 11.0
   `e77e8cb86f0 -> cd54cca1fac`, 10.2 `1c2c118331d -> b7aa087c35a`; the 10.2 IT
   is in big-data-plugin `d6688ef35`.
-- **Open:** final design (PoC child space vs passing the connection
-  explicitly); cost of copying variables per lookup; plugins that read
-  `connection` after a lookup; nested `zip:pvfs://` untested.
-- **Remaining effort:** 3-4.5 days (design, master, 11.0/10.2 backports, QA).
+- **Design options (master):**
+  - **A1 child copy:** the PoC above; `connection` is written into a per-resolution copy.
+  - **A2 explicit connection:** `ConnectionFileSystem` passes the name to `VFSHelper.getOpts` and resolves the
+    provider URI with those options. Nothing is written, nothing is copied.
+
+  Both pass every A test: core `PvfsResolutionIsolationTest` 3/3 and `PvfsConnectionIsolationMinioIT` 6/7 (the
+  7th is the pre-existing nested gap below; stock fails 3/7). Core `connections.**` + `core.vfs.**`: 264/264
+  for both.
+- **Cost per PVFS lookup** (`PvfsLookupCostIT`, MinIO, file-object resolution only, no S3 request timed; JDK 21;
+  median of 7x1 s after 3 s warm-up; stock and A1/A2 measured twice, stock varied by about 10%):
+
+  | Variables in space | Stock | A1 | A2 | A1 + C1 PoC 1 | A2 + C1 PoC 1 |
+  |---|---|---|---|---|---|
+  | 190 (System only) | 69-76 µs | 76-78 µs | 65-66 µs | 93 µs | 81 µs |
+  | 1,190 | 198-220 µs | 229-230 µs | 180-181 µs | 376 µs | 292 µs |
+  | 5,190 | 683-782 µs | 813-819 µs | 623-643 µs | 1,824 µs | 1,414 µs |
+
+  A1 adds one variable copy per resolution (8 µs at 190 variables, 139 µs at 5,190): +1-20% time, +7-11%
+  allocation. A2 skips one variable scan: 5-20% faster and 1-6% less allocation than stock. Both are small next to
+  an S3 request (milliseconds); A1 only matters for per-row lookups at volume (about +1 s per 100k files). The real
+  cost is C1's snapshot (+22-127%, see [C1](#c)).
+- **Who reads `connection`:** upstream master of pentaho-kettle, pdi-plugins-ee, big-data-plugin,
+  pentaho-hadoop-shims, pentaho-big-data-ee, pdi-ee-plugin and pentaho-metaverse has one reader,
+  `KettleVFSImpl.buildFsOptions`. That is the BACKLOG-28010 (2019) feature where a user-set `connection` variable
+  selects a named connection for raw URIs; it keeps working in A1 and A2. `details.getSpace()` is read after lookup
+  by ADLS Gen1/Gen2, Catalog and shims `PvfsConf`, but only for `${}` substitution: same values in A1 and A2, and no
+  one resolves URIs with it. Third-party plugins were not checked.
+  Compatibility: a raw `s3://` step that only worked because an earlier PVFS step leaked `connection` stops
+  working in both designs. That is the PDI-21092 fix and needs a release note.
+- **Nested `zip:pvfs://`:** parallel reads through two connections on one shared space are already isolated on
+  stock and in A1/A2, and the caller's space stays clean. The PVFS layer under `zip:` receives the zip options,
+  not the caller's space. **New gap, not an A ticket:** a connection with `${VAR}` credentials fails with `403`
+  through `zip:pvfs://` on stock and in A1/A2, while plain `pvfs://` works. It needs its own ticket.
+- **10.2:** `getConnectionDetails()` returns the shared cached instance ([B](#b)), so `details.setSpace()` still
+  races between steps in A1 and A2. Merge B (pentaho/pentaho-kettle#10782) before A on 10.2. This is from code
+  reading; not tested.
+- **Recommendation:** A2. It has no hidden state, no copy, is faster, and passes the same tests. A2 risk: provider
+  URIs bypass `buildFsOptions`. That matches stock whenever a connection was selected, but needs review of the
+  fallback when `getOpts` returns `null`.
+- **Commits (pentaho-kettle, master):** tests + benchmark `spike/PDI-21063-A-design` `b0e925b2170`; A1
+  `spike/PDI-21063-A1-child-copy` `3987a9d3914`; A2 `spike/PDI-21063-A2-explicit-connection` `3b356132de2`.
+  The `+ C1` columns cherry-pick `54dc61598ab`.
+- **Remaining effort:** 3-4 days (A2 hardening, master, 11.0/10.2 backports after B, QA, nested-variable ticket
+  separately).
 
 <a id="b"></a>
 ## B - PDI-21074, PDI-20299: live connection details (10.2 only)
@@ -116,8 +156,11 @@ pentaho-kettle `spike/PDI-21063-master`.
 - **Commits:** pentaho-kettle master `0876db9d896 -> 54dc61598ab`, 11.0
   `fa9e2a53e30 -> b2291ce6f8c`, 10.2 `e18b9f9a83d` (PoC 2) + `4c65c83ef20`
   (PoC 1); the 10.2 test is big-data-plugin `e5723654f`.
-- **Open:** a snapshot copies all variables on each lookup (cost); the cache
-  is still compared by hash only, so collisions are possible; `reset()` is not
+- **Open:** a snapshot copies, sorts and hashes all variables on each lookup:
+  +22-127% per PVFS lookup over A alone (measured in [A](#a)), worse than
+  linear. Needs a cheaper key, e.g. only the variables the connection
+  references, or a cached hash. The cache is still compared by hash only, so
+  collisions are possible; `reset()` is not
   safe while another job is reading connections (10.2); PDI-20586's Spoon
   browse-tree cache remains untested.
 - **Remaining effort:** 3-4 days (PoC 1 design + perf check on all lines,
@@ -241,7 +284,9 @@ pentaho-kettle `spike/PDI-21063-master`.
       validate a PoC, under the documented Text File Input interpretation.
 - [ ] PDI-20647: accept that interpretation, compare archived 11.1.0.0-59
       if access is restored, and validate any requested 11.0/10.2 backports.
-- [ ] Team decision on the A design (PDI-21035, PDI-20723, PDI-21092).
+- [x] A design inputs (PDI-21035, PDI-20723, PDI-21092): cost, `connection`
+      readers and nested `zip:pvfs://` measured; recommendation A2.
+- [ ] Team decision on the A design.
 - [ ] One implementation ticket per cause linked to PDI-21042.
 
 ## Appendix: how to run
@@ -259,6 +304,12 @@ mvn -o test -Dtest='PvfsResolutionIsolationTest,ConnectionManagerEditIsolationTe
 
 # A/C MinIO ITs - kettle master plugins/s3-vfs/core
 mvn verify -Dit.test='PvfsConnectionIsolationMinioIT,CarteConnectionCachingMinioIT' -Dtest=NONE -Dsurefire.failIfNoSpecifiedTests=false -Dcheckstyle.skip -Djacoco.skip=true
+# A design (PDI-21035, PDI-20723, PDI-21092) - kettle master ROOT, per branch; label each run
+mvn -B verify -nsu -DskipDefault -Pbase,plugins,highdeps -pl plugins/s3-vfs/core -am \
+  -Dit.test=PvfsConnectionIsolationMinioIT,PvfsLookupCostIT -Dpdi21063.bench=true -Dpdi21063.variant=A2 \
+  -Dtest=NONE -Dsurefire.failIfNoSpecifiedTests=false -Dfailsafe.failIfNoSpecifiedTests=false \
+  -Dcheckstyle.skip -Djacoco.skip=true -Dmaven.javadoc.skip=true
+# results: plugins/s3-vfs/core/target/pdi21063-a-bench.tsv
 # A/C MinIO ITs - kettle 11.0 plugins/s3-vfs/core, big-data-plugin 10.2 s3-vfs (JUnit 4, surefire)
 # 10.2 Carte IT: first install kettle 10.2 core AND engine
 mvn test -Dtest='PvfsConnectionIsolationMinioIT,CarteConnectionCachingMinioIT' -Dcheckstyle.skip -Djacoco.skip=true
