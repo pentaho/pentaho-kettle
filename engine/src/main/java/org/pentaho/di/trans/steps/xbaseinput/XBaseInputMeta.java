@@ -82,6 +82,9 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
   /** The name of the field in the output containing the filename */
   private String filenameField;
 
+  /** Type of compression being used */
+  public String fileCompression;
+
   /** The character set / encoding used in the string or memo fields */
   private String charactersetName;
 
@@ -192,6 +195,7 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
    */
   public void setAcceptingStep( StepMeta acceptingStep ) {
     this.acceptingStep = acceptingStep;
+    acceptingStepName = acceptingStep != null ? acceptingStep.getName() : null;
   }
 
   /**
@@ -214,6 +218,21 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
    */
   public String getFilenameField() {
     return filenameField;
+  }
+
+  /**
+   * @return Returns the compression type.
+   */
+  public String getFileCompression() {
+    return fileCompression;
+  }
+
+  /**
+   * @param fileCompression
+   *          Sets the compression type
+   */
+  public void setFileCompression( String fileCompression ) {
+    this.fileCompression = fileCompression;
   }
 
   /**
@@ -259,6 +278,7 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
 
       includeFilename = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "include" ) );
       filenameField = XMLHandler.getTagValue( stepnode, "include_field" );
+      fileCompression = XMLHandler.getTagValue( stepnode, "compression_type" );
       charactersetName = XMLHandler.getTagValue( stepnode, "charset_name" );
 
       acceptingFilenames = "Y".equalsIgnoreCase( XMLHandler.getTagValue( stepnode, "accept_filenames" ) );
@@ -305,9 +325,7 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
     //
     XBase xbi = null;
     try {
-      xbi = new XBase( getLog(), KettleVFS.getInputStream( files.getFile( 0 ) ) );
-      xbi.setDbfFile( files.getFile( 0 ).getName().getURI() );
-      xbi.open();
+      xbi = XBaseFactory.createXBase( getLog(), files.getFile( 0 ), fileCompression );
       RowMetaInterface add = xbi.getFields();
       for ( int i = 0; i < add.size(); i++ ) {
         ValueMetaInterface v = add.getValueMeta( i );
@@ -362,15 +380,12 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
 
     retval.append( "    " + XMLHandler.addTagValue( "include", includeFilename ) );
     retval.append( "    " + XMLHandler.addTagValue( "include_field", filenameField ) );
+    retval.append( "    " + XMLHandler.addTagValue( "compression_type", fileCompression ) );
     retval.append( "    " + XMLHandler.addTagValue( "charset_name", charactersetName ) );
 
     retval.append( "    " + XMLHandler.addTagValue( "accept_filenames", acceptingFilenames ) );
     retval.append( "    " + XMLHandler.addTagValue( "accept_field", acceptingField ) );
-    if ( ( acceptingStepName == null ) && ( acceptingStep != null ) ) {
-      acceptingStepName = acceptingStep.getName();
-    }
-    retval.append( "    "
-      + XMLHandler.addTagValue( "accept_stepname", acceptingStepName ) );
+    retval.append( "    " + XMLHandler.addTagValue( "accept_stepname", acceptingStepName ) );
 
     return retval.toString();
   }
@@ -385,6 +400,7 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
 
       includeFilename = rep.getStepAttributeBoolean( id_step, "include" );
       filenameField = rep.getStepAttributeString( id_step, "include_field" );
+      fileCompression = rep.getStepAttributeString( id_step, "compression_type" );
       charactersetName = rep.getStepAttributeString( id_step, "charset_name" );
 
       acceptingFilenames = rep.getStepAttributeBoolean( id_step, "accept_filenames" );
@@ -407,13 +423,11 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
 
       rep.saveStepAttribute( id_transformation, id_step, "include", includeFilename );
       rep.saveStepAttribute( id_transformation, id_step, "include_field", filenameField );
+      rep.saveStepAttribute( id_transformation, id_step, "compression_type", fileCompression );
       rep.saveStepAttribute( id_transformation, id_step, "charset_name", charactersetName );
 
       rep.saveStepAttribute( id_transformation, id_step, "accept_filenames", acceptingFilenames );
       rep.saveStepAttribute( id_transformation, id_step, "accept_field", acceptingField );
-      if ( ( acceptingStepName == null ) && ( acceptingStep != null ) ) {
-        acceptingStepName = acceptingStep.getName();
-      }
       rep.saveStepAttribute( id_transformation, id_step, "accept_stepname", acceptingStepName );
 
     } catch ( Exception e ) {
@@ -457,9 +471,9 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
           PKG, "XBaseInputMeta.Remark.FileToUseIsSpecified" ), stepMeta );
       remarks.add( cr );
 
-      XBase xbi = new XBase( getLog(), transMeta.environmentSubstitute( dbfFileName ) );
+      XBase xbi = null;
       try {
-        xbi.open();
+        xbi = XBaseFactory.createXBase( log, transMeta.environmentSubstitute( dbfFileName ), fileCompression );
         cr =
           new CheckResult( CheckResult.TYPE_RESULT_OK, BaseMessages.getString(
             PKG, "XBaseInputMeta.Remark.FileExistsAndCanBeOpened" ), stepMeta );
@@ -478,7 +492,9 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
             + Const.CR + ke.getMessage(), stepMeta );
         remarks.add( cr );
       } finally {
-        xbi.close();
+        if ( xbi != null ) {
+          xbi.close();
+        }
       }
     }
   }
