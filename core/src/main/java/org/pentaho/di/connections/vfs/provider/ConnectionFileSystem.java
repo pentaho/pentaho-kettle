@@ -17,6 +17,7 @@ package org.pentaho.di.connections.vfs.provider;
 import org.pentaho.di.connections.ConnectionManager;
 import org.pentaho.di.connections.vfs.VFSConnectionDetails;
 import org.pentaho.di.connections.vfs.VFSConnectionManagerHelper;
+import org.pentaho.di.connections.vfs.VFSHelper;
 import org.pentaho.di.core.bowl.Bowl;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -100,8 +101,7 @@ public class ConnectionFileSystem extends AbstractFileSystem implements FileSyst
       .toProviderFileName( pvfsFileName, details );
 
     AbstractFileObject<?> providerFileObject =
-      (AbstractFileObject<?>) getKettleVFS()
-        .getFileObject( providerFileName.getURI(), details.getSpace() );
+      (AbstractFileObject<?>) resolveProviderFile( providerFileName.getURI(), connectionName, details.getSpace() );
 
     return new ResolvedConnectionFileObject( pvfsFileName, this, providerFileObject );
   }
@@ -205,14 +205,23 @@ public class ConnectionFileSystem extends AbstractFileSystem implements FileSyst
       throw new IOException( "Failed to initialize connection variables" );
     }
 
-    String connectionName = details.getName();
-
-    // Used by KettleVFSImpl#buildFsOptions -> VFSHelper#getOpts(...).
-    varSpace.setVariable( CONNECTION, connectionName );
-
+    // The connection is selected explicitly in resolveProviderFile, so the caller's space, which may be shared (e.g.
+    // by all steps of a transformation), is never written to (PDI-21035, PDI-20723, PDI-21092).
     details.setSpace( varSpace );
 
     return varSpace;
+  }
+
+  @NonNull
+  private FileObject resolveProviderFile( @NonNull String providerUri, @NonNull String connectionName,
+                                          @NonNull VariableSpace space ) throws KettleException, IOException {
+    FileSystemOptions options = VFSHelper.getOpts( getBowl(), providerUri, connectionName, space );
+    if ( options == null ) {
+      return getKettleVFS().getFileObject( providerUri, space );
+    }
+    // Bypasses KettleVFSImpl#buildFsOptions, which would let a "connection" variable in the caller's space replace
+    // these options.
+    return KettleVFS.getInstance().getFileSystemManager().resolveFile( providerUri, options );
   }
 
   @NonNull
