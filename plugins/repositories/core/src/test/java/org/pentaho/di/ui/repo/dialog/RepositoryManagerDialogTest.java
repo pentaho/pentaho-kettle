@@ -180,7 +180,7 @@ public class RepositoryManagerDialogTest {
         new RepositoriesMeta(), null );
 
       verify( mockDialogShell ).close();
-      verify( mockAuthContext ).storeJSessionId( "JSESS123" );
+      verify( mockAuthContext ).storeJSessionId( "JSESS123", "adminUser" );
       verify( mockController ).connectToRepository(
         "myRepo",
         "adminUser",
@@ -761,7 +761,9 @@ public class RepositoryManagerDialogTest {
       dialogInstance.openBrowserLogin( "myRepo", "http://localhost:8080/pentaho",
         new RepositoriesMeta(), null );
 
+      // check both overloads so this stays meaningful regardless of which one the caller uses
       verify( neverUsedContext, never() ).storeJSessionId( anyString() );
+      verify( neverUsedContext, never() ).storeJSessionId( any(), any() );
       verify( mockController, never() ).connectToRepository( anyString(), anyString(), anyString() );
 
       org.eclipse.swt.widgets.MessageBox msgBox = mbMock.constructed().get( 0 );

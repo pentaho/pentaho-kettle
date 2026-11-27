@@ -19,6 +19,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.KettleClientEnvironment;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
 import org.pentaho.di.core.Props;
@@ -37,7 +38,6 @@ import org.pentaho.di.www.SlaveServerJobStatus;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -88,6 +88,7 @@ public class JobEntryJobIT extends JobEntryJob {
 
     when( parentJob.getLogLevel() ).thenReturn( LogLevel.BASIC );
     when( parentJobMeta.getRepositoryDirectory() ).thenReturn( null );
+    when( parentJobMeta.getBowl() ).thenReturn( DefaultBowl.getInstance() );
     when( jobMeta.getRepositoryDirectory() ).thenReturn( mock( RepositoryDirectoryInterface.class ) );
     when( jobMeta.getName() ).thenReturn( JOB_META_NAME );
     when( parentJob.getJobMeta() ).thenReturn( parentJobMeta );
@@ -122,8 +123,20 @@ public class JobEntryJobIT extends JobEntryJob {
     job.setParentJobMeta( parentJobMeta );
 
     job.execute( new Result(), 0 );
-    String result = Files.lines( FILE ).collect( Collectors.joining( "" ) );
-    assertTrue( result.contains( LOG ) );
+    assertTrue( "Remote log output was not written before the timeout", awaitLogFileContents( LOG ).contains( LOG ) );
+  }
+
+  private static String awaitLogFileContents( String expectedContent ) throws Exception {
+    long deadline = System.currentTimeMillis() + 10_000;
+    String contents = "";
+    while ( System.currentTimeMillis() < deadline ) {
+      contents = Files.readString( FILE );
+      if ( contents.contains( expectedContent ) ) {
+        return contents;
+      }
+      Thread.sleep( 100 );
+    }
+    return contents;
   }
 
   @BeforeClass

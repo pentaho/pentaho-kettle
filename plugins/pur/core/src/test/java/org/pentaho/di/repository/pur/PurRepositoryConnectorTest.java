@@ -36,6 +36,7 @@ import org.pentaho.platform.engine.core.system.PentahoSystem;
 import org.pentaho.platform.api.engine.IAuthorizationPolicy;
 
 import java.io.ByteArrayInputStream;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -51,6 +52,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -78,6 +80,121 @@ public class PurRepositoryConnectorTest {
       new PurRepositoryConnector( mockPurRepository, mockPurRepositoryMeta, mockRootRef );
     purRepositoryConnector.disconnect();
     purRepositoryConnector.disconnect();
+  }
+
+  /**
+   * Puts a connector into the state {@code connect} would leave it in, without standing up a server.
+   */
+  private PurRepositoryConnector connectorWithSession( PurRepository purRepository, PurRepositoryMeta meta,
+      RootRef rootRef, String username, boolean usedSessionAuth ) throws Exception {
+    PurRepositoryConnector connector = new PurRepositoryConnector( purRepository, meta, rootRef );
+    Field usernameField = PurRepositoryConnector.class.getDeclaredField( "connectedUsername" );
+    usernameField.setAccessible( true );
+    usernameField.set( connector, username );
+    Field sessionAuthField = PurRepositoryConnector.class.getDeclaredField( "usedSessionAuth" );
+    sessionAuthField.setAccessible( true );
+    sessionAuthField.set( connector, usedSessionAuth );
+    return connector;
+  }
+
+  @Test
+  public void testDisconnectClearsTheCachedSessionCredentials() throws Exception {
+    // Regression for PDI-20652: leaving our own session behind lets the next connection replay
+    // the previous user's JSESSIONID instead of authenticating as the new user.
+    PurRepository mockPurRepository = mock( PurRepository.class );
+    PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
+    PurRepositoryLocation location = mock( PurRepositoryLocation.class );
+    RootRef mockRootRef = mock( RootRef.class );
+    doReturn( location ).when( mockPurRepositoryMeta ).getRepositoryLocation();
+    doReturn( "http://localhost:8080/pentaho" ).when( location ).getUrl();
+
+    SpoonSessionManager mockSessionManager = mock( SpoonSessionManager.class );
+    AuthenticationContext mockAuthContext = mock( AuthenticationContext.class );
+    when( mockSessionManager.getAuthenticationContext( "http://localhost:8080/pentaho" ) )
+      .thenReturn( mockAuthContext );
+    when( mockAuthContext.isSessionOwnedBy( "admin" ) ).thenReturn( true );
+
+    try ( MockedStatic<SpoonSessionManager> mockedManager = mockStatic( SpoonSessionManager.class ) ) {
+      mockedManager.when( SpoonSessionManager::getInstance ).thenReturn( mockSessionManager );
+
+      connectorWithSession( mockPurRepository, mockPurRepositoryMeta, mockRootRef, "admin", true ).disconnect();
+
+      verify( mockAuthContext ).clearCredentials();
+    }
+  }
+
+  @Test
+  public void testDisconnectLeavesACachedSessionBelongingToAnotherUserAlone() throws Exception {
+    // The session cache is keyed by server URL, so every connection to a repository in this JVM shares
+    // one entry. Disconnecting must not sign out a connection that belongs to somebody else.
+    PurRepository mockPurRepository = mock( PurRepository.class );
+    PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
+    PurRepositoryLocation location = mock( PurRepositoryLocation.class );
+    RootRef mockRootRef = mock( RootRef.class );
+    doReturn( location ).when( mockPurRepositoryMeta ).getRepositoryLocation();
+    doReturn( "http://localhost:8080/pentaho" ).when( location ).getUrl();
+
+    SpoonSessionManager mockSessionManager = mock( SpoonSessionManager.class );
+    AuthenticationContext mockAuthContext = mock( AuthenticationContext.class );
+    when( mockSessionManager.getAuthenticationContext( "http://localhost:8080/pentaho" ) )
+      .thenReturn( mockAuthContext );
+    when( mockAuthContext.isSessionOwnedBy( "joe" ) ).thenReturn( false );
+
+    try ( MockedStatic<SpoonSessionManager> mockedManager = mockStatic( SpoonSessionManager.class ) ) {
+      mockedManager.when( SpoonSessionManager::getInstance ).thenReturn( mockSessionManager );
+
+      connectorWithSession( mockPurRepository, mockPurRepositoryMeta, mockRootRef, "joe", true ).disconnect();
+
+      verify( mockAuthContext, never() ).clearCredentials();
+    }
+  }
+
+  @Test
+  public void testDisconnectDoesNotTouchTheSessionCacheForPasswordAuthenticatedConnections() throws Exception {
+    // A Carte server runs many jobs at once, each connecting with a password and disconnecting when it
+    // finishes. Those connections own no session, so the first job to finish must leave the cache alone.
+    PurRepository mockPurRepository = mock( PurRepository.class );
+    PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
+    PurRepositoryLocation location = mock( PurRepositoryLocation.class );
+    RootRef mockRootRef = mock( RootRef.class );
+    doReturn( location ).when( mockPurRepositoryMeta ).getRepositoryLocation();
+    doReturn( "http://localhost:8080/pentaho" ).when( location ).getUrl();
+
+    SpoonSessionManager mockSessionManager = mock( SpoonSessionManager.class );
+    AuthenticationContext mockAuthContext = mock( AuthenticationContext.class );
+    when( mockSessionManager.getAuthenticationContext( "http://localhost:8080/pentaho" ) )
+      .thenReturn( mockAuthContext );
+
+    try ( MockedStatic<SpoonSessionManager> mockedManager = mockStatic( SpoonSessionManager.class ) ) {
+      mockedManager.when( SpoonSessionManager::getInstance ).thenReturn( mockSessionManager );
+
+      connectorWithSession( mockPurRepository, mockPurRepositoryMeta, mockRootRef, "admin", false ).disconnect();
+
+      verify( mockAuthContext, never() ).clearCredentials();
+      // the cache must not even be consulted, since looking a context up creates one
+      verify( mockSessionManager, never() ).getAuthenticationContext( anyString() );
+    }
+  }
+
+  @Test
+  public void testDisconnectCompletesWhenClearingTheCachedSessionFails() throws Exception {
+    // Session cleanup is best effort and must never prevent a disconnect from completing.
+    PurRepository mockPurRepository = mock( PurRepository.class );
+    PurRepositoryMeta mockPurRepositoryMeta = mock( PurRepositoryMeta.class );
+    PurRepositoryLocation location = mock( PurRepositoryLocation.class );
+    RootRef mockRootRef = mock( RootRef.class );
+    doReturn( location ).when( mockPurRepositoryMeta ).getRepositoryLocation();
+    doReturn( "http://localhost:8080/pentaho" ).when( location ).getUrl();
+
+    SpoonSessionManager mockSessionManager = mock( SpoonSessionManager.class );
+    when( mockSessionManager.getAuthenticationContext( "http://localhost:8080/pentaho" ) )
+      .thenThrow( new IllegalArgumentException( "malformed url" ) );
+
+    try ( MockedStatic<SpoonSessionManager> mockedManager = mockStatic( SpoonSessionManager.class ) ) {
+      mockedManager.when( SpoonSessionManager::getInstance ).thenReturn( mockSessionManager );
+
+      connectorWithSession( mockPurRepository, mockPurRepositoryMeta, mockRootRef, "admin", true ).disconnect();
+    }
   }
 
   @Test

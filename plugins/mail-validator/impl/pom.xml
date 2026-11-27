@@ -34,15 +34,11 @@
       <artifactId>kettle-core</artifactId>
       <scope>provided</scope>
     </dependency>
+
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.healthmarketscience.jackcess</groupId>
-      <artifactId>jackcess</artifactId>
-      <scope>compile</scope>
     </dependency>
 
     <!-- Test dependencies -->

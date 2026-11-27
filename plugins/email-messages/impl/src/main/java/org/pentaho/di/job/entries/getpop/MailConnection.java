@@ -15,6 +15,8 @@
 package org.pentaho.di.job.entries.getpop;
 
 import com.google.common.annotations.VisibleForTesting;
+import org.apache.james.mime4j.mboxiterator.CharBufferWrapper;
+import org.apache.james.mime4j.mboxiterator.MboxIterator;
 import org.eclipse.angus.mail.imap.IMAPSSLStore;
 import org.eclipse.angus.mail.pop3.POP3SSLStore;
 import org.apache.commons.io.FilenameUtils;
@@ -37,6 +39,9 @@ import jakarta.mail.Part;
 import jakarta.mail.Session;
 import jakarta.mail.Store;
 import jakarta.mail.URLName;
+import jakarta.mail.Address;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeUtility;
 import jakarta.mail.search.AndTerm;
 import jakarta.mail.search.BodyTerm;
@@ -48,14 +53,25 @@ import jakarta.mail.search.ReceivedDateTerm;
 import jakarta.mail.search.RecipientStringTerm;
 import jakarta.mail.search.SearchTerm;
 import jakarta.mail.search.SubjectTerm;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -70,6 +86,12 @@ import java.util.regex.Pattern;
 
 public class MailConnection {
   private static Class<?> PKG = JobEntryGetPOP.class; // for i18n purposes, needed by Translator2!!
+  private static final String ERROR_FOLDER_NOT_FOUND = "MailConnection.Error.FolderNotFound";
+  private static final String ERROR_SET_DESTINATION = "MailConnection.Error.SetDestination";
+  private static final String ERROR_CREATE_FOLDER = "MailConnection.Error.CreateFolder";
+  private static final String BEARER_TOKEN = "Bearer ";
+  private static final String MAIL_PREFIX = "mail.";
+  private static final String FILE_SCHEME = "file://";
 
   /**
    * Target mail server.
@@ -93,7 +115,9 @@ public class MailConnection {
   private Store store = null;
   private Folder folder = null;
   /**
-   * Contains the list of retrieved messages
+   * Contains the list of retrieved messages (headers only). Message bodies are lazy-loaded on demand
+   * when accessed via getMessageBody(). For MBOX protocol, this references the mboxMessages array.
+   * For IMAP/POP3, these are server-side message references.
    */
   private Message[] messages;
   /**
@@ -101,6 +125,15 @@ public class MailConnection {
    */
   private Message message;
   private SearchTerm searchTerm = null;
+  private boolean mboxConnected;
+  private String mboxFolderName = "";
+  /**
+   * All message headers from MBOX file loaded at connect time. Message bodies are lazy-loaded
+   * on demand when accessed via getMessageBody(). Memory footprint grows linearly with message
+   * count (headers ~2-5KB each), but bodies are not retained after access.
+   */
+  private Message[] mboxMessages = new Message[0];
+  private String destinationMboxPath;
 
   /**
    * Counts the number of message fetched
@@ -134,6 +167,13 @@ public class MailConnection {
 
   private LogChannelInterface log;
   private Bowl bowl;
+
+  /**
+   * Maps MBOX Message objects to their sequence numbers (1-based).
+   * Used because mime4j MimeMessage objects always return 0 from getMessageNumber().
+   */
+  @VisibleForTesting
+  Map<Message, Integer> mboxMessageNumbers = new HashMap<>();
 
   /**
    * Construct a new Database MailConnection
@@ -180,63 +220,11 @@ public class MailConnection {
     this.proxyusername = proxyusername;
 
     try {
-
-      if ( useproxy ) {
-        // Need here to pass a proxy
-        // use SASL authentication
-        this.prop.put( "mail.imap.sasl.enable", "true" );
-        this.prop.put( "mail.imap.sasl.authorizationid", proxyusername );
-      }
-
-      if ( protocol == MailConnectionMeta.PROTOCOL_POP3 ) {
-        this.prop.setProperty( "mail.pop3s.rsetbeforequit", "true" );
-        this.prop.setProperty( "mail.pop3.rsetbeforequit", "true" );
-      } else if ( protocol == MailConnectionMeta.PROTOCOL_MBOX ) {
-        this.prop.setProperty( "mstor.mbox.metadataStrategy", "none" ); // mstor.mbox.metadataStrategy={none|xml|yaml}
-        this.prop.setProperty( "mstor.cache.disabled", "true" ); // prevent diskstore fail
-      }
-
-      String protocolString =
-        ( protocol == MailConnectionMeta.PROTOCOL_POP3 ) ? "pop3" : protocol == MailConnectionMeta.PROTOCOL_MBOX
-          ? "mstor" : "imap";
-
-      if( password.contains( "Bearer ") ) {
-        this.prop.setProperty( "mail.imap.ssl.enable", "true" );
-        this.prop.setProperty( "mail.imap.auth.mechanisms", "XOAUTH2" );
-      }
-      this.prop.setProperty( "mail.imap.connectiontimeout", "10000" ); // 10 seconds
-      this.prop.setProperty( "mail.imap.timeout", "10000" ); // 10 seconds
-
-      if ( usessl && protocol != MailConnectionMeta.PROTOCOL_MBOX ) {
-        // Supports IMAP/POP3 connection with SSL, the connection is established via SSL.
-        this.prop
-          .setProperty( "mail." + protocolString + ".socketFactory.class", "javax.net.ssl.SSLSocketFactory" );
-        this.prop.setProperty( "mail." + protocolString + ".socketFactory.fallback", "false" );
-        this.prop.setProperty( "mail." + protocolString + ".port", "" + port );
-        this.prop.setProperty( "mail." + protocolString + ".socketFactory.port", "" + port );
-
-        // Create session object
-        this.session = Session.getInstance( this.prop, null );
-        this.session.setDebug( log.isDebug() );
-        if ( this.port == -1 ) {
-          this.port =
-            ( ( protocol == MailConnectionMeta.PROTOCOL_POP3 )
-              ? MailConnectionMeta.DEFAULT_SSL_POP3_PORT : MailConnectionMeta.DEFAULT_SSL_IMAP_PORT );
-        }
-        URLName url = new URLName( protocolString, server, port, "", username, this.password.startsWith( "Bearer " ) ? this.password.substring( 7 ) : this.password );
-        this.store =
-          ( protocol == MailConnectionMeta.PROTOCOL_POP3 )
-            ? new POP3SSLStore( this.session, url ) : new IMAPSSLStore( this.session, url );
-        url = null;
-      } else {
-        this.session = Session.getInstance( this.prop, null );
-        this.session.setDebug( log.isDebug() );
-        if ( protocol == MailConnectionMeta.PROTOCOL_MBOX ) {
-          this.store = this.session.getStore( new URLName( protocolString + ":" + server ) );
-        } else {
-          this.store = this.session.getStore( protocolString );
-        }
-      }
+      configureProxySettings();
+      configurePOP3Settings();
+      configureOAuthSettings();
+      configureTimeoutSettings();
+      configureMailStore();
 
       if ( log.isDetailed() ) {
         log.logDetailed( BaseMessages.getString( PKG, "JobGetMailsFromPOP.NewConnectionDefined" ) );
@@ -244,6 +232,78 @@ public class MailConnection {
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "JobGetMailsFromPOP.Error.NewConnection", Const.NVL(
         this.server, "" ) ), e );
+    }
+  }
+
+  private void configureProxySettings() {
+    if ( this.useproxy ) {
+      // Need here to pass a proxy
+      // use SASL authentication
+      this.prop.put( "mail.imap.sasl.enable", "true" );
+      this.prop.put( "mail.imap.sasl.authorizationid", this.proxyusername );
+    }
+  }
+
+  private void configurePOP3Settings() {
+    if ( this.protocol == MailConnectionMeta.PROTOCOL_POP3 ) {
+      this.prop.setProperty( "mail.pop3s.rsetbeforequit", "true" );
+      this.prop.setProperty( "mail.pop3.rsetbeforequit", "true" );
+    }
+  }
+
+  private void configureOAuthSettings() {
+    if( this.password.contains( BEARER_TOKEN ) ) {
+      this.prop.setProperty( "mail.imap.ssl.enable", "true" );
+      this.prop.setProperty( "mail.imap.auth.mechanisms", "XOAUTH2" );
+    }
+  }
+
+  private void configureTimeoutSettings() {
+    this.prop.setProperty( "mail.imap.connectiontimeout", "10000" ); // 10 seconds
+    this.prop.setProperty( "mail.imap.timeout", "10000" ); // 10 seconds
+  }
+
+  private void configureMailStore() throws MessagingException {
+    String protocolString =
+      ( this.protocol == MailConnectionMeta.PROTOCOL_POP3 ) ? "pop3" : "imap";
+
+    if ( this.usessl && this.protocol != MailConnectionMeta.PROTOCOL_MBOX ) {
+      configureSSLMailStore( protocolString );
+    } else {
+      configureNonSSLMailStore( protocolString );
+    }
+  }
+
+  private void configureSSLMailStore( String protocolString ) {
+    // Supports IMAP/POP3 connection with SSL, the connection is established via SSL.
+    this.prop
+      .setProperty( MAIL_PREFIX + protocolString + ".socketFactory.class", "javax.net.ssl.SSLSocketFactory" );
+    this.prop.setProperty( MAIL_PREFIX + protocolString + ".socketFactory.fallback", "false" );
+    this.prop.setProperty( MAIL_PREFIX + protocolString + ".port", "" + this.port );
+    this.prop.setProperty( MAIL_PREFIX + protocolString + ".socketFactory.port", "" + this.port );
+
+    // Create session object
+    this.session = Session.getInstance( this.prop, null );
+    this.session.setDebug( this.log.isDebug() );
+    if ( this.port == -1 ) {
+      this.port =
+        ( ( this.protocol == MailConnectionMeta.PROTOCOL_POP3 )
+          ? MailConnectionMeta.DEFAULT_SSL_POP3_PORT : MailConnectionMeta.DEFAULT_SSL_IMAP_PORT );
+    }
+    String cleanPassword = this.password.startsWith( BEARER_TOKEN ) ? this.password.substring( BEARER_TOKEN.length() ) : this.password;
+    URLName url = new URLName( protocolString, this.server, this.port, "", this.username, cleanPassword );
+    this.store =
+      ( this.protocol == MailConnectionMeta.PROTOCOL_POP3 )
+        ? new POP3SSLStore( this.session, url ) : new IMAPSSLStore( this.session, url );
+  }
+
+  private void configureNonSSLMailStore( String protocolString ) throws MessagingException {
+    this.session = Session.getInstance( this.prop, null );
+    this.session.setDebug( this.log.isDebug() );
+    if ( this.protocol == MailConnectionMeta.PROTOCOL_MBOX ) {
+      this.store = null;
+    } else {
+      this.store = this.session.getStore( protocolString );
     }
   }
 
@@ -303,18 +363,13 @@ public class MailConnection {
         PKG, "JobGetMailsFromPOP.Connecting", this.server, this.username, "" + this.port ) );
     }
     try {
-      if ( (this.usessl || this.protocol == MailConnectionMeta.PROTOCOL_MBOX) && !( this.password.contains("Bearer ") ) ){
-        // Supports IMAP/POP3 connection with SSL,
-        // the connection is established via SSL.
-        this.store.connect();
-      } else {
-        this.password = this.password.startsWith( "Bearer " ) ? this.password.substring( 7 ) : this.password;
-        if ( this.port > -1 ) {
-          this.store.connect( this.server, this.port, this.username, this.password );
-        } else {
-          this.store.connect( this.server, this.username, this.password );
-        }
+      if ( this.protocol == MailConnectionMeta.PROTOCOL_MBOX ) {
+        connectMbox();
+        return;
       }
+
+      connectToMailServer();
+
       if ( log.isDetailed() ) {
         log.logDetailed( BaseMessages.getString(
           PKG, "JobGetMailsFromPOP.Connected", this.server, this.username, "" + this.port ) );
@@ -324,6 +379,41 @@ public class MailConnection {
         BaseMessages.getString( PKG, "JobGetMailsFromPOP.Error.Connecting", this.server, this.username, Const
           .NVL( "" + this.port, "" ) ), e );
     }
+  }
+
+  private void connectMbox() throws KettleException {
+    this.mboxMessages = loadMboxMessages();
+    this.mboxConnected = true;
+    this.messages = this.mboxMessages;
+  }
+
+  private void connectToMailServer() throws MessagingException {
+    if ( shouldUseSSLConnection() ) {
+      this.store.connect();
+    } else {
+      connectWithPassword();
+    }
+  }
+
+  private boolean shouldUseSSLConnection() {
+    return ( this.usessl || this.protocol == MailConnectionMeta.PROTOCOL_MBOX ) && !hasBearerToken();
+  }
+
+  private void connectWithPassword() throws MessagingException {
+    String cleanPassword = getPasswordWithoutBearer();
+    if ( this.port > -1 ) {
+      this.store.connect( this.server, this.port, this.username, cleanPassword );
+    } else {
+      this.store.connect( this.server, this.username, cleanPassword );
+    }
+  }
+
+  private boolean hasBearerToken() {
+    return this.password != null && this.password.startsWith( BEARER_TOKEN );
+  }
+
+  private String getPasswordWithoutBearer() {
+    return hasBearerToken() ? this.password.substring( BEARER_TOKEN.length() ) : this.password;
   }
 
   /**
@@ -367,67 +457,91 @@ public class MailConnection {
   public void openFolder( String foldername, boolean defaultFolder, boolean write ) throws KettleException {
     this.write = write;
     try {
+      if ( this.protocol == MailConnectionMeta.PROTOCOL_MBOX ) {
+        openMboxFolder( foldername, defaultFolder );
+        return;
+      }
+
       if ( getFolder() != null ) {
-        // A folder is already opened
-        // before make sure to close it
         closeFolder( true );
       }
 
       if ( defaultFolder ) {
-        if ( protocol == MailConnectionMeta.PROTOCOL_MBOX ) {
-          this.folder = this.store.getDefaultFolder();
-        } else {
-          // get the default folder
-          this.folder = getRecursiveFolder( MailConnectionMeta.INBOX_FOLDER );
-        }
-
-        if ( this.folder == null ) {
-          throw new KettleException( BaseMessages.getString( PKG, "JobGetMailsFromPOP.InvalidDefaultFolder.Label" ) );
-        }
-
-        if ( ( folder.getType() & Folder.HOLDS_MESSAGES ) == 0 ) {
-          throw new KettleException( BaseMessages.getString( PKG, "MailConnection.DefaultFolderCanNotHoldMessage" ) );
-        }
+        openDefaultFolder();
       } else {
-        // Open specified Folder (for IMAP/MBOX)
-        if ( this.protocol == MailConnectionMeta.PROTOCOL_IMAP
-          || this.protocol == MailConnectionMeta.PROTOCOL_MBOX ) {
-          this.folder = getRecursiveFolder( foldername );
-        }
-        if ( this.folder == null || !this.folder.exists() ) {
-          throw new KettleException( BaseMessages.getString( PKG, "JobGetMailsFromPOP.InvalidFolder.Label" ) );
-        }
-      }
-      if ( this.write ) {
-        if ( log.isDebug() ) {
-          log.logDebug( BaseMessages.getString(
-            PKG, "MailConnection.OpeningFolderInWriteMode.Label", getFolderName() ) );
-        }
-        this.folder.open( Folder.READ_WRITE );
-      } else {
-        if ( log.isDebug() ) {
-          log.logDebug( BaseMessages.getString(
-            PKG, "MailConnection.OpeningFolderInReadMode.Label", getFolderName() ) );
-        }
-        this.folder.open( Folder.READ_ONLY );
+        openSpecifiedFolder( foldername );
       }
 
-      if ( log.isDetailed() ) {
-        log.logDetailed( BaseMessages.getString( PKG, "JobGetMailsFromPOP.FolderOpened.Label", getFolderName() ) );
-      }
-      if ( log.isDebug() ) {
-        // display some infos on folder
-        //CHECKSTYLE:LineLength:OFF
-        log.logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.FolderOpened.Name", getFolderName() ) );
-        log.logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.FolderOpened.FullName", this.folder.getFullName() ) );
-        log.logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.FolderOpened.Url", this.folder.getURLName().toString() ) );
-        log.logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.FolderOpened.Subscribed", "" + this.folder.isSubscribed() ) );
-      }
+      openFolderWithMode();
+      logFolderDetails();
 
     } catch ( Exception e ) {
       throw new KettleException( defaultFolder
         ? BaseMessages.getString( PKG, "JobGetMailsFromPOP.Error.OpeningDefaultFolder" )
         : BaseMessages.getString( PKG, "JobGetMailsFromPOP.Error.OpeningFolder", foldername ), e );
+    }
+  }
+
+  private void openMboxFolder( String foldername, boolean defaultFolder ) {
+    this.mboxFolderName = defaultFolder ? MailConnectionMeta.INBOX_FOLDER : Const.NVL( foldername, "" );
+    this.folder = null;
+    this.messages = null;
+    this.message = null;
+    this.messagenr = -1;
+  }
+
+  private void openDefaultFolder() throws KettleException, MessagingException {
+    if ( protocol == MailConnectionMeta.PROTOCOL_MBOX ) {
+      this.folder = this.store.getDefaultFolder();
+    } else {
+      this.folder = getRecursiveFolder( MailConnectionMeta.INBOX_FOLDER );
+    }
+
+    if ( this.folder == null ) {
+      throw new KettleException( BaseMessages.getString( PKG, "JobGetMailsFromPOP.InvalidDefaultFolder.Label" ) );
+    }
+
+    if ( ( folder.getType() & Folder.HOLDS_MESSAGES ) == 0 ) {
+      throw new KettleException( BaseMessages.getString( PKG, "MailConnection.DefaultFolderCanNotHoldMessage" ) );
+    }
+  }
+
+  private void openSpecifiedFolder( String foldername ) throws KettleException, MessagingException {
+    if ( this.protocol == MailConnectionMeta.PROTOCOL_IMAP
+      || this.protocol == MailConnectionMeta.PROTOCOL_MBOX ) {
+      this.folder = getRecursiveFolder( foldername );
+    }
+    if ( this.folder == null || !this.folder.exists() ) {
+      throw new KettleException( BaseMessages.getString( PKG, "JobGetMailsFromPOP.InvalidFolder.Label" ) );
+    }
+  }
+
+  private void openFolderWithMode() throws MessagingException {
+    if ( this.write ) {
+      if ( log.isDebug() ) {
+        log.logDebug( BaseMessages.getString(
+          PKG, "MailConnection.OpeningFolderInWriteMode.Label", getFolderName() ) );
+      }
+      this.folder.open( Folder.READ_WRITE );
+    } else {
+      if ( log.isDebug() ) {
+        log.logDebug( BaseMessages.getString(
+          PKG, "MailConnection.OpeningFolderInReadMode.Label", getFolderName() ) );
+      }
+      this.folder.open( Folder.READ_ONLY );
+    }
+  }
+
+  private void logFolderDetails() throws MessagingException {
+    if ( log.isDetailed() ) {
+      log.logDetailed( BaseMessages.getString( PKG, "JobGetMailsFromPOP.FolderOpened.Label", getFolderName() ) );
+    }
+    if ( log.isDebug() ) {
+      //CHECKSTYLE:LineLength:OFF
+      log.logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.FolderOpened.Name", getFolderName() ) );
+      log.logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.FolderOpened.FullName", this.folder.getFullName() ) );
+      log.logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.FolderOpened.Url", this.folder.getURLName().toString() ) );
+      log.logDebug( BaseMessages.getString( PKG, "JobGetMailsFromPOP.FolderOpened.Subscribed", "" + this.folder.isSubscribed() ) );
     }
   }
 
@@ -665,6 +779,11 @@ public class MailConnection {
    */
   public void retrieveMessages() throws KettleException {
     try {
+      if ( this.protocol == MailConnectionMeta.PROTOCOL_MBOX ) {
+        this.messages = this.mboxMessages;
+        return;
+      }
+
       // search term?
       if ( this.searchTerm != null ) {
         this.messages = this.folder.search( this.searchTerm );
@@ -675,6 +794,22 @@ public class MailConnection {
       this.messages = null;
       throw new KettleException( BaseMessages.getString(
         PKG, "MailConnection.Error.RetrieveMessages", getFolderName() ), e );
+    }
+  }
+
+  /**
+   * Gets the effective message number for a Message.
+   * For MBOX messages, this returns the mapped sequence number (1-based).
+   * For POP3/IMAP messages, this returns the actual message number from the server.
+   */
+  public int getEffectiveMessageNumber( Message message ) {
+    if ( mboxConnected && mboxMessageNumbers.containsKey( message ) ) {
+      return mboxMessageNumbers.get( message );
+    }
+    try {
+      return message.getMessageNumber();
+    } catch ( Exception e ) {
+      return 0;
     }
   }
 
@@ -700,6 +835,21 @@ public class MailConnection {
       log.logDebug( BaseMessages.getString( PKG, "MailConnection.ClosingConnection" ) );
     }
     try {
+      if ( this.protocol == MailConnectionMeta.PROTOCOL_MBOX ) {
+        if ( expunge ) {
+          persistMboxExpunge();
+        }
+        clearFilters();
+        this.messages = null;
+        this.message = null;
+        this.mboxMessages = new Message[0];
+        this.mboxConnected = false;
+        this.mboxFolderName = "";
+        this.destinationMboxPath = null;
+        this.mboxMessageNumbers.clear();
+        return;
+      }
+
       // close the folder, passing in a true value to expunge the deleted message
       closeFolder( expunge );
       clearFilters();
@@ -921,9 +1071,12 @@ public class MailConnection {
     try {
       this.message.setFlag( Flags.Flag.DELETED, true );
       updateDeletedMessagesCounter();
+      if ( this.protocol == MailConnectionMeta.PROTOCOL_MBOX ) {
+        this.messages = this.mboxMessages;
+      }
     } catch ( Exception e ) {
       throw new KettleException( BaseMessages.getString( PKG, "MailConnection.Error.DeletingMessage", ""
-        + getMessage().getMessageNumber() ), e );
+        + getEffectiveMessageNumber( getMessage() ) ), e );
     }
   }
 
@@ -938,24 +1091,54 @@ public class MailConnection {
    */
   public void setDestinationFolder( String foldername, boolean createFolder ) throws KettleException {
     try {
-      String[] folderparts = foldername.split( "/" );
-      Folder f = this.getStore().getDefaultFolder();
-      // Open destination folder
-      for ( int i = 0; i < folderparts.length; i++ ) {
-        f = f.getFolder( folderparts[i] );
-        if ( !f.exists() ) {
-          if ( createFolder ) {
-            // Create folder
-            f.create( Folder.HOLDS_MESSAGES );
-          } else {
-            throw new KettleException( BaseMessages.getString( PKG, "MailConnection.Error.FolderNotFound", foldername ) );
-          }
-        }
+      if ( this.protocol == MailConnectionMeta.PROTOCOL_MBOX ) {
+        this.destinationMboxPath = prepareMboxDestinationPath( foldername, createFolder );
+        return;
       }
-      this.destinationIMAPFolder = f;
+
+      this.destinationIMAPFolder = getOrCreateImapDestinationFolder( foldername, createFolder );
     } catch ( Exception e ) {
-      throw new KettleException( e );
+      throw new KettleException( BaseMessages.getString( PKG, ERROR_SET_DESTINATION, foldername ), e );
     }
+  }
+
+  private String prepareMboxDestinationPath( String foldername, boolean createFolder ) throws KettleException {
+    String resolvedPath = resolveMboxFolderPath( foldername );
+    File destinationFile = new File( resolvedPath );
+    File parentDirectory = destinationFile.getParentFile();
+    if ( parentDirectory == null ) {
+      return resolvedPath;
+    }
+
+    if ( parentDirectory.exists() && !parentDirectory.isDirectory() ) {
+      throw new KettleException( BaseMessages.getString( PKG, ERROR_CREATE_FOLDER, resolvedPath ) );
+    }
+    if ( !parentDirectory.exists() ) {
+      if ( !createFolder ) {
+        throw new KettleException( BaseMessages.getString( PKG, ERROR_FOLDER_NOT_FOUND, foldername ) );
+      }
+      if ( !parentDirectory.mkdirs() ) {
+        throw new KettleException( BaseMessages.getString( PKG, ERROR_CREATE_FOLDER, resolvedPath ) );
+      }
+    }
+    return resolvedPath;
+  }
+
+  private Folder getOrCreateImapDestinationFolder( String foldername, boolean createFolder )
+    throws MessagingException, KettleException {
+    String[] folderparts = foldername.split( "/" );
+    Folder destinationFolder = this.getStore().getDefaultFolder();
+    for ( String folderPart : folderparts ) {
+      destinationFolder = destinationFolder.getFolder( folderPart );
+      if ( destinationFolder.exists() ) {
+        continue;
+      }
+      if ( !createFolder ) {
+        throw new KettleException( BaseMessages.getString( PKG, ERROR_FOLDER_NOT_FOUND, foldername ) );
+      }
+      destinationFolder.create( Folder.HOLDS_MESSAGES );
+    }
+    return destinationFolder;
   }
 
   /**
@@ -965,15 +1148,29 @@ public class MailConnection {
    */
   public void moveMessage() throws KettleException {
     try {
+      if ( this.protocol == MailConnectionMeta.PROTOCOL_MBOX ) {
+        if ( this.destinationMboxPath == null ) {
+          throw new KettleException( BaseMessages.getString( PKG, ERROR_FOLDER_NOT_FOUND, "" ) );
+        }
+        appendMessagesToMbox( new Message[] { this.message }, this.destinationMboxPath );
+        updatedMovedMessagesCounter();
+        deleteMessage();
+        return;
+      }
+
       // move all messages
       this.folder.copyMessages( new Message[] { this.message }, this.destinationIMAPFolder );
       updatedMovedMessagesCounter();
       // Make sure to delete messages
       deleteMessage();
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString( PKG, "MailConnection.Error.MovingMessage", ""
-        + getMessage().getMessageNumber(), this.destinationIMAPFolder.getName() ), e );
-
+      int messageNumber = getEffectiveMessageNumber( getMessage() );
+      String errorMessage = ( this.protocol == MailConnectionMeta.PROTOCOL_MBOX )
+        ? BaseMessages.getString( PKG, "MailConnection.Error.MovingMessage", ""
+          + messageNumber, this.destinationMboxPath )
+        : BaseMessages.getString( PKG, "MailConnection.Error.MovingMessage", ""
+          + messageNumber, this.destinationIMAPFolder.getName() );
+      throw new KettleException( errorMessage, e );
     }
   }
 
@@ -983,6 +1180,10 @@ public class MailConnection {
    * @return foldername
    */
   public String getFolderName() {
+    if ( this.protocol == MailConnectionMeta.PROTOCOL_MBOX ) {
+      return Const.NVL( this.mboxFolderName, "" );
+    }
+
     if ( this.folder == null ) {
       return "";
     }
@@ -1114,6 +1315,17 @@ public class MailConnection {
    */
   public void deleteMessages( boolean setCounter ) throws KettleException {
     try {
+      if ( this.protocol == MailConnectionMeta.PROTOCOL_MBOX ) {
+        for ( Message currentMessage : this.messages ) {
+          currentMessage.setFlag( Flags.Flag.DELETED, true );
+        }
+        if ( setCounter ) {
+          setDeletedMessagesCounter();
+        }
+        this.messages = this.mboxMessages;
+        return;
+      }
+
       this.folder.setFlags( this.messages, new Flags( Flags.Flag.DELETED ), true );
       if ( setCounter ) {
         setDeletedMessagesCounter();
@@ -1130,12 +1342,24 @@ public class MailConnection {
    */
   public void moveMessages() throws KettleException {
     try {
+      if ( this.protocol == MailConnectionMeta.PROTOCOL_MBOX ) {
+        if ( this.destinationMboxPath == null ) {
+          throw new KettleException( BaseMessages.getString( PKG, ERROR_FOLDER_NOT_FOUND, "" ) );
+        }
+        appendMessagesToMbox( this.messages, this.destinationMboxPath );
+        deleteMessages( false );
+        setMovedMessagesCounter();
+        return;
+      }
+
       this.folder.copyMessages( this.messages, this.destinationIMAPFolder );
       deleteMessages( false );
       setMovedMessagesCounter();
     } catch ( Exception e ) {
-      throw new KettleException( BaseMessages.getString(
-        PKG, "MailConnection.Error.MovingMessages", this.destinationIMAPFolder.getName() ), e );
+      String errorMessage = ( this.protocol == MailConnectionMeta.PROTOCOL_MBOX )
+        ? BaseMessages.getString( PKG, "MailConnection.Error.MovingMessages", this.destinationMboxPath )
+        : BaseMessages.getString( PKG, "MailConnection.Error.MovingMessages", this.destinationIMAPFolder.getName() );
+      throw new KettleException( errorMessage, e );
     }
   }
 
@@ -1147,6 +1371,10 @@ public class MailConnection {
    * @return true is folder exists
    */
   public boolean folderExists( String foldername ) {
+    if ( this.protocol == MailConnectionMeta.PROTOCOL_MBOX ) {
+      return new File( resolveMboxFolderPath( foldername ) ).exists();
+    }
+
     boolean retval = false;
     Folder dfolder = null;
     try {
@@ -1241,7 +1469,7 @@ public class MailConnection {
     return retval;
   }
 
-  public String getMessageBody() throws Exception {
+  public String getMessageBody() throws MessagingException, IOException {
     return getMessageBody( getMessage() );
   }
 
@@ -1430,5 +1658,293 @@ public class MailConnection {
       }
     }
     return retval;
+  }
+
+  private Message[] loadMboxMessages() throws KettleException {
+    String mboxPath = getSourceMboxPath();
+    File mboxFile = new File( mboxPath );
+
+    if ( mboxFile.exists() && mboxFile.length() == 0 ) {
+      return new Message[0];
+    }
+
+    mboxMessageNumbers.clear();
+    List<Message> loadedMessages = new ArrayList<>();
+    try ( MboxIterator iterator = MboxIterator.fromFile( Paths.get( mboxPath ) )
+      .charset( StandardCharsets.ISO_8859_1 )
+      .build() ) {
+      int messageNumber = 1;
+      for ( CharBufferWrapper messageBuffer : iterator ) {
+        try ( InputStream messageStream = messageBuffer.asInputStream( StandardCharsets.ISO_8859_1 ) ) {
+          MimeMessage msg = new MimeMessage( session, messageStream );
+          mboxMessageNumbers.put( msg, messageNumber++ );
+          loadedMessages.add( msg );
+        }
+      }
+    } catch ( Exception e ) {
+      throw new KettleException( BaseMessages.getString( PKG, "JobGetMailsFromPOP.Error.Connecting", this.server,
+        this.username, Const.NVL( "" + this.port, "" ) ), e );
+    }
+
+    return loadedMessages.toArray( new Message[0] );
+  }
+
+  private String getSourceMboxPath() {
+    return normalizeMboxPath( server );
+  }
+
+  @VisibleForTesting
+  String normalizeMboxPath( String path ) {
+    if ( path == null ) {
+      return path;
+    }
+    if ( path.startsWith( "file:" ) ) {
+      try {
+        URI uri = new URI( path );
+        String filePath = uri.getPath();
+        // Handle Windows paths that may start with /C: by removing leading slash if needed
+        if ( filePath != null && filePath.length() > 2 && filePath.charAt( 0 ) == '/' && filePath.charAt( 2 ) == ':' ) {
+          return filePath.substring( 1 );
+        }
+        return filePath;
+      } catch ( URISyntaxException e ) {
+        return fallbackNormalizeMboxPath( path );
+      }
+    }
+    return path;
+  }
+
+  private String fallbackNormalizeMboxPath( String path ) {
+    // If URI parsing fails, fall back to simple string manipulation
+    if ( path.startsWith( "file:///" ) ) {
+      // file:///path → /path
+      return path.substring( FILE_SCHEME.length() );
+    } else if ( path.startsWith( FILE_SCHEME ) ) {
+      // file://host/path or file://path → need to skip host if present
+      String remainder = path.substring( FILE_SCHEME.length() );
+      int slashIndex = remainder.indexOf( '/' );
+      if ( slashIndex >= 0 ) {
+        return remainder.substring( slashIndex );
+      }
+      // No path component found after host
+      return "/";
+    } else if ( path.startsWith( "file:/" ) ) {
+      // file:/path → /path
+      return path.substring( "file:".length() );
+    }
+    return path;
+  }
+
+  private String resolveMboxFolderPath( String foldername ) {
+    if ( Utils.isEmpty( foldername ) || MailConnectionMeta.INBOX_FOLDER.equalsIgnoreCase( foldername ) ) {
+      return getSourceMboxPath();
+    }
+    String resolvedFolder = normalizeMboxPath( foldername );
+    File destination = new File( resolvedFolder );
+    if ( destination.isAbsolute() ) {
+      return destination.getPath();
+    }
+
+    File sourceFile = new File( getSourceMboxPath() );
+    File sourceParent = sourceFile.getParentFile();
+    if ( sourceParent == null ) {
+      return resolvedFolder;
+    }
+    return new File( sourceParent, resolvedFolder ).getPath();
+  }
+
+  private void persistMboxExpunge() throws KettleException {
+    List<Message> retainedMessages = new ArrayList<>();
+    for ( Message currentMessage : mboxMessages ) {
+      if ( !isMessageDeleted( currentMessage ) ) {
+        retainedMessages.add( currentMessage );
+      }
+    }
+
+    // Only rewrite file if messages were actually deleted (avoid unnecessary file rewrites and timestamp changes)
+    if ( retainedMessages.size() < mboxMessages.length ) {
+      writeMessagesToMbox( retainedMessages, getSourceMboxPath(), false );
+    }
+    mboxMessages = retainedMessages.toArray( new Message[0] );
+  }
+
+  private void appendMessagesToMbox( Message[] sourceMessages, String targetMboxPath ) throws KettleException {
+    writeMessagesToMbox( Arrays.asList( sourceMessages ), targetMboxPath, true );
+  }
+
+  private void writeMessagesToMbox( List<Message> sourceMessages, String targetMboxPath, boolean append )
+    throws KettleException {
+    File targetFile = new File( targetMboxPath );
+    File parent = targetFile.getParentFile();
+    if ( parent != null && !parent.exists() && !parent.mkdirs() ) {
+      throw new KettleException( BaseMessages.getString( PKG, ERROR_CREATE_FOLDER, targetMboxPath ) );
+    }
+
+    try ( OutputStream outputStream = new BufferedOutputStream( new FileOutputStream( targetFile, append ) ) ) {
+      for ( Message sourceMessage : sourceMessages ) {
+        writeMessageAsMboxEntry( sourceMessage, outputStream );
+      }
+    } catch ( Exception e ) {
+      throw new KettleException( BaseMessages.getString( PKG, "MailConnection.Error.WriteMboxFile", targetMboxPath ), e );
+    }
+  }
+
+  private void writeMessageAsMboxEntry( Message sourceMessage, OutputStream outputStream )
+    throws IOException, MessagingException {
+    writeMessageHeader( sourceMessage, outputStream );
+    writeMessageBody( sourceMessage, outputStream );
+    outputStream.write( '\n' );
+  }
+
+  private void writeMessageHeader( Message sourceMessage, OutputStream outputStream ) throws IOException, MessagingException {
+    String header = "From " + getEnvelopeFrom( sourceMessage ) + " " + new Date() + "\n";
+    outputStream.write( header.getBytes( StandardCharsets.ISO_8859_1 ) );
+  }
+
+  private void writeMessageBody( Message sourceMessage, OutputStream outputStream ) throws IOException, MessagingException {
+    try ( MboxEscapingOutputStream escapingStream = new MboxEscapingOutputStream( outputStream ) ) {
+      sourceMessage.writeTo( escapingStream );
+      escapingStream.finish();
+    }
+  }
+
+  private static final class MboxEscapingOutputStream extends OutputStream {
+    private static final byte[] FROM_PREFIX = "From ".getBytes( StandardCharsets.ISO_8859_1 );
+
+    private final OutputStream delegate;
+    private final byte[] lineBuffer;
+    private int lineLength;
+    private boolean sawCarriageReturn;
+
+    private MboxEscapingOutputStream( OutputStream delegate ) {
+      this.delegate = delegate;
+      this.lineBuffer = new byte[8192];
+      this.lineLength = 0;
+      this.sawCarriageReturn = false;
+    }
+
+    @Override
+    public void write( int b ) throws IOException {
+      byte current = (byte) b;
+      if ( current == '\r' ) {
+        flushLine();
+        delegate.write( '\n' );
+        sawCarriageReturn = true;
+        return;
+      }
+
+      if ( current == '\n' ) {
+        if ( !sawCarriageReturn ) {
+          flushLine();
+          delegate.write( '\n' );
+        }
+        sawCarriageReturn = false;
+        return;
+      }
+
+      sawCarriageReturn = false;
+      appendToLine( current );
+    }
+
+    @Override
+    public void write( byte[] b, int off, int len ) throws IOException {
+      if ( b == null ) {
+        throw new NullPointerException( "b" );
+      }
+      if ( off < 0 || len < 0 || off + len > b.length ) {
+        throw new IndexOutOfBoundsException();
+      }
+      for ( int i = off; i < off + len; i++ ) {
+        write( b[i] );
+      }
+    }
+
+    @Override
+    public void close() {
+      // Do not close the delegate stream. Caller manages lifecycle.
+    }
+
+    private void finish() throws IOException {
+      flushLine();
+    }
+
+    private void appendToLine( byte value ) throws IOException {
+      if ( lineLength == lineBuffer.length ) {
+        flushLine();
+      }
+      lineBuffer[lineLength++] = value;
+    }
+
+    private void flushLine() throws IOException {
+      if ( lineLength == 0 ) {
+        return;
+      }
+
+      if ( startsWithFromPrefix() ) {
+        delegate.write( '>' );
+      }
+      delegate.write( lineBuffer, 0, lineLength );
+      lineLength = 0;
+    }
+
+    private boolean startsWithFromPrefix() {
+      if ( lineLength < FROM_PREFIX.length ) {
+        return false;
+      }
+      for ( int i = 0; i < FROM_PREFIX.length; i++ ) {
+        if ( lineBuffer[i] != FROM_PREFIX[i] ) {
+          return false;
+        }
+      }
+      return true;
+    }
+  }
+
+  private String getEnvelopeFrom( Message sourceMessage ) throws MessagingException {
+    Address[] fromAddresses = sourceMessage.getFrom();
+    if ( isEmptyFromList( fromAddresses ) ) {
+      return "unknown@example.com";
+    }
+
+    Address fromAddress = fromAddresses[0];
+
+    // Try to extract address from InternetAddress
+    if ( fromAddress instanceof InternetAddress ) {
+      String address = ( (InternetAddress) fromAddress ).getAddress();
+      if ( !Utils.isEmpty( address ) && address.contains( "@" ) ) {
+        return address;
+      }
+    }
+
+    // Try to extract address from bracket notation
+    String bracketAddress = extractBracketAddress( fromAddress.toString() );
+    if ( bracketAddress != null ) {
+      return bracketAddress;
+    }
+
+    // Try to extract address by removing spaces
+    String compactFrom = fromAddress.toString().trim().replaceAll( "\\s+", "" );
+    if ( compactFrom.contains( "@" ) ) {
+      return compactFrom;
+    }
+
+    return "unknown@example.com";
+  }
+
+  private boolean isEmptyFromList( Address[] fromAddresses ) {
+    return fromAddresses == null || fromAddresses.length == 0 || fromAddresses[0] == null;
+  }
+
+  private String extractBracketAddress( String fromString ) {
+    String rawFrom = fromString.trim();
+    int start = rawFrom.indexOf( '<' );
+    int end = rawFrom.indexOf( '>' );
+    if ( start >= 0 && end > start + 1 ) {
+      String bracketAddress = rawFrom.substring( start + 1, end ).trim();
+      if ( bracketAddress.contains( "@" ) ) {
+        return bracketAddress;
+      }
+    }
+    return null;
   }
 }

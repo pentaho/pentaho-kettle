@@ -38,6 +38,16 @@
 
   <report_to_masters>Y</report_to_masters>
 
+  <!--
+    Default behavior for direct job/trans execution URLs is deny-by-default for
+    non-pvfs schemes. The default allowlist is intentionally minimal: only
+    pvfs:// is permitted unless you explicitly add more schemes here.
+    Local paths without a scheme still require 'file' to be included.
+  -->
+  <allowedExecuteFileSchemes>
+    <scheme>pvfs</scheme>
+  </allowedExecuteFileSchemes>
+
   <slaveserver>
     <name>slave3-8083</name>
     <hostname>localhost</hostname>

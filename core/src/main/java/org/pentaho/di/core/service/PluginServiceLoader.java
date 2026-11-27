@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -98,8 +99,9 @@ public class PluginServiceLoader {
       }
     }
     // add any providers created dynamically (not part of plugin registry initialization)
-    if ( dynamicallyAddedServices.containsKey( apiInterface.getName() ) ) {
-      unsortedServices.addAll( dynamicallyAddedServices.get( apiInterface.getName() ) );
+    Collection<ProviderServicePriority<?>> dynamicallyAdded = dynamicallyAddedServices.get( apiInterface.getName() );
+    if ( dynamicallyAdded != null ) {
+      unsortedServices.addAll( dynamicallyAdded );
     }
 
     // sort by priority, extract the service, and cast to the interface type
@@ -112,12 +114,19 @@ public class PluginServiceLoader {
     Collection<ProviderServicePriority<?>> providersAndServices;
     if ( dynamicallyAddedServices.containsKey( apiInterface.getName() ) ) {
       providersAndServices = dynamicallyAddedServices.get( apiInterface.getName() );
-      providersAndServices.removeIf( e -> e.getProvider().equals( provider ) );
+      providersAndServices.removeIf( e -> Objects.equals( e.getProvider(), provider ) );
     } else {
       providersAndServices = new ArrayList<>();
     }
     providersAndServices.add( new ProviderServicePriority<>( provider, service, priority ) );
     dynamicallyAddedServices.put( apiInterface.getName(), providersAndServices );
+  }
+
+  public static void unregisterService( Object provider, Class<?> apiInterface ) {
+    dynamicallyAddedServices.computeIfPresent( apiInterface.getName(), ( key, providersAndServices ) -> {
+      providersAndServices.removeIf( service -> Objects.equals( service.getProvider(), provider ) );
+      return providersAndServices.isEmpty() ? null : providersAndServices;
+    } );
   }
 
   private static class WrappingClassLoaderChangingInvocationHandler implements InvocationHandler {

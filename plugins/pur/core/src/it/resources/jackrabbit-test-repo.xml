@@ -104,6 +104,7 @@ Jackrabbit configuration suitable for integration tests.
         class: FQN of class implementing the PersistenceManager interface
     -->
     <PersistenceManager class="org.apache.jackrabbit.core.persistence.pool.DerbyPersistenceManager">
+      <param name="driver" value="org.apache.derby.iapi.jdbc.AutoloadedDriver"/>
       <param name="url" value="jdbc:derby:${wsp.home}/db;create=true"/>
       <param name="schemaObjectPrefix" value="${wsp.name}_"/>
     </PersistenceManager>
@@ -142,6 +143,7 @@ Jackrabbit configuration suitable for integration tests.
         implementations.
     -->
     <PersistenceManager class="org.apache.jackrabbit.core.persistence.pool.DerbyPersistenceManager">
+      <param name="driver" value="org.apache.derby.iapi.jdbc.AutoloadedDriver"/>
       <param name="url" value="jdbc:derby:${rep.home}/version/db;create=true"/>
       <param name="schemaObjectPrefix" value="version_"/>
     </PersistenceManager>

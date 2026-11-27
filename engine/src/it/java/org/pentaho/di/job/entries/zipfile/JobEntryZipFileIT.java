@@ -23,6 +23,7 @@ import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobMeta;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -60,9 +61,11 @@ public class JobEntryZipFileIT {
     try {
       Result result = new Result();
       JobEntryZipFile entry = new JobEntryZipFile();
+      JobMeta jobMeta = new JobMeta();
+      Job parentJob = new Job( null, jobMeta );
+      entry.setParentJobMeta( jobMeta );
       assertTrue(
-              entry.processRowFile(new Job(), result, zipPath, null, null, tempFile.getAbsolutePath(), null, false));
-      boolean isTrue = true;
+        entry.processRowFile( parentJob, result, zipPath, null, null, tempFile.getAbsolutePath(), null, false ) );
 
       FileObject zip = KettleVFS.getInstance( DefaultBowl.getInstance() ).getFileObject(zipPath);
       assertTrue("Zip archive should be created", zip.exists());

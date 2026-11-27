@@ -14,6 +14,7 @@
 package org.pentaho.di.pan;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Objects;
 import org.junit.After;
@@ -23,6 +24,7 @@ import org.mockito.MockitoAnnotations;
 import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.base.Params;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.bowl.DefaultBowl;
 import org.pentaho.di.core.exception.KettleException;
@@ -40,11 +42,13 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.kitchen.Kitchen;
 import org.pentaho.di.pan.delegates.PanTransformationDelegate;
+import org.pentaho.di.pan.executors.LocalTransExecutorService.KettleTransInitializationException;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.pentaho.metastore.api.IMetaStore;
 import org.pentaho.metastore.stores.delegate.DelegatingMetaStore;
 
@@ -59,6 +63,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.nullable;
@@ -66,6 +71,7 @@ import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -349,6 +355,28 @@ public class PanCommandExecutorTest {
   }
 
   @Test
+  public void testExecuteWithDelegateLogsExecutedTransStepStats() throws Throwable {
+    Result successResult = new Result();
+    successResult.setNrErrors( 0 );
+    Trans executedTrans = mock( Trans.class );
+    ArrayList<StepMetaDataCombi> steps = new ArrayList<>();
+    steps.add( new StepMetaDataCombi() );
+    when( executedTrans.getSteps() ).thenReturn( steps );
+    when( mockDelegate.createDefaultExecutionConfiguration() ).thenReturn( new TransExecutionConfiguration() );
+    when( mockDelegate.executeTransformation( any( Trans.class ),
+      any( TransExecutionConfiguration.class ), any( String[].class ) ) )
+      .thenReturn( successResult );
+    when( mockDelegate.getLastExecutedTrans() ).thenReturn( executedTrans );
+
+    Params testParams = new Params.Builder().build();
+
+    executorWithMocks.executeWithDelegate( mockTrans, testParams, new String[0] );
+
+    verify( executedTrans, times( 1 ) ).printStats( anyInt() );
+    verify( mockTrans, never() ).printStats( anyInt() );
+  }
+
+  @Test
   public void testExecuteWithDelegateError() throws Throwable {
     // Setup mock delegate to return error result
     Result errorResult = new Result();
@@ -384,6 +412,34 @@ public class PanCommandExecutorTest {
     assertNotNull( "Result should not be null", result );
     assertEquals( "Should return unexpected error code",
       CommandExecutorCodes.Pan.UNEXPECTED_ERROR.getCode(), result.getExitStatus() );
+  }
+
+  @Test
+  public void testExecuteWithDelegateInitializationException() throws Throwable {
+    when( mockDelegate.executeTransformation( any( Trans.class ),
+      any( TransExecutionConfiguration.class ), any( String[].class ) ) )
+      .thenThrow( new KettleTransInitializationException( new KettleException( "initialization failed" ) ) );
+    when( mockDelegate.createDefaultExecutionConfiguration() ).thenReturn( mock( TransExecutionConfiguration.class ) );
+
+    Result result = executorWithMocks.executeWithDelegate( mockTrans, new Params.Builder().build(), new String[0] );
+
+    assertEquals( CommandExecutorCodes.Pan.UNABLE_TO_PREP_INIT_TRANS.getCode(), result.getExitStatus() );
+  }
+
+  @Test
+  public void testExecuteWithDelegateUsesExecutedTransformationExitCode() throws Throwable {
+    Result errorResult = new Result();
+    errorResult.setNrErrors( 1 );
+    Trans executedTrans = mock( Trans.class );
+    when( executedTrans.getVariable( Const.KETTLE_TRANS_PAN_JVM_EXIT_CODE ) ).thenReturn( "0" );
+    when( mockDelegate.getLastExecutedTrans() ).thenReturn( executedTrans );
+    when( mockDelegate.executeTransformation( any( Trans.class ),
+      any( TransExecutionConfiguration.class ), any( String[].class ) ) ).thenReturn( errorResult );
+    when( mockDelegate.createDefaultExecutionConfiguration() ).thenReturn( mock( TransExecutionConfiguration.class ) );
+
+    Result result = executorWithMocks.executeWithDelegate( mockTrans, new Params.Builder().build(), new String[0] );
+
+    assertEquals( 0, result.getExitStatus() );
   }
 
   // Test 8: Edge Cases and Error Handling

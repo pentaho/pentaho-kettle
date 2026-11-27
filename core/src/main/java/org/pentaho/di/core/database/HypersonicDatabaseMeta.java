@@ -56,6 +56,28 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
   }
 
   /**
+   * @return the SQL to retrieve the list of schemas.
+   *
+   *    Since HSQLDB 2.7.x, INFORMATION_SCHEMA.SCHEMATA (and therefore the plain JDBC
+   *    DatabaseMetaData#getSchemas() call) only returns schemas that the connecting user has direct
+   *    authorization over (schema ownership or DBA role membership). A user that was only granted SELECT
+   *    on individual tables within a schema - but was never granted any privilege on the schema itself -
+   *    will no longer see that schema, even though the tables inside it are fully visible. This is a
+   *    behavioral change compared to older HSQLDB versions (e.g. 2.3.2), where such a user could still
+   *    see the schema.
+   *
+   *    To keep schema visibility consistent regardless of the privileges the connecting user was
+   *    granted, we union the schemas visible through INFORMATION_SCHEMA.SCHEMATA (e.g. for DBA users)
+   *    with the schemas that can be derived from INFORMATION_SCHEMA.TABLES (visible to any user that has
+   *    at least one table-level grant in that schema).
+   */
+  @Override
+  public String getSQLListOfSchemas() {
+    return "SELECT SCHEMA_NAME AS name FROM INFORMATION_SCHEMA.SCHEMATA "
+      + "UNION SELECT DISTINCT TABLE_SCHEMA AS name FROM INFORMATION_SCHEMA.TABLES";
+  }
+
+  /**
    * @return true if the database supports bitmap indexes
    */
   @Override

@@ -171,16 +171,59 @@ public class AuthenticationContext {
   }
 
   /**
-   * Convenience method: Store JSESSIONID (for session-based auth)
+   * Convenience method: Store JSESSIONID (for session-based auth) without recording an owner.
+   * <p>
+   * A session stored this way has no owner, and {@link #isSessionOwnedBy(String)} therefore treats it as
+   * usable by any user. Prefer {@link #storeJSessionId(String, String)} whenever the user is known, so the
+   * session cannot be replayed on a connection made by someone else.
    *
    * @param jsessionId The JSESSIONID value
    */
   public void storeJSessionId( String jsessionId ) {
+    storeJSessionId( jsessionId, null );
+  }
+
+  /**
+   * Convenience method: Store JSESSIONID together with the user it was issued to.
+   * <p>
+   * The owner is used by {@link #isSessionOwnedBy(String)} so a cached session is never replayed
+   * on a connection made by a different user.
+   *
+   * @param jsessionId The JSESSIONID value
+   * @param username   The user the session was issued to, may be {@code null} when unknown
+   */
+  public void storeJSessionId( String jsessionId, String username ) {
     if ( strategy instanceof SessionBasedAuthStrategy ) {
-      ( (SessionBasedAuthStrategy) strategy ).storeJSessionId( serverUri, jsessionId );
+      ( (SessionBasedAuthStrategy) strategy ).storeJSessionId( serverUri, jsessionId, username );
     } else {
       storeCredentialValue( JSESSIONID_KEY, jsessionId );
     }
+  }
+
+  /**
+   * Get the user that the cached session was issued to.
+   *
+   * @return The owning user name, or {@code null} when unknown
+   */
+  public String getSessionOwner() {
+    if ( strategy instanceof SessionBasedAuthStrategy ) {
+      return ( (SessionBasedAuthStrategy) strategy ).getSessionOwner( serverUri );
+    }
+    return null;
+  }
+
+  /**
+   * Determine whether the cached session belongs to the given user.
+   * <p>
+   * When no owner was recorded the session is treated as belonging to the caller, preserving the
+   * behaviour of sessions stored before an owner was tracked.
+   *
+   * @param username The user attempting to use the cached session
+   * @return {@code true} when the cached session may be used by {@code username}
+   */
+  public boolean isSessionOwnedBy( String username ) {
+    String owner = getSessionOwner();
+    return owner == null || owner.equals( username );
   }
 
   /**

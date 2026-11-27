@@ -19,6 +19,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.exception.KettleObjectExistsException;
 import org.pentaho.di.core.exception.KettleTransException;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.job.JobMeta;
@@ -67,6 +69,8 @@ import java.util.function.Supplier;
  */
 public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
 
+  private static final LogChannelInterface log = new LogChannel( "RepositoryFileProvider" );
+
   public static final String PENTAHO_ENTERPRISE_REPOSITORY = "PentahoEnterpriseRepository";
   public static Repository repository;
   public static final String TRANSFORMATION = "transformation";
@@ -97,7 +101,10 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
   @Override
   public RepositoryTree getTree( Bowl bowl ) {
     RepositoryTree repositoryTree = new RepositoryTree( NAME );
-    repositoryTree.setChildren( loadDirectoryTree().getChildren() );
+    RepositoryTree loadedTree = loadDirectoryTree();
+    if ( loadedTree != null ) {
+      repositoryTree.setChildren( loadedTree.getChildren() );
+    }
     return repositoryTree;
   }
 
@@ -550,6 +557,9 @@ public class RepositoryFileProvider extends BaseFileProvider<RepositoryFile> {
         }
         return repositoryTree;
       } catch ( Exception e ) {
+        // Returning null here previously surfaced as an NPE in getTree() with no indication of the
+        // underlying cause, which made the failure look like the dialog simply not opening.
+        log.logError( "Unable to load the repository directory tree", e );
         return null;
       }
     }

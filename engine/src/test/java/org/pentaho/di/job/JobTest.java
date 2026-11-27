@@ -44,9 +44,13 @@ import org.pentaho.di.trans.HasDatabasesInterface;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.assertEquals;
@@ -67,10 +71,63 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
+import static org.pentaho.di.trans.Trans.STRING_FINISHED;
+import static org.pentaho.di.trans.Trans.STRING_RUNNING;
+import static org.pentaho.di.trans.Trans.STRING_WAITING;
 import static org.pentaho.test.util.InternalState.setInternalState;
 
 
 public class JobTest {
+
+  @Test
+  public void markAsFinishedUpdatesActiveAndFinishedStatusTogether() {
+    Job job = new Job();
+
+    job.setActive( true );
+    job.setResult( new Result() );
+    job.markAsFinished();
+
+    assertFalse( job.isActive() );
+    assertTrue( job.isFinished() );
+    assertEquals( STRING_FINISHED, job.getStatus() );
+  }
+
+  @Test
+  public void markAsFinishedNeverReportsWaitingAfterRunning() throws Exception {
+    Job job = new Job();
+    job.setResult( new Result() );
+    ExecutorService executor = Executors.newSingleThreadExecutor();
+
+    try {
+      for ( int transition = 0; transition < 100; transition++ ) {
+        job.setFinished( false );
+        job.setStopped( false );
+        job.setActive( true );
+        CountDownLatch runningObserved = new CountDownLatch( 1 );
+        AtomicBoolean transitionComplete = new AtomicBoolean();
+        Future<Boolean> observedWaiting = executor.submit( () -> {
+          while ( !transitionComplete.get() && !Thread.currentThread().isInterrupted() ) {
+            String status = job.getStatus();
+            if ( STRING_RUNNING.equals( status ) ) {
+              runningObserved.countDown();
+            } else if ( runningObserved.getCount() == 0 && STRING_WAITING.equals( status ) ) {
+              return true;
+            }
+          }
+          return false;
+        } );
+
+        assertTrue( runningObserved.await( 10, TimeUnit.SECONDS ) );
+        job.markAsFinished();
+        transitionComplete.set( true );
+        assertFalse( observedWaiting.get( 10, TimeUnit.SECONDS ) );
+      }
+    } finally {
+      executor.shutdownNow();
+      assertTrue( executor.awaitTermination( 10, TimeUnit.SECONDS ) );
+    }
+  }
+
   private static final String STRING_DEFAULT = "<def>";
   private Job mockedJob;
   private Database mockedDataBase;

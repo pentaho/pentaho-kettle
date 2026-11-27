@@ -267,6 +267,18 @@ public class HypersonicDatabaseMetaTest {
   }
 
   @Test
+  public void testGetSQLListOfSchemas() throws Exception {
+    // HSQLDB 2.7.x restricts INFORMATION_SCHEMA.SCHEMATA (and therefore DatabaseMetaData#getSchemas())
+    // to schemas the connecting user has direct authorization over. Users that were only granted table-level
+    // privileges (and not schema-level/DBA privileges) would no longer see their own schema. Union in the
+    // schemas visible through INFORMATION_SCHEMA.TABLES to restore visibility for such users.
+    String sql = hypersonicDatabaseMeta.getSQLListOfSchemas();
+    String expectedSql = "SELECT SCHEMA_NAME AS name FROM INFORMATION_SCHEMA.SCHEMATA "
+      + "UNION SELECT DISTINCT TABLE_SCHEMA AS name FROM INFORMATION_SCHEMA.TABLES";
+    assertEquals( expectedSql, sql );
+  }
+
+  @Test
   public void testGetFieldDefinition() throws Exception {
     ValueMetaInterface vm = new ValueMetaString();
     String sql = hypersonicDatabaseMeta.getFieldDefinition( vm, null, null, false, false, false );

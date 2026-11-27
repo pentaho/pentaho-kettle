@@ -56,6 +56,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.msaccess.MSAccessDatabaseUtil;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPreviewFactory;
@@ -78,7 +79,6 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 import com.healthmarketscience.jackcess.Column;
 import com.healthmarketscience.jackcess.Database;
-import com.healthmarketscience.jackcess.DatabaseBuilder;
 import com.healthmarketscience.jackcess.Table;
 import org.pentaho.di.ui.util.DialogHelper;
 
@@ -1114,16 +1114,15 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 
       if ( inputList.getFiles().size() > 0 ) {
         // Open the file (only first file)...
-        try ( Database d = new DatabaseBuilder( new File( AccessInputMeta.getFilename( inputList.getFile( 0 ) ) ) )
-          .setReadOnly( true )
-          .open() ) {
+        try ( Database d =
+          MSAccessDatabaseUtil.open( new File( AccessInputMeta.getFilename( inputList.getFile( 0 ) ) ), true ) ) {
           String realTableName = transMeta.environmentSubstitute( meta.getTableName() );
 
           Table t = null;
           if ( realTableName.startsWith( AccessInputMeta.PREFIX_SYSTEM ) ) {
             t = d.getSystemTable( realTableName );
           } else {
-            t = d.getTable( realTableName );
+            t = MSAccessDatabaseUtil.getTable( d, realTableName );
           }
 
           // Get the list of columns
@@ -1518,9 +1517,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
           // Open the file (only first file) in readOnly ...
           //
           accessDatabase =
-            new DatabaseBuilder( new File( AccessInputMeta.getFilename( fileInputList.getFile( 0 ) ) ) )
-              .setReadOnly( true )
-              .open();
+            MSAccessDatabaseUtil.open( new File( AccessInputMeta.getFilename( fileInputList.getFile( 0 ) ) ), true );
 
           // Get user tables
           //

@@ -39,11 +39,6 @@
           <artifactId>kettle-engine</artifactId>
           <scope>provided</scope>
       </dependency>
-      <dependency>
-          <groupId>com.healthmarketscience.jackcess</groupId>
-          <artifactId>jackcess</artifactId>
-          <scope>compile</scope>
-      </dependency>
 
       <dependency>
           <groupId>pentaho-kettle</groupId>
@@ -70,6 +65,12 @@
       </dependency>
         <!-- Test dependencies -->
         <dependency>
+            <groupId>org.pentaho.di.plugins</groupId>
+            <artifactId>script-values-mod-plugins-impl</artifactId>
+            <version>${pdi.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>pentaho-kettle</groupId>
             <artifactId>kettle-core</artifactId>
             <version>${pdi.version}</version>
@@ -95,11 +96,6 @@
           <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
-      <version>${commons-lang3.version}</version>
-    </dependency>
 
     </dependencies>
 </project>

@@ -71,6 +71,10 @@ public class PurRepositoryConnector implements IRepositoryConnector {
   private final PurRepositoryMeta repositoryMeta;
   private final RootRef rootRef;
   private ServiceManager serviceManager;
+  /** The user this connection authenticated as, used to decide whose cached session may be discarded. */
+  private String connectedUsername;
+  /** Whether this connection authenticated with a cached browser session rather than a password. */
+  private boolean usedSessionAuth;
 
   public PurRepositoryConnector( PurRepository purRepository, PurRepositoryMeta repositoryMeta, RootRef rootRef ) {
     log = new LogChannel( this.getClass().getSimpleName() );
@@ -104,6 +108,8 @@ public class PurRepositoryConnector implements IRepositoryConnector {
     }
 
     serviceManager = new WebServiceManager( repositoryMeta.getRepositoryLocation().getUrl(), username );
+    connectedUsername = username;
+    usedSessionAuth = useSessionAuth;
     RepositoryServiceRegistry purRepositoryServiceRegistry = new RepositoryServiceRegistry();
     final String decryptedPassword = useSessionAuth ? "" : Encr.decryptPasswordOptionallyEncrypted( password );
     final RepositoryConnectResult result = new RepositoryConnectResult( purRepositoryServiceRegistry );
@@ -419,6 +425,46 @@ public class PurRepositoryConnector implements IRepositoryConnector {
       serviceManager.close();
     }
     serviceManager = null;
+    clearCachedSession();
+    connectedUsername = null;
+    usedSessionAuth = false;
+  }
+
+  /**
+   * Discard the cached browser session for this repository, but only when it belongs to this connection.
+   * <p>
+   * The session credentials are held in a cache keyed by server URL that outlives the repository
+   * connection. Leaving our own session behind lets the next connection replay the previous user's
+   * JSESSIONID, which ignores the credentials supplied for that connection and leaves the client
+   * presenting a session that the server has already invalidated.
+   * <p>
+   * The cache is keyed by server URL alone, so every connection to the same repository in this JVM shares
+   * one entry. Clearing it unconditionally would therefore discard the credentials of unrelated
+   * connections — on a Carte server, for example, each running job connects and disconnects
+   * independently, so the first job to finish would sign the others out. Only a connection that
+   * authenticated with a session, and whose user still owns the cached one, may discard it.
+   */
+  private void clearCachedSession() {
+    if ( !usedSessionAuth ) {
+      // Authenticated with a password, so there is no session of ours to discard.
+      return;
+    }
+    try {
+      AuthenticationContext authContext =
+        SpoonSessionManager.getInstance()
+          .getAuthenticationContext( repositoryMeta.getRepositoryLocation().getUrl() );
+      if ( authContext == null ) {
+        return;
+      }
+      if ( authContext.isSessionOwnedBy( connectedUsername ) ) {
+        authContext.clearCredentials();
+      } else {
+        log.logDebug( "Leaving the cached session in place because it belongs to a different user" );
+      }
+    } catch ( Exception e ) {
+      // Never let session cleanup prevent a disconnect from completing
+      log.logDebug( "Unable to clear cached session credentials on disconnect", e );
+    }
   }
 
   public LogChannelInterface getLog() {

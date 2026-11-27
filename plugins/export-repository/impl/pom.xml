@@ -35,12 +35,6 @@
       <artifactId>kettle-engine</artifactId>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>com.healthmarketscience.jackcess</groupId>
-      <artifactId>jackcess</artifactId>
-      <scope>compile</scope>
-    </dependency>
-
     <!-- Test dependencies -->
     <dependency>
       <groupId>org.mockito</groupId>

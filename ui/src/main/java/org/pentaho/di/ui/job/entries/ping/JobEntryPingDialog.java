@@ -14,6 +14,9 @@
 
 package org.pentaho.di.ui.job.entries.ping;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
@@ -34,6 +37,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
@@ -110,15 +114,6 @@ public class JobEntryPingDialog extends JobEntryDialog implements JobEntryDialog
       }
     };
     changed = jobEntry.hasChanged();
-
-    ModifyListener lsValidate = event -> {
-      String currentText = ((Text) event.getSource()).getText().trim();
-      boolean isPosInt = JobEntryPing.isPositiveInteger( currentText );
-      if ( !isPosInt && !( currentText.equals( "" ) ) ) {
-        displayInfoMessage( BaseMessages.getString( PKG, "JobPing.InfoOnlyPositiveInteger" ) );
-        ((Text) event.getSource()).setText( "" );
-      }
-    };
 
     FormLayout formLayout = new FormLayout();
     formLayout.marginWidth = Const.FORM_MARGIN;
@@ -214,7 +209,6 @@ public class JobEntryPingDialog extends JobEntryDialog implements JobEntryDialog
     wlTimeOut.setToolTipText( BaseMessages.getString( PKG, "JobPing.TimeOut.Tooltip" ) );
     props.setLook( wTimeOut );
     wTimeOut.addModifyListener( lsMod );
-    wTimeOut.addModifyListener( lsValidate );
     fdTimeOut = new FormData();
     fdTimeOut.left = new FormAttachment( middle, 0 );
     fdTimeOut.top = new FormAttachment( wPingType, margin );
@@ -234,7 +228,6 @@ public class JobEntryPingDialog extends JobEntryDialog implements JobEntryDialog
     wNbrPackets = new TextVar( jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
     props.setLook( wNbrPackets );
     wNbrPackets.addModifyListener( lsMod );
-    wNbrPackets.addModifyListener( lsValidate );
     fdNbrPackets = new FormData();
     fdNbrPackets.left = new FormAttachment( middle, 0 );
     fdNbrPackets.top = new FormAttachment( wTimeOut, margin );
@@ -358,12 +351,36 @@ public class JobEntryPingDialog extends JobEntryDialog implements JobEntryDialog
     dispose();
   }
 
+  static boolean isValidNumericInput( String value ) {
+    if ( JobEntryPing.isPositiveInteger( value ) ) {
+      return true;
+    }
+    List<String> variables = new ArrayList<>();
+    StringUtil.getUsedVariables( value, variables, true );
+    StringUtil.getUsedVariables( value, StringUtil.HEX_OPEN, StringUtil.HEX_CLOSE, variables, true );
+    return !variables.isEmpty();
+  }
+
+  boolean validateNumericInput( TextVar field, String labelKey ) {
+    if ( !field.isEnabled() || isValidNumericInput( field.getText() ) ) {
+      return true;
+    }
+    displayInfoMessage( BaseMessages.getString( PKG, "JobPing.InfoPositiveIntegerOrVariable",
+      BaseMessages.getString( PKG, labelKey ), "${name}", "%%name%%", "$[31]" ) );
+    field.setFocus();
+    return false;
+  }
+
   private void ok() {
     if ( Utils.isEmpty( wName.getText() ) ) {
       MessageBox mb = new MessageBox( shell, SWT.OK | SWT.ICON_ERROR );
       mb.setText( BaseMessages.getString( PKG, "System.StepJobEntryNameMissing.Title" ) );
       mb.setMessage( BaseMessages.getString( PKG, "System.JobEntryNameMissing.Msg" ) );
       mb.open();
+      return;
+    }
+    if ( !validateNumericInput( wTimeOut, "JobPing.TimeOut.Label" )
+      || !validateNumericInput( wNbrPackets, "JobPing.NrPackets.Label" ) ) {
       return;
     }
     jobEntry.setName( wName.getText() );

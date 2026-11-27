@@ -30,15 +30,11 @@
       <artifactId>kettle-core</artifactId>
       <scope>provided</scope>
     </dependency>
+
     <dependency>
       <groupId>pentaho-kettle</groupId>
       <artifactId>kettle-engine</artifactId>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.healthmarketscience.jackcess</groupId>
-      <artifactId>jackcess</artifactId>
-      <scope>compile</scope>
     </dependency>
 
     <!-- Test dependencies -->
@@ -64,6 +60,12 @@
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
       <version>${commons-lang3.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.james</groupId>
+      <artifactId>apache-mime4j-mbox-iterator</artifactId>
+      <version>${apache-mime4j.version}</version>
     </dependency>
 
   </dependencies>

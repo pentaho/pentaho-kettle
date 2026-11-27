@@ -1,4 +1,4 @@
-Pentaho Developer Edition 11.0 Copyright 2026 Pentaho Canada Inc.; licensed under the 
+Pentaho Developer Edition 11.1 Copyright 2026 Pentaho Canada Inc.; licensed under the 
 Business Source License 1.1 (BSL). This project may include third party components that
 are individually licensed per the terms indicated by their respective copyright owners
 included in text file or in the source code. 
@@ -9,7 +9,7 @@ License text copyright (c) 2020 MariaDB Corporation Ab, All Rights Reserved.
 Parameters
 
 Licensor:             Pentaho Canada Inc.
-Licensed Work:        Pentaho Developer Edition 11.0. The Licensed Work is (c) 2026
+Licensed Work:        Pentaho Developer Edition 11.1. The Licensed Work is (c) 2026
                       Pentaho Canada Inc.
 Additional Use Grant: None
 Change Date:          Four years from the date the Licensed Work is published.

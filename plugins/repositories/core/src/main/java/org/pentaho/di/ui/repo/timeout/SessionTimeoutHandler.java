@@ -413,7 +413,7 @@ public class SessionTimeoutHandler {
       RepositoryMeta repositoryMeta, RepositoryConnectController repositoryConnectController ) throws KettleException {
     log.logBasic( "Browser auth successful, reconnecting" );
     SpoonSessionManager.getInstance().getAuthenticationContext( serverUrl )
-      .storeJSessionId( sessionInfo.getJsessionId() );
+      .storeJSessionId( sessionInfo.getJsessionId(), sessionInfo.getUsername() );
 
     repositoryConnectController.reconnectToRepository(
       repositoryMeta.getName(),

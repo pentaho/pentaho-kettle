@@ -10,12 +10,13 @@
  * Change Date: 2030-06-15
  ******************************************************************************/
 
-
 package org.pentaho.amazon.s3;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FormAttachment;
@@ -51,7 +52,7 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import com.amazonaws.regions.Regions;
+import software.amazon.awssdk.regions.Region;
 
 public class S3DetailComposite implements VFSDetailsComposite {
   private static final Class<?> PKG = S3DetailComposite.class;
@@ -161,9 +162,8 @@ public class S3DetailComposite implements VFSDetailsComposite {
     wBottomHalf.setLayoutData( wfdBottomHalf );
     props.setLook( wBottomHalf );
 
-    //This composite holds controls that are not currently in use.  No layout needed here
-    wWidgetHolder = new Composite( wComposite, SWT.NONE );
-    wWidgetHolder.setVisible( false );
+    // This composite holds controls that are not currently in use.
+    wWidgetHolder = createWidgetHolder( wComposite );
 
     wAuthType = createStandbyCombo();
     wAuthType.setItems( getAuthTypeChoices() );
@@ -245,6 +245,18 @@ public class S3DetailComposite implements VFSDetailsComposite {
     VFSDetailsCompositeHelper.setupCompositeResizeListener( wComposite );
     initializingUiForFirstTime = false;
     return wComposite;
+  }
+
+  private static Composite createWidgetHolder( Composite parent ) {
+    var holder = new Composite( parent, SWT.NONE );
+    holder.setVisible( false );
+    var fd = new FormData();
+    // size set to zero to prevent it from leaking into the parent's size computations
+    // after sized components are stored in it
+    fd.width = 0;
+    fd.height = 0;
+    holder.setLayoutData( fd );
+    return holder;
   }
 
   private void setTrustStoreListeners() {
@@ -353,8 +365,23 @@ public class S3DetailComposite implements VFSDetailsComposite {
     moveWidgetsToBottom( s3ConnectionType, authType );
 
     wBottomHalf.layout();
-    wComposite.pack();
-    VFSDetailsCompositeHelper.updateScrollableRegion( wComposite );
+    updateScrollableRegion( wComposite );
+  }
+
+  /**
+   * Ensures the scrollable content is resized to fit the widgets currently shown
+   */
+  private static void updateScrollableRegion( Composite composite ) {
+    int width = composite.getParent().getClientArea().width;
+    // can be called with width zero before the full layout
+    if ( width != 0 ) {
+      // locking the width from the parent in case there are components that wrap
+      var contentSize = composite.computeSize( width, SWT.DEFAULT, true );
+      composite.setSize( contentSize );
+      if ( composite.getParent() instanceof ScrolledComposite scrolled ) {
+        scrolled.setMinSize( contentSize );
+      }
+    }
   }
 
   /** Ensure region in details is what is seen */
@@ -423,6 +450,7 @@ public class S3DetailComposite implements VFSDetailsComposite {
     wCredentialsFilePath.setText( Const.NVL( details.getCredentialsFilePath(), "" ) );
     wEndpoint.setText( Const.NVL( details.getEndpoint(), "" ) );
     wSignatureVersion.setText( Const.NVL( details.getSignatureVersion(), "" ) );
+    setSigVersionEditability();
     wPathStyleAccess.setSelection( Boolean.parseBoolean( Const.NVL( details.getPathStyleAccess(), "false" ) ) );
     wPathStyleAccess.setVariableName( Const.NVL( details.getPathStyleAccessVariable(), "" ) );
 
@@ -438,7 +466,7 @@ public class S3DetailComposite implements VFSDetailsComposite {
   private void populateRegion() {
     switch ( getConnectionType() ) {
       case AMAZON -> {
-        int regionIndex = computeComboIndex( Const.NVL( details.getRegion(), Regions.DEFAULT_REGION.getName() ),
+        int regionIndex = computeComboIndex( Const.NVL( details.getRegion(), Region.US_EAST_1.id() ),
           regionChoices, -1 );
         if ( regionIndex != -1 ) {
           wRegion.select( regionIndex );
@@ -448,7 +476,7 @@ public class S3DetailComposite implements VFSDetailsComposite {
       }
       case MINIO -> {
         wMinioRegion.setText( Const.NVL( details.getRegion(), "" ) );
-        int regionIndex = computeComboIndex( Regions.DEFAULT_REGION.getName(), regionChoices, 0 );
+        int regionIndex = computeComboIndex( Region.US_EAST_1.id(), regionChoices, 0 );
         wRegion.select( regionIndex );
       }
     }
@@ -539,6 +567,22 @@ public class S3DetailComposite implements VFSDetailsComposite {
     return IntStream.range( 0, choices.length )
       .filter( i -> choices[ i ].equals( targetValue ) )
       .findFirst().orElse( notFoundReturnValue );
+  }
+
+  private void setSigVersionEditability() {
+    String sigVersion = StringUtils.trim( wSignatureVersion.getText() );
+    if ( isSigVersionValid( sigVersion ) ) {
+      // might as well ensure it is properly trimmed
+      wSignatureVersion.setText( sigVersion );
+      wSignatureVersion.setEnabled( false );
+    } else {
+      // allow fixing/erasing the value
+      wSignatureVersion.setEnabled( true );
+    }
+  }
+
+  private static boolean isSigVersionValid( String sigVersion ) {
+    return StringUtils.isEmpty( sigVersion ) || Strings.CS.equals( sigVersion, S3Util.SIG_VERSION );
   }
 
   public String validate() {

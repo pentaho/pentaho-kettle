@@ -42,6 +42,7 @@ import org.pentaho.di.core.util.Utils;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.msaccess.MSAccessDatabaseUtil;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
@@ -54,7 +55,6 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 import com.healthmarketscience.jackcess.Database;
-import com.healthmarketscience.jackcess.DatabaseBuilder;
 import org.pentaho.di.ui.util.DialogHelper;
 
 @PluginDialog( id = "AccessOutput", image = "ACO.svg", pluginType = PluginDialog.PluginType.STEP,
@@ -469,7 +469,7 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
           PKG, "AccessOutputMeta.Exception.FileDoesNotExist", realFilename ) );
       }
 
-      try ( Database database = new DatabaseBuilder( file ).setReadOnly( true ).open() ) {
+      try ( Database database = MSAccessDatabaseUtil.open( file, true ) ) {
         Set<String> set = database.getTableNames();
         String[] tablenames = set.toArray( new String[set.size()] );
         EnterSelectionDialog dialog =

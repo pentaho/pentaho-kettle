@@ -216,7 +216,7 @@ public class MailInput extends BaseStep implements StepInterface {
       Message message = data.folderIterator.next();
 
       if ( isDebug() ) {
-        logDebug( BaseMessages.getString( PKG, "MailInput.Log.FetchingMessage", message.getMessageNumber() ) );
+        logDebug( BaseMessages.getString( PKG, "MailInput.Log.FetchingMessage", data.mailConn.getEffectiveMessageNumber( message ) ) );
       }
 
       try {
@@ -532,7 +532,7 @@ public class MailInput extends BaseStep implements StepInterface {
         try {
           switch ( meta.getInputFields()[i].getColumn() ) {
             case MailInputField.COLUMN_MESSAGE_NR:
-              r[index] = new Long( message.getMessageNumber() );
+              r[index] = Long.valueOf( data.mailConn.getEffectiveMessageNumber( message ) );
               break;
             case MailInputField.COLUMN_SUBJECT:
               r[index] = message.getSubject();
@@ -567,7 +567,7 @@ public class MailInput extends BaseStep implements StepInterface {
               r[index] = data.mailConn.getFolderName();
               break;
             case MailInputField.COLUMN_SIZE:
-              r[index] = new Long( message.getSize() );
+              r[index] = Long.valueOf( message.getSize() );
               break;
             case MailInputField.COLUMN_FLAG_DRAFT:
               r[index] = new Boolean( data.mailConn.isMessageDraft( message ) );
@@ -585,7 +585,7 @@ public class MailInput extends BaseStep implements StepInterface {
               r[index] = new Boolean( data.mailConn.isMessageDeleted( message ) );
               break;
             case MailInputField.COLUMN_ATTACHED_FILES_COUNT:
-              r[index] = new Long( data.mailConn.getAttachedFilesCount( message, null ) );
+              r[index] = Long.valueOf( data.mailConn.getAttachedFilesCount( message, null ) );
               break;
             case MailInputField.COLUMN_HEADER:
               String name = meta.getInputFields()[i].getName();

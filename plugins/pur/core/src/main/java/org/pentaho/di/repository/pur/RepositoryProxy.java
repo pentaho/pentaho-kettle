@@ -454,28 +454,34 @@ public class RepositoryProxy extends AbstractRepository implements ILockService,
   private DatabaseMeta loadDatabaseMeta( String code, List<DatabaseMeta> databases ) throws KettleException {
     DataProperty codeProp = node.getProperty( code );
     if ( codeProp != null ) {
-      if ( DataNodeRef.REF_MISSING.equals( codeProp.getRef().getId() )
-          && System.getProperty( "kettle.allow_missing_refs" ) == null ) {
-        throw new KettleException( BaseMessages.getString( PKG, "RepositoryProxy.ERROR_0001_MISSING_REF" ) );
-      }
-      ObjectId databaseId = new StringObjectId( node.getProperty( code ).getRef().getId().toString() );
-      DatabaseMeta databaseMeta = DatabaseMeta.findDatabase( databases, databaseId );
-      if ( databaseMeta != null ) {
-        return databaseMeta;
-      } else {
-        // the referenced ObjectId is not in the current set of DBs. It may have been overridden by another.
-        // Try to find the original DB and load the overriding one by name.
-        DatabaseMeta orig = loadDatabaseMeta( databaseId, null );
-        if ( orig != null ) {
-          return DatabaseMeta.findDatabase( databases, orig.getName() );
-        }
-      }
+      return loadDatabaseMetaFromReference( codeProp, databases );
     } else {
       DataProperty nameProp = node.getProperty( code + PROP_CODE_NR_SEPARATOR + NAME_EXT );
       if ( nameProp != null ) {
         String dbName = nameProp.getString();
         return DatabaseMeta.findDatabase( databases, dbName );
       }
+    }
+    return null;
+  }
+
+  private DatabaseMeta loadDatabaseMetaFromReference( DataProperty codeProp, List<DatabaseMeta> databases )
+    throws KettleException {
+    if ( DataNodeRef.REF_MISSING.equals( codeProp.getRef().getId() )
+        && System.getProperty( "kettle.allow_missing_refs" ) == null ) {
+      throw new KettleException( BaseMessages.getString( PKG, "RepositoryProxy.ERROR_0001_MISSING_REF" ) );
+    }
+    ObjectId databaseId = new StringObjectId( codeProp.getRef().getId().toString() );
+    DatabaseMeta databaseMeta = DatabaseMeta.findDatabase( databases, databaseId );
+    if ( databaseMeta != null ) {
+      return databaseMeta;
+    }
+    // The referenced ObjectId is not in the current set of DBs. It may have been overridden by another.
+    // Try to find the original DB and load the overriding one by name.
+    DatabaseMeta orig = loadDatabaseMeta( databaseId, null );
+    if ( orig != null ) {
+      DatabaseMeta override = DatabaseMeta.findDatabase( databases, orig.getName() );
+      return override == null ? orig : override;
     }
     return null;
   }

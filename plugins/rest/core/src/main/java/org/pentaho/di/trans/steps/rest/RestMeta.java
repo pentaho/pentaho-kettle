@@ -641,7 +641,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface {
       proxyPort = rep.getStepAttributeString( idStep, TAG_PROXY_PORT );
 
       trustStoreFile = rep.getStepAttributeString( idStep, TAG_TRUST_STORE_FILE );
-      ignoreSsl = "Y".equalsIgnoreCase( rep.getStepAttributeString( idStep, TAG_IGNORE_SSL ) );
+      ignoreSsl = rep.getStepAttributeBoolean( idStep, TAG_IGNORE_SSL );
       trustStorePassword =
           Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString( idStep, TAG_TRUST_STORE_PASSWORD ) );
 

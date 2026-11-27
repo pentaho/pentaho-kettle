@@ -241,6 +241,8 @@ public class VfsSharedObjectsIOTest {
     String rootPath = ROOT_FILE_PATH + "-reload-on-clear";
     String firstConnectionName = "ExistingConn";
     String secondConnectionName = "SecondConn";
+    String slaveServerType = String.valueOf( SharedObjectsIO.SharedObjectType.SLAVESERVER );
+    String slaveServerName = "ExistingSlave";
 
     SharedObjectsIO initialSharedObjectsIO = createVfsSharedObject( rootPath );
     try {
@@ -250,6 +252,9 @@ public class VfsSharedObjectsIOTest {
         createDatabaseMeta( firstConnectionName ).toNode() );
       initialSharedObjectsIO.saveSharedObject( db_type, secondConnectionName,
         createDatabaseMeta( secondConnectionName ).toNode() );
+      initialSharedObjectsIO.saveSharedObject( slaveServerType, slaveServerName,
+        XMLHandler.loadXMLString( "<slaveserver><name>" + slaveServerName + "</name></slaveserver>" )
+          .getFirstChild() );
     } finally {
       initialSharedObjectsIO.unlock();
     }
@@ -269,6 +274,8 @@ public class VfsSharedObjectsIOTest {
       assertEquals( 0, verifySharedObjectsIO.getSharedObjects( db_type ).size() );
       assertNull( verifySharedObjectsIO.getSharedObject( db_type, firstConnectionName ) );
       assertNull( verifySharedObjectsIO.getSharedObject( db_type, secondConnectionName ) );
+      // clearing connections must not drop other shared object types
+      assertNotNull( verifySharedObjectsIO.getSharedObject( slaveServerType, slaveServerName ) );
     } finally {
       verifySharedObjectsIO.unlock();
     }

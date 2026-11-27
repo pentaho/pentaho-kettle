@@ -45,6 +45,7 @@ public class PanTransformationDelegate {
 
   private LogChannelInterface log;
   private Repository repository;
+  private Trans lastExecutedTrans;
 
   private static final String LOCAL = "LOCAL";
   private static final String REMOTE = "REMOTE";
@@ -125,6 +126,7 @@ public class PanTransformationDelegate {
     }
 
     // Determine execution type and execute accordingly
+    lastExecutedTrans = null;
     return executeBasedOnConfiguration( transMeta, executionConfiguration, arguments );
   }
 
@@ -136,18 +138,28 @@ public class PanTransformationDelegate {
                                               String[] arguments ) throws KettleException {
 
     if ( executionConfiguration.isExecutingLocally() ) {
-      return transformationExecutorServiceMap.get( LOCAL )
-        .execute( log, transMeta, repository, executionConfiguration, arguments );
+      return executeWithService( LOCAL, transMeta, executionConfiguration, arguments );
     } else if ( executionConfiguration.isExecutingRemotely() ) {
-      return transformationExecutorServiceMap.get( REMOTE )
-        .execute( log, transMeta, repository, executionConfiguration, arguments );
+      return executeWithService( REMOTE, transMeta, executionConfiguration, arguments );
     } else if ( executionConfiguration.isExecutingClustered() ) {
-      return transformationExecutorServiceMap.get( CLUSTERED )
-        .execute( log, transMeta, repository, executionConfiguration, arguments );
-
-    } else {
-      throw new KettleException( BaseMessages.getString( pkg, "PanTransformationDelegate.Error.NoExecutionTypeSpecified" ) );
+      return executeWithService( CLUSTERED, transMeta, executionConfiguration, arguments );
     }
+
+    throw new KettleException( BaseMessages.getString( pkg, "PanTransformationDelegate.Error.NoExecutionTypeSpecified" ) );
+  }
+
+  private Result executeWithService( String executionKey, TransMeta transMeta,
+                                      TransExecutionConfiguration executionConfiguration,
+                                      String[] arguments ) throws KettleException {
+    TransExecutorService executorService = transformationExecutorServiceMap.get( executionKey );
+    if ( executorService == null ) {
+      throw new KettleException( BaseMessages.getString( pkg,
+        "PanTransformationDelegate.Error.NoExecutionTypeSpecified" ) );
+    }
+
+    Result result = executorService.execute( log, transMeta, repository, executionConfiguration, arguments );
+    lastExecutedTrans = executorService.getTransToLog();
+    return result;
   }
 
   /**
@@ -187,5 +199,9 @@ public class PanTransformationDelegate {
 
   public void setRepository( Repository repository ) {
     this.repository = repository;
+  }
+
+  public Trans getLastExecutedTrans() {
+    return lastExecutedTrans;
   }
 }

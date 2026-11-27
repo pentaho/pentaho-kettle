@@ -69,7 +69,6 @@
     <jboss-logging.version>3.4.3.Final</jboss-logging.version>
     <cglib-nodep.version>2.2</cglib-nodep.version>
     <js.version>1.7R3</js.version>
-    <mstor.version>0.9.13</mstor.version>
     <commons-cli.version>1.2</commons-cli.version>
     <log4jdbc.version>1.2</log4jdbc.version>
     <oro.version>2.0.8</oro.version>
@@ -160,10 +159,6 @@
       <artifactId>encoder</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.mozilla</groupId>
-      <artifactId>rhino</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.antlr</groupId>
       <artifactId>antlr-complete</artifactId>
       <version>${antlr-complete.version}</version>
@@ -233,28 +228,6 @@
       <groupId>infobright</groupId>
       <artifactId>infobright-core</artifactId>
       <version>${infobright-core.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.janino</groupId>
-      <artifactId>commons-compiler</artifactId>
-      <version>${janino.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.janino</groupId>
-      <artifactId>janino</artifactId>
-      <version>${janino.version}</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -680,17 +653,6 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.mnode.mstor</groupId>
-      <artifactId>mstor</artifactId>
-      <version>${mstor.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
       <groupId>org.xerial.snappy</groupId>
       <artifactId>snappy-java</artifactId>
       <version>${snappy-java.version}</version>
@@ -801,7 +763,10 @@
     <dependency>
       <groupId>com.cronutils</groupId>
       <artifactId>cron-utils</artifactId>
-      <version>9.1.6</version>
+      <!-- cron-utils version is managed centrally via the parent POM chain: dependencyManagement
+           in the org root org.pentaho:pentaho-parent-pom (property cron-utils.version), inherited
+           here through pentaho-ce-jar-parent-pom. 9.1.7+ pulls the fixed org.glassfish:jakarta.el
+           3.0.4 in place of the vulnerable org.glassfish:javax.el 3.0.0 (CVE-2021-28170). -->
     </dependency>
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
@@ -820,6 +785,12 @@
     <dependency>
       <groupId>jakarta.xml.bind</groupId>
       <artifactId>jakarta.xml.bind-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.jaxb</groupId>
+      <artifactId>jaxb-core</artifactId>
+      <version>${jaxb-runtime.version}</version>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.glassfish.jaxb</groupId>
@@ -921,6 +892,38 @@
 
   <build>
     <plugins>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>default-test</id>
+            <configuration>
+              <excludes>
+                <exclude>**/*$*</exclude>
+                <exclude>**/MinaSshConnectionHostConfigTest.java</exclude>
+              </excludes>
+            </configuration>
+          </execution>
+          <!-- BISERVER-15807: MINA SSHD reads user.home one time for each JVM. This test needs a new JVM. -->
+          <execution>
+            <id>ssh-host-config-test</id>
+            <phase>${test-unit-execute-phase}</phase>
+            <goals>
+              <goal>test</goal>
+            </goals>
+            <configuration>
+              <argLine>-Dfile.encoding=${project.build.sourceEncoding} @{jacocoSurefireArgLine} ${maven-surefire-plugin.argLine} ${maven-surefire-plugin.ci.argLine}</argLine>
+              <test>MinaSshConnectionHostConfigTest</test>
+              <forkCount>1</forkCount>
+              <reuseForks>false</reuseForks>
+              <testFailureIgnore>${maven-surefire-plugin.testFailureIgnore}</testFailureIgnore>
+              <systemPropertyVariables>
+                <ssh.hostconfig.isolated>true</ssh.hostconfig.isolated>
+              </systemPropertyVariables>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
         <executions>

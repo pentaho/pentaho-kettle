@@ -46,6 +46,7 @@
     <se-jcr.version>0.9</se-jcr.version>
     <jcr.version>2.0</jcr.version>
     <derby.version>10.17.1.0</derby.version>
+    <javax.transaction-api.version>1.2</javax.transaction-api.version>
     <commons-database.version>11.1.0.0-SNAPSHOT</commons-database.version>
 
     <!-- Wadl2Java Settings -->
@@ -156,19 +157,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-lang3</artifactId>
-      <version>${commons-lang3.version}</version>
-      <scope>compile</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-
     <!-- Third-party dependencies -->
     <dependency>
       <groupId>org.eclipse.swt</groupId>
@@ -425,6 +413,18 @@
       <groupId>org.apache.derby</groupId>
       <artifactId>derby</artifactId>
       <version>${derby.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.transaction</groupId>
+      <artifactId>javax.transaction-api</artifactId>
+      <version>${javax.transaction-api.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.pentaho.di.plugins</groupId>
+      <artifactId>pentaho-metastore-locator-core</artifactId>
+      <version>${pdi.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

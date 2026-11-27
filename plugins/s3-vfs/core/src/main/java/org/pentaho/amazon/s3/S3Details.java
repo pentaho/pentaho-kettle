@@ -10,12 +10,9 @@
  * Change Date: 2030-06-15
  ******************************************************************************/
 
-
-
 package org.pentaho.amazon.s3;
 
-import com.amazonaws.regions.Region;
-import com.amazonaws.regions.RegionUtils;
+import software.amazon.awssdk.regions.Region;
 import org.eclipse.swt.widgets.Composite;
 import org.pentaho.di.connections.annotations.Encrypted;
 import org.pentaho.di.connections.vfs.BaseVFSConnectionDetails;
@@ -26,7 +23,7 @@ import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.metastore.persist.MetaStoreAttribute;
 import org.pentaho.metastore.persist.MetaStoreElementType;
 import org.pentaho.s3.vfs.S3FileProvider;
-import org.pentaho.s3common.S3CommonFileSystemConfigBuilder;
+import org.pentaho.s3.vfs.S3FileSystemConfigBuilder;
 
 import java.util.List;
 import java.util.Map;
@@ -39,26 +36,26 @@ public class S3Details extends BaseVFSConnectionDetails {
   public static final String CONNECTION_TYPE_AWS = "0";
   public static final String CONNECTION_TYPE_MINIO = "1";
 
-  public static final String PROP_NAME = S3CommonFileSystemConfigBuilder.NAME;
+  public static final String PROP_NAME = S3FileSystemConfigBuilder.NAME;
   public static final String PROP_DESCRIPTION = "description";
-  public static final String PROP_ACCESS_KEY = S3CommonFileSystemConfigBuilder.ACCESS_KEY;
-  public static final String PROP_SECRET_KEY = S3CommonFileSystemConfigBuilder.SECRET_KEY;
-  public static final String PROP_SESSION_TOKEN = S3CommonFileSystemConfigBuilder.SESSION_TOKEN;
+  public static final String PROP_ACCESS_KEY = S3FileSystemConfigBuilder.ACCESS_KEY;
+  public static final String PROP_SECRET_KEY = S3FileSystemConfigBuilder.SECRET_KEY;
+  public static final String PROP_SESSION_TOKEN = S3FileSystemConfigBuilder.SESSION_TOKEN;
   public static final String PROP_CREDENTIALS_FILE_PATH = "credentialsFilePath";
-  public static final String PROP_CREDENTIALS_FILE = S3CommonFileSystemConfigBuilder.CREDENTIALS_FILE;
+  public static final String PROP_CREDENTIALS_FILE = S3FileSystemConfigBuilder.CREDENTIALS_FILE;
   public static final String PROP_AUTH_TYPE = "authType";
-  public static final String PROP_REGION = S3CommonFileSystemConfigBuilder.REGION;
-  public static final String PROP_PROFILE_NAME = S3CommonFileSystemConfigBuilder.PROFILE_NAME;
-  public static final String PROP_ENDPOINT = S3CommonFileSystemConfigBuilder.ENDPOINT;
+  public static final String PROP_REGION = S3FileSystemConfigBuilder.REGION;
+  public static final String PROP_PROFILE_NAME = S3FileSystemConfigBuilder.PROFILE_NAME;
+  public static final String PROP_ENDPOINT = S3FileSystemConfigBuilder.ENDPOINT;
   public static final String PROP_SIGNATURE_VERSION = "signatureVersion";
-  public static final String PROP_PATHSTYLE_ACCESS = S3CommonFileSystemConfigBuilder.PATHSTYLE_ACCESS;
-  public static final String PROP_DEFAULT_S3_CONFIG = S3CommonFileSystemConfigBuilder.DEFAULT_S3_CONFIG;
-  public static final String PROP_CONNECTION_TYPE = S3CommonFileSystemConfigBuilder.CONNECTION_TYPE;
-  public static final String PROP_TRUST_STORE_FILE_PATH = S3CommonFileSystemConfigBuilder.TRUST_STORE_FILE_PATH;
-  public static final String PROP_TRUST_STORE_PASSWORD = S3CommonFileSystemConfigBuilder.TRUST_STORE_PASSWORD;
-  public static final String PROP_TRUST_ALL = S3CommonFileSystemConfigBuilder.TRUST_ALL;
-  public static final String PROP_KEY_STORE_FILE_PATH = S3CommonFileSystemConfigBuilder.KEY_STORE_FILE_PATH;
-  public static final String PROP_KEY_STORE_PASSWORD = S3CommonFileSystemConfigBuilder.KEY_STORE_PASSWORD;
+  public static final String PROP_PATHSTYLE_ACCESS = S3FileSystemConfigBuilder.PATHSTYLE_ACCESS;
+  public static final String PROP_DEFAULT_S3_CONFIG = S3FileSystemConfigBuilder.DEFAULT_S3_CONFIG;
+  public static final String PROP_CONNECTION_TYPE = S3FileSystemConfigBuilder.CONNECTION_TYPE;
+  public static final String PROP_TRUST_STORE_FILE_PATH = S3FileSystemConfigBuilder.TRUST_STORE_FILE_PATH;
+  public static final String PROP_TRUST_STORE_PASSWORD = S3FileSystemConfigBuilder.TRUST_STORE_PASSWORD;
+  public static final String PROP_TRUST_ALL = S3FileSystemConfigBuilder.TRUST_ALL;
+  public static final String PROP_KEY_STORE_FILE_PATH = S3FileSystemConfigBuilder.KEY_STORE_FILE_PATH;
+  public static final String PROP_KEY_STORE_PASSWORD = S3FileSystemConfigBuilder.KEY_STORE_PASSWORD;
 
   @MetaStoreAttribute private String name;
 
@@ -85,6 +82,7 @@ public class S3Details extends BaseVFSConnectionDetails {
   @MetaStoreAttribute private String pathStyleAccess;
   @MetaStoreAttribute private String pathStyleAccessVariable;
 
+  // no longer in use
   @MetaStoreAttribute private String signatureVersion;
 
   @MetaStoreAttribute private String defaultS3Config;
@@ -169,7 +167,7 @@ public class S3Details extends BaseVFSConnectionDetails {
   }
 
   public List<String> getRegions() {
-    return RegionUtils.getRegions().stream().map( Region::getName ).collect( Collectors.toList() );
+    return Region.regions().stream().map( Region::id ).collect( Collectors.toList() );
   }
 
   public String getRegion() {

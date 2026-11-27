@@ -953,7 +953,7 @@ public class RepositoryManagerDialog extends Dialog {
                 BaseMessages.getString( PKG, "repositories.error.configuration.invalidServerUrl", serverUrl ) );
               return;
             }
-            authContext.storeJSessionId( sessionInfo.getJsessionId() );
+            authContext.storeJSessionId( sessionInfo.getJsessionId(), sessionInfo.getUsername() );
 
             RepositoryConnectController.getInstance().connectToRepository(
               repoName,

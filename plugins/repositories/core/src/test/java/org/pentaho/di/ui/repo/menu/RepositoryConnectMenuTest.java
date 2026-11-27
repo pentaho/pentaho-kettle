@@ -204,7 +204,7 @@ public class RepositoryConnectMenuTest {
       invokeOpenBrowserLogin( repoName, serverUrl );
 
       // Verify session was stored
-      verify( mockAuthContext ).storeJSessionId( "JSESS123" );
+      verify( mockAuthContext ).storeJSessionId( "JSESS123", "adminUser" );
 
       // Verify connectToRepository was called with session auth password
       verify( repoController ).connectToRepository(

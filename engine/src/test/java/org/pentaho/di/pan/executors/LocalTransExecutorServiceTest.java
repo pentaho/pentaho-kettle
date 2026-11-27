@@ -25,7 +25,12 @@ import org.pentaho.di.trans.TransExecutionConfiguration;
 
 import java.util.Map;
 
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.openMocks;
 
@@ -61,6 +66,35 @@ public class LocalTransExecutorServiceTest {
     verify( mockTrans ).prepareExecution( params );
     verify( mockTrans ).startThreads();
     verify( mockTrans ).waitUntilFinished();
+    assertSame( mockTrans, localTransExecutorService.getTransToLog() );
+  }
+
+  @Test
+  public void testPreparationFailureRetainsCause() throws KettleException {
+    Trans trans = mock( Trans.class );
+    KettleException failure = new KettleException( "prepare failed" );
+    doThrow( failure ).when( trans ).prepareExecution( any( String[].class ) );
+    try {
+      localTransExecutorService.execute( trans, repository, delegate.createDefaultExecutionConfiguration(), new String[0] );
+      fail( "Expected initialization failure" );
+    } catch ( LocalTransExecutorService.KettleTransInitializationException e ) {
+      assertSame( failure, e.getCause() );
+    }
+    verify( trans, never() ).startThreads();
+  }
+
+  @Test
+  public void testStartFailureRetainsCause() throws KettleException {
+    Trans trans = mock( Trans.class );
+    KettleException failure = new KettleException( "start failed" );
+    doThrow( failure ).when( trans ).startThreads();
+    try {
+      localTransExecutorService.execute( trans, repository, delegate.createDefaultExecutionConfiguration(), new String[0] );
+      fail( "Expected initialization failure" );
+    } catch ( LocalTransExecutorService.KettleTransInitializationException e ) {
+      assertSame( failure, e.getCause() );
+    }
+    verify( trans, never() ).waitUntilFinished();
   }
 
 }

@@ -71,6 +71,11 @@
         <module>mail-validator</module>
         <module>get-file-with-ftp</module>
         <module>msg-box-info</module>
+        <module>eval-job-entry</module>
+        <module>exec-process</module>
+        <module>exec-sql</module>
+        <module>script-values-mod</module>
+        <module>janino</module>
       </modules>
     </profile>
 

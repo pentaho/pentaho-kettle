@@ -15,6 +15,7 @@ package org.pentaho.di.pan.executors;
 
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleTransException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
@@ -31,6 +32,7 @@ import java.util.Map;
 public class LocalTransExecutorService implements TransExecutorService {
 
   private static Class<?> pkg = LocalTransExecutorService.class;
+  private Trans executionTrans;
 
   /**
    * Executes a transformation locally.
@@ -48,6 +50,7 @@ public class LocalTransExecutorService implements TransExecutorService {
                          TransExecutionConfiguration executionConfiguration, String[] arguments ) throws KettleException {
     log.logBasic( BaseMessages.getString( pkg, "PanTransformationDelegate.Log.ExecutingLocally" ) );
 
+    executionTrans = null;
     Trans trans = DefaultTransFactoryManager.getInstance().getTransFactory(
       executionConfiguration.getRunConfiguration() ).create( transMeta, transMeta );
     return execute( trans, repository, executionConfiguration, arguments );
@@ -65,6 +68,7 @@ public class LocalTransExecutorService implements TransExecutorService {
    */
   protected Result execute(  Trans trans, Repository repository,
                              TransExecutionConfiguration executionConfiguration, String[] arguments ) throws KettleException {
+    executionTrans = trans;
     trans.setRepository( repository );
 
     // Copy execution configuration settings
@@ -79,12 +83,27 @@ public class LocalTransExecutorService implements TransExecutorService {
     }
 
     // Prepare and start execution
-    trans.prepareExecution( arguments );
-    trans.startThreads();
+    try {
+      trans.prepareExecution( arguments );
+      trans.startThreads();
+    } catch ( KettleException e ) {
+      throw new KettleTransInitializationException( e );
+    }
 
     // Wait for completion
     trans.waitUntilFinished();
 
     return trans.getResult();
+  }
+
+  public static class KettleTransInitializationException extends KettleTransException {
+    public KettleTransInitializationException( KettleException cause ) {
+      super( cause );
+    }
+  }
+
+  @Override
+  public Trans getTransToLog() {
+    return executionTrans;
   }
 }

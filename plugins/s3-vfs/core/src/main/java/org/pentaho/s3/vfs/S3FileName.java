@@ -10,10 +10,9 @@
  * Change Date: 2030-06-15
  ******************************************************************************/
 
-
 package org.pentaho.s3.vfs;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.commons.vfs2.FileName;
 import org.apache.commons.vfs2.FileType;
 import org.apache.commons.vfs2.provider.AbstractFileName;
@@ -37,7 +36,7 @@ public class S3FileName extends AbstractFileName {
   }
 
   public S3FileName( String scheme, String bucketId, String path, FileType type ) {
-    super( scheme, StringUtils.prependIfMissing( path, DELIMITER ), type );
+    super( scheme, Strings.CS.prependIfMissing( path, DELIMITER ), type );
 
     this.bucketId = bucketId;
 

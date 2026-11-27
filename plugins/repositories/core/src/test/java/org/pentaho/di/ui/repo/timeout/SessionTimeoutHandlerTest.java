@@ -486,7 +486,7 @@ public class SessionTimeoutHandlerTest {
 
       assertTrue( result );
       verify( authService ).authenticate( "http://server", "oauth2/authorization/azure" );
-      verify( authCtx ).storeJSessionId( "sess-abc" );
+      verify( authCtx ).storeJSessionId( "sess-abc", "ssoUser" );
       verify( repositoryConnectController ).reconnectToRepository(
         "myRepo", "ssoUser", AuthenticationContext.SESSION_AUTH_TOKEN );
     }
@@ -683,7 +683,7 @@ public class SessionTimeoutHandlerTest {
         sessionTimeoutHandler, "http://server", sessionInfo, repositoryMeta, repositoryConnectController );
 
       assertTrue( result );
-      verify( authCtx ).storeJSessionId( "sess123" );
+      verify( authCtx ).storeJSessionId( "sess123", "admin" );
       verify( repositoryConnectController ).reconnectToRepository(
         "myRepo", "admin", AuthenticationContext.SESSION_AUTH_TOKEN );
     }

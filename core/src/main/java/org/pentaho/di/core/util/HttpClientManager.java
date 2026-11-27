@@ -212,14 +212,14 @@ public class HttpClientManager {
 
     TrustManager[] trustManagers = null;
     if ( ignoreSSLValidation ) {
-      trustManagers = createPhonyTrustManagers();
+      trustManagers = getTrustAllManagers();
     } else if ( trustFileStream != null ) {
-      trustManagers = createTrustManagersFromTrustStore( trustFileStream, trustStorePassword );
+      trustManagers = getTrustManagers( trustFileStream, trustStorePassword );
     }
 
     KeyManager[] keyManagers = null;
     if ( keyStoreFileStream != null ) {
-      keyManagers = createKeyManagersFromKeyStore( keyStoreFileStream, keyStorePassword, keyPassword );
+      keyManagers = getKeyManagers( keyStoreFileStream, keyStorePassword, keyPassword );
     }
 
     SSLContext sslContext = SSLContext.getInstance( sslContextProtocol );
@@ -228,7 +228,25 @@ public class HttpClientManager {
     return sslContext;
   }
 
-  private static KeyManager[] createKeyManagersFromKeyStore( InputStream keyStoreFileStream, String keyStorePassword, String keyPassword )
+  /**
+   * Builds the trust managers an {@link SSLContext} would be initialized with, for clients that
+   * configure TLS through managers rather than through a context.
+   */
+  public static TrustManager[] getTrustManagers( InputStream trustFileStream, String trustStorePassword )
+    throws NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException {
+    TrustManagerFactory tmf = TrustManagerFactory.getInstance( TrustManagerFactory.getDefaultAlgorithm() );
+    KeyStore trustStore = KeyStore.getInstance( KeyStore.getDefaultType() );
+    trustStore.load( trustFileStream, toCharArray( trustStorePassword ) );
+    tmf.init( trustStore );
+    return tmf.getTrustManagers();
+  }
+
+  /**
+   * Builds the key managers an {@link SSLContext} would be initialized with, for clients that
+   * configure TLS through managers rather than through a context.
+   */
+  public static KeyManager[] getKeyManagers( InputStream keyStoreFileStream, String keyStorePassword,
+                                             String keyPassword )
     throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException, UnrecoverableKeyException {
     KeyStore keyStore = KeyStore.getInstance( KeyStore.getDefaultType() );
     keyStore.load( keyStoreFileStream, toCharArray( keyStorePassword ) );
@@ -236,15 +254,6 @@ public class HttpClientManager {
     KeyManagerFactory kmf = KeyManagerFactory.getInstance( KeyManagerFactory.getDefaultAlgorithm() );
     kmf.init( keyStore, toCharArray( keyPassword ) );
     return kmf.getKeyManagers();
-  }
-
-  private static TrustManager[] createTrustManagersFromTrustStore( InputStream trustFileStream, String trustStorePassword )
-    throws NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException {
-    TrustManagerFactory tmf = TrustManagerFactory.getInstance( TrustManagerFactory.getDefaultAlgorithm() );
-    KeyStore trustStore = KeyStore.getInstance( KeyStore.getDefaultType() );
-    trustStore.load( trustFileStream, toCharArray( trustStorePassword ) );
-    tmf.init( trustStore );
-    return tmf.getTrustManagers();
   }
 
   private static char[] toCharArray( String value ) {
@@ -255,7 +264,7 @@ public class HttpClientManager {
   // it's supposed to be insecure, sonar
   @SuppressWarnings( "java:S4830" )
   /** @return TrustManager accepting ALL certificates */
-  private static TrustManager[] createPhonyTrustManagers() {
+  public static TrustManager[] getTrustAllManagers() {
     return new TrustManager[] {
       new X509TrustManager() {
         public X509Certificate[] getAcceptedIssuers() {

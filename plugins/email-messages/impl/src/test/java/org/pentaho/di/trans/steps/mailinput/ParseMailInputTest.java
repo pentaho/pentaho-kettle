@@ -14,24 +14,21 @@
 
 package org.pentaho.di.trans.steps.mailinput;
 
-import org.mockito.AdditionalMatchers;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import jakarta.mail.Address;
+import jakarta.mail.Header;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.regex.Pattern;
-
-import jakarta.mail.Address;
-import jakarta.mail.Header;
-import jakarta.mail.Message;
-import jakarta.mail.MessagingException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.AfterClass;
@@ -39,6 +36,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.AdditionalMatchers;
 import org.mockito.Mockito;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
@@ -106,6 +104,7 @@ public class ParseMailInputTest {
     when( conn.getFolderName() ).thenReturn( FLD_NAME );
     when( conn.getAttachedFilesCount( any(), any() ) ).thenReturn( ATTCH_COUNT );
     when( conn.getMessageBodyContentType( any( Message.class ) ) ).thenReturn( CNTNT_TYPE );
+    when( conn.getEffectiveMessageNumber( any( Message.class ) ) ).thenReturn( MSG_NUMB );
     data = mock( MailInputData.class );
     data.mailConn = conn;
 
