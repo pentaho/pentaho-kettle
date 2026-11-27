@@ -74,12 +74,14 @@ public class KitchenIT {
 
   @Before
   public void setUp() {
+    Kitchen.setCommandExecutor( null );
     oldSecurityManager = System.getSecurityManager();
     System.setSecurityManager( new MySecurityManager( oldSecurityManager ) );
   }
 
   @After
   public void tearDown() {
+    Kitchen.setCommandExecutor( null );
     System.setSecurityManager( oldSecurityManager );
   }
 
