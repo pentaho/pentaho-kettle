@@ -9,11 +9,13 @@ provide, so it also covers other services that implement the S3 API, such as Bac
 Cloudflare R2, Hitachi Content Platform or MinIO. The fields of that connection type are:
 
 * **Region:** free text, as those services do not always use the AWS region names. When left empty,
-the default region of the AWS SDK is used.
+the client signs the requests for `us-east-1`. The region of the environment or of an AWS profile
+is not used.
 * **Access Key** / **Secret Key:** the credentials issued by the service.
 * **Endpoint:** the service endpoint, for example `https://s3.example-region.example.com`. It is
 passed to the client together with the region.
-* **Signature Version:** the AWS SDK signer type used to sign the requests.
+* **Signature Version:** a legacy compatibility field. Only Signature V4 is supported, so leave it
+empty or set to `AWSS3V4SignerType`. Any other value only logs a warning.
 * **Trust Store** / **Key Store:** for endpoints presenting a certificate that the JVM does not
 trust by default, or requiring a client certificate.
 * **PathStyle Access:** addresses the bucket in the request path instead of in the host name, for
