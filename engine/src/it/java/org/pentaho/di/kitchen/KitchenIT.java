@@ -13,16 +13,21 @@
 package org.pentaho.di.kitchen;
 
 import org.apache.commons.io.FileUtils;
-import org.junit.Ignore;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.base.CommandExecutorCodes;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.security.ExitInterceptor;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.UUID;
 
@@ -30,8 +35,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
-@Ignore
 public class KitchenIT {
 
   private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
@@ -59,6 +64,22 @@ public class KitchenIT {
     "missing_referenced_ktr.kjb"
   };
 
+  @Before
+  public void setUp() {
+    oldOut = System.out;
+    oldErr = System.err;
+    Kitchen.setCommandExecutor( null );
+    ExitInterceptor.enableIntercept();
+  }
+
+  @After
+  public void tearDown() {
+    System.setOut( oldOut );
+    System.setErr( oldErr );
+    Kitchen.setCommandExecutor( null );
+    ExitInterceptor.disableIntercept();
+  }
+
   @Test
   public void testArchivedJobsExecution() throws Exception {
     String file = this.getClass().getResource( "test-kjb.zip" ).getFile();
@@ -69,12 +90,16 @@ public class KitchenIT {
     System.setErr( new PrintStream( errContent ) );
     try {
       Kitchen.main( args );
+      fail( "Kitchen should exit after execution" );
     } catch ( SecurityException e ) {
       System.setOut( oldOut );
       System.setErr( oldErr );
       System.out.println( outContent );
       assertFalse( outContent.toString().contains( "result=[false]" ) );
       assertFalse( outContent.toString().contains( "ERROR" ) );
+      assertNotNull( Kitchen.getCommandExecutor().getResult() );
+      assertEquals( CommandExecutorCodes.Kitchen.SUCCESS.getCode(),
+        Kitchen.getCommandExecutor().getResult().getExitStatus() );
     }
   }
 
@@ -88,12 +113,16 @@ public class KitchenIT {
     System.setErr( new PrintStream( errContent ) );
     try {
       Kitchen.main( args );
+      fail( "Kitchen should exit after execution" );
     } catch ( SecurityException e ) {
       System.setOut( oldOut );
       System.setErr( oldErr );
       System.out.println( outContent );
       assertFalse( outContent.toString().contains( "result=[false]" ) );
       assertFalse( outContent.toString().contains( "ERROR" ) );
+      assertNotNull( Kitchen.getCommandExecutor().getResult() );
+      assertEquals( CommandExecutorCodes.Kitchen.SUCCESS.getCode(),
+        Kitchen.getCommandExecutor().getResult().getExitStatus() );
     }
   }
 
@@ -112,6 +141,7 @@ public class KitchenIT {
       try {
 
         Kitchen.main( new String[]{ "/file:" + testKJBFullPath, "/level:Basic", "/logfile:" + logFileFullPath } );
+        fail( "Kitchen should exit after execution" );
 
       } catch ( SecurityException e ) {
         // All OK / expected: SecurityException is purposely thrown when Kitchen triggers System.exitJVM()
@@ -151,6 +181,7 @@ public class KitchenIT {
       try {
 
         Kitchen.main( new String[]{ "/file:" + testKJBFullPath, "/level:Basic", "/logfile:" + logFileFullPath } );
+        fail( "Kitchen should exit after execution" );
 
       } catch ( SecurityException e ) {
         // All OK / expected: SecurityException is purposely thrown when Kitchen triggers System.exitJVM()
@@ -202,6 +233,7 @@ public class KitchenIT {
         "/param:" + param1Name + "=" + param1Val,
         "/param:" + param2Name + "=" + param2Val
       } );
+      fail( "Kitchen should exit after execution" );
 
     } catch ( SecurityException e ) {
       // All OK / expected: SecurityException is purposely thrown when Pan triggers System.exitJVM()
@@ -226,26 +258,17 @@ public class KitchenIT {
     }
   }
 
-  private String getFileContentAsString( String relativePath ) {
-
-    String content = "";
-
-    try {
-      BufferedReader rd = new BufferedReader(
-              new InputStreamReader( this.getClass().getResourceAsStream( relativePath ) ) );
-      StringBuffer logFileContentBuffer = new StringBuffer();
-      String line = "";
+  private String getFileContentAsString( String relativePath ) throws IOException {
+    InputStream stream = getClass().getResourceAsStream( relativePath );
+    assertNotNull( "Missing log file: " + relativePath, stream );
+    try ( BufferedReader rd = new BufferedReader( new InputStreamReader( stream, StandardCharsets.UTF_8 ) ) ) {
+      StringBuilder logFileContentBuffer = new StringBuilder();
+      String line;
       while ( ( line = rd.readLine() ) != null ) {
         logFileContentBuffer.append( line ).append( "\n" );
       }
-
-      content = logFileContentBuffer.toString();
-
-    } catch ( Throwable t ) {
-      // no-op
+      return logFileContentBuffer.toString();
     }
-
-    return content;
   }
 
   @Test
@@ -264,6 +287,7 @@ public class KitchenIT {
         "/file:" + testKJBWithinZip,
         "/level:Basic",
         "/zip:" + base64Zip } );
+      fail( "Kitchen should exit after execution" );
 
     } catch ( SecurityException e ) {
       // All OK / expected: SecurityException is purposely thrown when Kitchen triggers System.exitJVM()

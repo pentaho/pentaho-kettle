@@ -14,6 +14,7 @@ package org.pentaho.di.pan.executors;
 
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleTransException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
@@ -81,13 +82,23 @@ public class LocalTransExecutorService implements TransExecutorService {
     }
 
     // Prepare and start execution
-    trans.prepareExecution( arguments );
-    trans.startThreads();
+    try {
+      trans.prepareExecution( arguments );
+      trans.startThreads();
+    } catch ( KettleException e ) {
+      throw new KettleTransInitializationException( e );
+    }
 
     // Wait for completion
     trans.waitUntilFinished();
 
     return trans.getResult();
+  }
+
+  public static class KettleTransInitializationException extends KettleTransException {
+    public KettleTransInitializationException( KettleException cause ) {
+      super( cause );
+    }
   }
 
   @Override
