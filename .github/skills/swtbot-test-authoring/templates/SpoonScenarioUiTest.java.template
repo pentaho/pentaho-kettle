@@ -1,0 +1,76 @@
+package org.pentaho.di.ui.swtbot.test.<product package>;
+
+import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.ui.swtbot.ui.spoon.SpoonUi;
+
+import org.eclipse.swtbot.swt.finder.results.Result;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+/**
+ * Feature: <Feature title>
+ * (see ui/src/test/resources/features/<slug>.feature).
+ */
+public class Spoon<Feature>UiTest {
+  private Spoon spoon;
+
+  @Before
+  public void setUp() throws Exception {
+    // Background:
+    // Given Spoon is started successfully in the automated test environment
+    spoon = SpoonUi.awaitMainShell();
+    // And <shared starting state> -- establish it AND assert it
+    SpoonUi.closeAllFiles( spoon );
+    assertEquals( "open transformations before scenario", 0, SpoonUi.transformationCount( spoon ) );
+  }
+
+  @After
+  public void tearDown() {
+    SpoonUi.closeAllFiles( spoon );
+  }
+
+  /**
+   * Scenario: <Scenario title>.
+   */
+  @Test
+  public void <scenarioMethodName>() {
+    // Capture "before" state for relative assertions (check the SpoonUi helper inventory first).
+    int before = SpoonUi.transformationCount( spoon );
+
+    // When the user <action>
+    SpoonUi.mainShell( spoon ).menu().menu( "<Menu>", "<Submenu>", "<Item>" ).click();
+
+    // Then <expected result>
+    SpoonUi.waitFor( "<what is expected>", () -> SpoonUi.transformationCount( spoon ) == before + 1 );
+
+    // And <expected result>
+    Result<Boolean> check = () -> <spoon state check>;
+    assertTrue( "<what was expected, with actual values>", SpoonUi.onUiThread( spoon, check ) );
+  }
+
+  /**
+   * Scenario Outline: <Outline title>. Examples: <row 1 values>.
+   */
+  @Test
+  public void <outlineMethodNameRow1>() {
+    assert<OutlineBehavior>( <row 1 values> );
+  }
+
+  /**
+   * Scenario Outline: <Outline title>. Examples: <row 2 values>.
+   */
+  @Test
+  public void <outlineMethodNameRow2>() {
+    assert<OutlineBehavior>( <row 2 values> );
+  }
+
+  private void assert<OutlineBehavior>( <parameters> ) {
+    // Given <step with <parameter>>
+    // When the user <step with <parameter>>
+    // Then <step with <parameter>>
+  }
+}
